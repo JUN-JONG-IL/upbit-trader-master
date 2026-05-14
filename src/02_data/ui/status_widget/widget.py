@@ -14,6 +14,7 @@ import logging
 import os
 import sys
 import threading
+import importlib.util
 from datetime import datetime
 from typing import Optional
 
@@ -66,36 +67,71 @@ if _HAS_QT:
 
         def _init_ui(self) -> None:
             layout = QVBoxLayout(self)
-            # 시도: StatisticsTab 임포트 및 인스턴스 생성
+
+            # === Robust StatisticsTab import: try relative/package import first, then file-path fallback ===
+            _stats_tab_cls = None
             try:
-                # 상대경로: status_widget 패키지에서 tabs 상위 폴더로 이동
+                # Try relative/package import first (preferred)
                 from ..tabs.statistics_tab import StatisticsTab  # type: ignore
+                _stats_tab_cls = StatisticsTab
+            except Exception as e_rel:
+                logger.debug("[LogPopup] relative import of StatisticsTab failed: %s", e_rel)
+                # File-path fallback: load statistics_tab.py by filesystem path
                 try:
-                    self._stats_tab = StatisticsTab(parent=self)
+                    here = os.path.dirname(os.path.abspath(__file__))
+                    candidate = os.path.abspath(os.path.join(here, "..", "tabs", "statistics_tab.py"))
+                    if os.path.isfile(candidate):
+                        try:
+                            spec = importlib.util.spec_from_file_location("_statistics_tab_local", candidate)
+                            if spec and spec.loader:
+                                mod = importlib.util.module_from_spec(spec)
+                                spec.loader.exec_module(mod)
+                                _stats_tab_cls = getattr(mod, "StatisticsTab", None)
+                                if _stats_tab_cls is not None:
+                                    logger.debug("[LogPopup] StatisticsTab loaded from file: %s", candidate)
+                                else:
+                                    logger.debug("[LogPopup] file loaded but StatisticsTab not found in module: %s", candidate)
+                        except Exception as e_file:
+                            logger.debug("[LogPopup] file-path import of StatisticsTab failed: %s", e_file)
+                    else:
+                        logger.debug("[LogPopup] candidate statistics_tab.py not found at: %s", candidate)
+                except Exception as e_fp:
+                    logger.debug("[LogPopup] statistics_tab import fallback failed: %s", e_fp)
+
+            # If we found a StatisticsTab class, instantiate and embed it
+            if _stats_tab_cls is not None:
+                try:
+                    self._stats_tab = _stats_tab_cls(parent=self)
                     layout.addWidget(self._stats_tab)
                     self._has_stats_tab = True
                 except Exception as exc:
-                    logger.debug("[LogPopup] StatisticsTab 인스턴스 생성 실패, fallback 사용: %s", exc)
+                    logger.debug("[LogPopup] StatisticsTab instance create failed, fallback used: %s", exc)
                     self._has_stats_tab = False
-            except Exception as exc:
-                logger.debug("[LogPopup] StatisticsTab 임포트 실패 (허용), fallback 사용: %s", exc)
+            else:
                 self._has_stats_tab = False
 
             # fallback 텍스트 뷰 (StatisticsTab이 없을 때 사용)
             if not self._has_stats_tab:
-                self._text = QPlainTextEdit(self)
-                self._text.setReadOnly(True)
-                self._text.setLineWrapMode(QPlainTextEdit.NoWrap)
-                self._text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                layout.addWidget(self._text)
+                try:
+                    self._text = QPlainTextEdit(self)
+                    self._text.setReadOnly(True)
+                    self._text.setLineWrapMode(QPlainTextEdit.NoWrap)
+                    self._text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                    layout.addWidget(self._text)
+                except Exception:
+                    # final fallback: try a basic widget-less behavior (rare)
+                    logger.debug("[LogPopup] fallback text widget creation failed", exc_info=True)
 
             # 하단 닫기 버튼
-            btn_layout = QHBoxLayout()
-            btn_layout.addStretch(1)
-            self.btn_close = QPushButton("닫기", self)
-            self.btn_close.clicked.connect(self.close)
-            btn_layout.addWidget(self.btn_close)
-            layout.addLayout(btn_layout)
+            try:
+                btn_layout = QHBoxLayout()
+                btn_layout.addStretch(1)
+                self.btn_close = QPushButton("닫기", self)
+                self.btn_close.clicked.connect(self.close)
+                btn_layout.addWidget(self.btn_close)
+                layout.addLayout(btn_layout)
+            except Exception:
+                pass
 
         def append_log(self, formatted_message: str, record: Optional[logging.LogRecord] = None) -> None:
             """팝업에 로그 추가.
@@ -125,19 +161,30 @@ if _HAS_QT:
                             logger.debug("[LogPopup] statistics_tab.add_log_entry 실패, fallback: %s", exc)
                             # fallback to text view if present
                             if self._text is not None:
-                                self._text.appendPlainText(f"[{entry['level']}] {entry['time']} {entry['module']}: {entry['message']}")
+                                try:
+                                    self._text.appendPlainText(f"[{entry['level']}] {entry['time']} {entry['module']}: {entry['message']}")
+                                except Exception:
+                                    pass
                     except Exception:
                         # 안전하게 fallback
                         if self._text is not None:
-                            self._text.appendPlainText(formatted_message)
+                            try:
+                                self._text.appendPlainText(formatted_message)
+                            except Exception:
+                                pass
                 else:
                     # 단순 텍스트 뷰에 append
                     if self._text is not None:
-                        self._text.appendPlainText(formatted_message)
+                        try:
+                            self._text.appendPlainText(formatted_message)
+                        except Exception:
+                            pass
                 # autoscroll for plain text view
                 try:
                     if self._text is not None:
-                        self._text.verticalScrollBar().setValue(self._text.verticalScrollBar().maximum())
+                        sb = self._text.verticalScrollBar()
+                        if sb is not None:
+                            sb.setValue(sb.maximum())
                 except Exception:
                     pass
             except Exception:
@@ -331,7 +378,7 @@ if _HAS_QT:
 
         # ---------- 로그 팝업 생성/오픈/클로즈 ----------
         def _create_log_popup(self) -> LogPopup:
-            """LogPopup을 생성하여 반환. 이미 있으면 기�� 인스턴스 반환."""
+            """LogPopup을 생성하여 반환. 이미 있으면 기존 인스턴스 반환."""
             if self._log_popup is not None:
                 return self._log_popup
             try:
