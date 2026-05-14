@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-???�작 ??DB ?�결 �??�이??검�?모듈 (?�석??구현)
+앱 시작 시 DB 연결 및 데이터 검증 모듈 (정석적 구현)
 
-?�명:
-- bootstrap??asyncio.run(run_startup_validation())�??�출?????�는 비동�?진입???�공.
-- 블로??DB ?�라?�버 ?�출(psycopg2, redis, pymongo)?� asyncio.to_thread�?별도 ?�레?�에???�행?�여
-  메인 ?�벤??루프�?블로?�하지 ?�음.
-- Timescale(Postgres), Redis, MongoDB ?�결 �?기본 ?�태�?검?�하�?결과�??�약 반환.
-- 모든 로그/주석?� ?��?�??�성?�어 ?�습?�다.
+설명:
+- bootstrap이 asyncio.run(run_startup_validation())로 호출할 수 있는 비동기 진입점 제공.
+- 블로킹 DB 드라이버 호출(psycopg2, redis, pymongo)은 asyncio.to_thread로 별도 스레드에서 실행하여
+  메인 이벤트 루프를 블로킹하지 않음.
+- Timescale(Postgres), Redis, MongoDB 연결 및 기본 상태를 검사하고 결과를 요약 반환.
+- 모든 로그/주석은 한글로 작성되어 있습니다.
 """
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ logger = logging.getLogger("app.core.startup_validator")
 
 
 class ValidationResult:
-    """검�?결과 모델"""
+    """검증 결과 모델"""
     def __init__(self, success: bool, db_name: str, message: str, details: Optional[Dict[str, Any]] = None):
         self.success = success
         self.db_name = db_name
@@ -39,14 +39,14 @@ class ValidationResult:
 
 
 class StartupValidator:
-    """???�작 ??DB ?�결 �??�이??검증기"""
+    """앱 시작 시 DB 연결 및 데이터 검증기"""
 
     def __init__(self) -> None:
         self.results: Dict[str, ValidationResult] = {}
 
     async def validate_all(self) -> bool:
-        """모든 DB ?�결 �??�이??검증을 병렬�??�행?�고 ?�체 ?�공?��? 반환"""
-        logger.info("?�� DB ?�결 검�??�작...")
+        """모든 DB 연결 및 데이터 검증을 병렬로 실행하고 전체 성공여부 반환"""
+        logger.info("🔍 DB 연결 검증 시작...")
 
         tasks = [
             self._validate_timescaledb(),
@@ -60,35 +60,35 @@ class StartupValidator:
             if isinstance(res, ValidationResult):
                 self.results[res.db_name] = res
             elif isinstance(res, Exception):
-                logger.exception("검�?�??�외 발생:", exc_info=res)
+                logger.exception("검증 중 예외 발생:", exc_info=res)
 
         self._print_summary()
         all_ok = all(r.success for r in self.results.values())
 
         if all_ok:
-            logger.info("?�� 모든 DB ?�결 ?�공")
-            # 마이그레?�션 ?�동 ?�행 (TimescaleDB ?�결 ?�공 ??
+            logger.info("🎉 모든 DB 연결 성공")
+            # 마이그레이션 자동 실행 (TimescaleDB 연결 성공 시)
             try:
                 await asyncio.to_thread(self._run_migrations)
             except Exception as exc:
-                logger.warning("마이그레?�션 ?�패 (비치명적): %s", exc)
+                logger.warning("마이그레이션 실패 (비치명적): %s", exc)
 
         return all_ok
 
     def _run_migrations(self) -> None:
-        """TimescaleDB 마이그레?�션???�기 ?�레?�에???�행?�니??"""
+        """TimescaleDB 마이그레이션을 동기 스레드에서 실행합니다."""
         try:
-            # src/data_01 경로�?sys.path??추�??�여 timescale ?�키지 ?�근 보장
+            # src/02_data 경로를 sys.path에 추가하여 timescale 패키지 접근 보장
             _here = os.path.dirname(os.path.abspath(__file__))
-            _data_path = os.path.abspath(os.path.join(_here, "..", "data_01"))
+            _data_path = os.path.abspath(os.path.join(_here, "..", "02_data"))
             if _data_path not in sys.path:
                 sys.path.insert(0, _data_path)
             from timescale.auto_migrate import run_migrations_on_startup  # type: ignore[import]
             run_migrations_on_startup()
         except Exception as exc:
-            logger.warning("마이그레?�션 모듈 ?�행 ?�패: %s", exc)
+            logger.warning("마이그레이션 모듈 실행 실패: %s", exc)
 
-    # TimescaleDB 검??
+    # TimescaleDB 검사
     async def _validate_timescaledb(self) -> ValidationResult:
         db_label = "TimescaleDB"
 
@@ -98,11 +98,11 @@ class StartupValidator:
                     import psycopg2  # type: ignore
                     from psycopg2 import extras  # type: ignore
                 except Exception as e:
-                    return ValidationResult(False, db_label, "??psycopg2 미설�? pip install psycopg2-binary", {"error": str(e)})
+                    return ValidationResult(False, db_label, "❌ psycopg2 미설치: pip install psycopg2-binary", {"error": str(e)})
 
                 conn = None
                 try:
-                    # config.yaml 기반 ?�트 58529 ?�용
+                    # config.yaml 기반 포트 58529 사용
                     conn = psycopg2.connect(
                         host=os.getenv("PGHOST", os.getenv("TIMESCALEDB_HOST", "127.0.0.1")),
                         port=int(os.getenv("PGPORT", os.getenv("TIMESCALEDB_PORT", "58529"))),
@@ -121,7 +121,7 @@ class StartupValidator:
                     except Exception:
                         pg_version = "unknown"
 
-                    # timescaledb ?�장 ?�인
+                    # timescaledb 확장 확인
                     try:
                         cursor.execute("SELECT extname, extversion FROM pg_extension WHERE extname = 'timescaledb';")
                         ext = cursor.fetchone()
@@ -161,9 +161,9 @@ class StartupValidator:
                     }
 
                     if not ts_version:
-                        return ValidationResult(False, db_label, "??TimescaleDB ?�장???�치?��? ?�았?�니??", details)
+                        return ValidationResult(False, db_label, "❌ TimescaleDB 확장이 설치되지 않았습니다.", details)
 
-                    return ValidationResult(True, db_label, f"??{db_label} (v{ts_version})", details)
+                    return ValidationResult(True, db_label, f"✅ {db_label} (v{ts_version})", details)
 
                 finally:
                     try:
@@ -173,11 +173,11 @@ class StartupValidator:
                         pass
 
             except Exception as e:
-                return ValidationResult(False, db_label, f"??TimescaleDB 검???�패: {e}", {"error": str(e)})
+                return ValidationResult(False, db_label, f"❌ TimescaleDB 검사 실패: {e}", {"error": str(e)})
 
         return await asyncio.to_thread(sync_check)
 
-    # Redis 검??
+    # Redis 검사
     async def _validate_redis(self) -> ValidationResult:
         db_label = "Redis"
 
@@ -186,9 +186,9 @@ class StartupValidator:
                 try:
                     import redis  # type: ignore
                 except Exception as e:
-                    return ValidationResult(False, db_label, "??redis 미설�? pip install redis", {"error": str(e)})
+                    return ValidationResult(False, db_label, "❌ redis 미설치: pip install redis", {"error": str(e)})
 
-                # 1?�위: redis_factory (config.yaml 기반 ?�정)
+                # 1순위: redis_factory (config.yaml 기반 설정)
                 redis_url = None
                 try:
                     import importlib.util as _sv_ilu
@@ -200,13 +200,13 @@ class StartupValidator:
                     redis_url = _sv_factory_mod.get_redis_url()
                     logger.debug("[StartupValidator] redis_factory URL: %s", redis_url)
                 except Exception as _sv_e:
-                    logger.debug("[StartupValidator] redis_factory 로드 ?�패 (%s), env fallback ?�용", _sv_e)
+                    logger.debug("[StartupValidator] redis_factory 로드 실패 (%s), env fallback 사용", _sv_e)
 
-                # 2?�위: ?�경변??
+                # 2순위: 환경변수
                 if not redis_url:
                     redis_url = os.getenv("REDIS_URL", "").strip()
 
-                # 3?�위: 기본�?(?�트 58530)
+                # 3순위: 기본값 (포트 58530)
                 if not redis_url:
                     _password = os.getenv("REDIS_PASSWORD", "dummy")
                     _host = os.getenv("REDIS_HOST", "127.0.0.1")
@@ -217,9 +217,9 @@ class StartupValidator:
                 try:
                     client = redis.from_url(redis_url, decode_responses=True, socket_connect_timeout=5)
                     client.ping()
-                    logger.debug("[StartupValidator] Redis ?�결 ?�공: %s", redis_url)
+                    logger.debug("[StartupValidator] Redis 연결 성공: %s", redis_url)
                 except Exception as e:
-                    return ValidationResult(False, db_label, f"??Redis ?�결 ?�패: {e}", {"error": str(e), "url": redis_url})
+                    return ValidationResult(False, db_label, f"❌ Redis 연결 실패: {e}", {"error": str(e), "url": redis_url})
 
                 try:
                     info_server = client.info("server")
@@ -246,14 +246,14 @@ class StartupValidator:
                     "db0_keys": db0_keys,
                 }
 
-                return ValidationResult(True, db_label, f"??{db_label}", details)
+                return ValidationResult(True, db_label, f"✅ {db_label}", details)
 
             except Exception as e:
-                return ValidationResult(False, db_label, f"??Redis 검???�패: {e}", {"error": str(e)})
+                return ValidationResult(False, db_label, f"❌ Redis 검사 실패: {e}", {"error": str(e)})
 
         return await asyncio.to_thread(sync_check)
 
-    # MongoDB 검??
+    # MongoDB 검사
     async def _validate_mongodb(self) -> ValidationResult:
         db_label = "MongoDB"
 
@@ -262,7 +262,7 @@ class StartupValidator:
                 try:
                     from pymongo import MongoClient  # type: ignore
                 except Exception as e:
-                    return ValidationResult(False, db_label, "??pymongo 미설�? pip install pymongo", {"error": str(e)})
+                    return ValidationResult(False, db_label, "❌ pymongo 미설치: pip install pymongo", {"error": str(e)})
 
                 mongo_uri = os.getenv("MONGO_URI", "").strip()
                 try:
@@ -276,7 +276,7 @@ class StartupValidator:
                         )
                     client.admin.command("ping")
                 except Exception as e:
-                    return ValidationResult(False, db_label, f"??MongoDB ?�결 ?�패: {e}", {"error": str(e)})
+                    return ValidationResult(False, db_label, f"❌ MongoDB 연결 실패: {e}", {"error": str(e)})
 
                 db_name = os.getenv("MONGO_DB", os.getenv("MONGO_INITDB_DATABASE_CONTAINER", "upbit_trader"))
                 db = client[db_name]
@@ -307,24 +307,24 @@ class StartupValidator:
                     "symbol_metadata_count": metadata_count,
                 }
 
-                return ValidationResult(True, db_label, f"??{db_label} (v{mongo_version})", details)
+                return ValidationResult(True, db_label, f"✅ {db_label} (v{mongo_version})", details)
 
             except Exception as e:
-                return ValidationResult(False, db_label, f"??MongoDB 검???�패: {e}", {"error": str(e)})
+                return ValidationResult(False, db_label, f"❌ MongoDB 검사 실패: {e}", {"error": str(e)})
 
         return await asyncio.to_thread(sync_check)
 
     def _print_summary(self) -> None:
-        """검�?결과 ?�약 출력 (간결???�식)"""
+        """검증 결과 요약 출력 (간결한 형식)"""
         parts = []
         for db_name in ["TimescaleDB", "Redis", "MongoDB"]:
             res = self.results.get(db_name)
             if not res:
                 continue
             
-            icon = "?? if res.success else "??
+            icon = "✅" if res.success else "❌"
             
-            # 버전 ?�보 추출
+            # 버전 정보 추출
             if db_name == "TimescaleDB":
                 ver = res.details.get("timescaledb_version", "?")
             elif db_name == "Redis":
@@ -340,16 +340,16 @@ class StartupValidator:
         logger.info(summary)
         
         if all(r.success for r in self.results.values()):
-            pass  # ?�공 로그??validate_all?�서 출력
+            pass  # 성공 로그는 validate_all에서 출력
         else:
             failed = [name for name, r in self.results.items() if not r.success]
-            logger.warning("?�️ ?��? DB ?�결 ?�패: %s", ", ".join(failed))
+            logger.warning("⚠️ 일부 DB 연결 실패: %s", ", ".join(failed))
 
     def get_failed_dbs(self) -> list:
         return [name for name, r in self.results.items() if not r.success]
 
 
-# ?��? 진입??
+# 외부 진입점
 async def run_startup_validation() -> Tuple[bool, SimpleNamespace]:
     validator = StartupValidator()
     ok = await validator.validate_all()
@@ -359,15 +359,15 @@ async def run_startup_validation() -> Tuple[bool, SimpleNamespace]:
     return ok, ns
 
 
-# CLI ?�행??
+# CLI 실행용
 if __name__ == "__main__":
     async def _main():
         ok, validator = await run_startup_validation()
         if not ok:
             failed = validator.get_failed_dbs()
-            print(f"\n?�️ ?�결 ?�패???�비?? {', '.join(failed)}")
+            print(f"\n⚠️ 연결 실패한 서비스: {', '.join(failed)}")
             raise SystemExit(1)
         else:
-            print("\n??모든 검�??�과!")
+            print("\n✅ 모든 검증 통과!")
 
     asyncio.run(_main())

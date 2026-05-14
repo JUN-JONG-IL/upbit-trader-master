@@ -142,8 +142,8 @@ async def start_websocket_auto(static: SimpleNamespace):
         # 3. WebSocketManager 생성
         try:
             ws_manager_mod, _ = try_import_names((
-                "data_01.collectors.websocket_manager",
-                "src.data_01.collectors.websocket_manager",
+                "02_data.collectors.websocket_manager",
+                "src.02_data.collectors.websocket_manager",
             ))
             
             if not ws_manager_mod:
@@ -220,8 +220,8 @@ async def start_websocket_auto(static: SimpleNamespace):
         # ========================================
         try:
             rest_collector_mod, _ = try_import_names((
-                "data_01.collectors.rest_candle_collector",
-                "src.data_01.collectors.rest_candle_collector",
+                "02_data.collectors.rest_candle_collector",
+                "src.02_data.collectors.rest_candle_collector",
             ))
             
             if not rest_collector_mod:
@@ -327,4 +327,3 @@ def schedule_websocket_start(static: SimpleNamespace, delay_seconds: int = 10):
         
         t = threading.Thread(target=_delayed_start_sync, daemon=True, name="websocket_auto_start")
         t.start()
-

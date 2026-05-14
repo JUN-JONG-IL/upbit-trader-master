@@ -8,50 +8,50 @@ Institutional-grade AI and machine learning capabilities for the Upbit Trader sy
 
 ```
 src/06_ai/
-?œâ??€ core/                        # Central orchestration
-??  ?œâ??€ engine.py                # AIEngineManager ??main orchestrator
-??  ?œâ??€ model_registry.py        # MLflow model version management
-??  ?”â??€ inference.py             # Real-time inference engine (<100 ms)
-?œâ??€ prediction/                  # Price & anomaly prediction
-??  ?œâ??€ price_predictor.py       # LSTM / BiLSTM / Transformer / XGBoost
-??  ?œâ??€ pattern_detector.py      # Candlestick & chart pattern recognition
-??  ?”â??€ anomaly_detector.py      # Autoencoder anomaly detection
-?œâ??€ sentiment/                   # Sentiment analysis
-??  ?œâ??€ news_analyzer.py         # Financial news sentiment (FinBERT)
-??  ?”â??€ social_analyzer.py       # Twitter / Reddit sentiment
-?œâ??€ strategy/                    # Strategy recommendation
-??  ?œâ??€ recommender.py           # Market-regime-aware strategy ranking
-??  ?”â??€ optimizer.py             # Optuna hyperparameter optimisation
-?œâ??€ utils/                       # Shared utilities
-??  ?œâ??€ feature_engineering.py   # Technical indicators, sequences
-??  ?”â??€ preprocessing.py         # Scaling, splitting, cleaning
-?œâ??€ ai_engine/                   # LLM assistant & monitoring
-??  ?”â??€ ml_service.py            # MLService ??Gap/Anomaly ML model selector (moved from priority/)
-?œâ??€ detection/                   # Pump & dump anomaly detection
-?œâ??€ models/                      # Base predictors (LSTM, Transformer, XGB)
-?œâ??€ prediction/                  # Prediction UI & ensemble logic
-?œâ??€ priority/                    # Priority scoring & settings (AI/ML ë¶„ë¦¬ ??
-??  ?œâ??€ services/
-??  ??  ?œâ??€ priority_service.py      # ?°ì„ ?œìœ„ ?ìˆ˜ ê³„ì‚° (?œìžë¦?
-??  ??  ?œâ??€ priority_db_service.py   # ?°ì„ ?œìœ„ DB CRUD (?œìžë¦?
-??  ??  ?œâ??€ ml_service.py            # [SHIM] ??ai_engine/ml_service.py
-??  ??  ?”â??€ upbit_data_provider.py   # [SHIM] ??src/data_01/clients/
-??  ?”â??€ ui/
-??      ?œâ??€ priority_settings.ui     # ?°ì„ ?œìœ„ ?¤ì • UI (?œìžë¦?
-??      ?œâ??€ priority_dashboard.ui    # ?°ì„ ?œìœ„ ?€?œë³´??UI (?œìžë¦?
-??      ?”â??€ ml_model_selector.ui     # [MOVED] ??ui/ai_engine/ml_model_selector.ui
-?œâ??€ ui/
-??  ?”â??€ ai_engine/
-??      ?”â??€ ml_model_selector.ui     # ML ëª¨ë¸ ? íƒ UI (priority/ui/ ?ì„œ ?´ë™)
-?œâ??€ rl/                          # Reinforcement learning (PPO, DQN)
-?”â??€ README.md                    # This file
+â”œâ”€â”€ core/                        # Central orchestration
+â”‚   â”œâ”€â”€ engine.py                # AIEngineManager â€“ main orchestrator
+â”‚   â”œâ”€â”€ model_registry.py        # MLflow model version management
+â”‚   â””â”€â”€ inference.py             # Real-time inference engine (<100 ms)
+â”œâ”€â”€ prediction/                  # Price & anomaly prediction
+â”‚   â”œâ”€â”€ price_predictor.py       # LSTM / BiLSTM / Transformer / XGBoost
+â”‚   â”œâ”€â”€ pattern_detector.py      # Candlestick & chart pattern recognition
+â”‚   â””â”€â”€ anomaly_detector.py      # Autoencoder anomaly detection
+â”œâ”€â”€ sentiment/                   # Sentiment analysis
+â”‚   â”œâ”€â”€ news_analyzer.py         # Financial news sentiment (FinBERT)
+â”‚   â””â”€â”€ social_analyzer.py       # Twitter / Reddit sentiment
+â”œâ”€â”€ strategy/                    # Strategy recommendation
+â”‚   â”œâ”€â”€ recommender.py           # Market-regime-aware strategy ranking
+â”‚   â””â”€â”€ optimizer.py             # Optuna hyperparameter optimisation
+â”œâ”€â”€ utils/                       # Shared utilities
+â”‚   â”œâ”€â”€ feature_engineering.py   # Technical indicators, sequences
+â”‚   â””â”€â”€ preprocessing.py         # Scaling, splitting, cleaning
+â”œâ”€â”€ ai_engine/                   # LLM assistant & monitoring
+â”‚   â””â”€â”€ ml_service.py            # MLService â€“ Gap/Anomaly ML model selector (moved from priority/)
+â”œâ”€â”€ detection/                   # Pump & dump anomaly detection
+â”œâ”€â”€ models/                      # Base predictors (LSTM, Transformer, XGB)
+â”œâ”€â”€ prediction/                  # Prediction UI & ensemble logic
+â”œâ”€â”€ priority/                    # Priority scoring & settings (AI/ML ë¶„ë¦¬ í›„)
+â”‚   â”œâ”€â”€ services/
+â”‚   â”‚   â”œâ”€â”€ priority_service.py      # ìš°ì„ ìˆœìœ„ ì ìˆ˜ ê³„ì‚° (ì œìžë¦¬)
+â”‚   â”‚   â”œâ”€â”€ priority_db_service.py   # ìš°ì„ ìˆœìœ„ DB CRUD (ì œìžë¦¬)
+â”‚   â”‚   â”œâ”€â”€ ml_service.py            # [SHIM] â†’ ai_engine/ml_service.py
+â”‚   â”‚   â””â”€â”€ upbit_data_provider.py   # [SHIM] â†’ src/02_data/clients/
+â”‚   â””â”€â”€ ui/
+â”‚       â”œâ”€â”€ priority_settings.ui     # ìš°ì„ ìˆœìœ„ ì„¤ì • UI (ì œìžë¦¬)
+â”‚       â”œâ”€â”€ priority_dashboard.ui    # ìš°ì„ ìˆœìœ„ ëŒ€ì‹œë³´ë“œ UI (ì œìžë¦¬)
+â”‚       â””â”€â”€ ml_model_selector.ui     # [MOVED] â†’ ui/ai_engine/ml_model_selector.ui
+â”œâ”€â”€ ui/
+â”‚   â””â”€â”€ ai_engine/
+â”‚       â””â”€â”€ ml_model_selector.ui     # ML ëª¨ë¸ ì„ íƒ UI (priority/ui/ ì—ì„œ ì´ë™)
+â”œâ”€â”€ rl/                          # Reinforcement learning (PPO, DQN)
+â””â”€â”€ README.md                    # This file
 ```
 
 ---
 
 ## Key Components
 
-### `core/engine.py` ??AIEngineManager
+### `core/engine.py` â€“ AIEngineManager
 
 Main entry point for all AI signals.  Coordinates prediction, sentiment, and pattern-recognition models with Redis caching and MongoDB persistence.
 
@@ -74,7 +74,7 @@ sentiment = await engine.get_sentiment("BTC/KRW")
 await engine.load_model("lstm", my_model)
 ```
 
-### `core/model_registry.py` ??ModelRegistry
+### `core/model_registry.py` â€“ ModelRegistry
 
 MLflow-backed model versioning with in-memory fallback.
 
@@ -93,7 +93,7 @@ registry.promote("lstm-price-predictor", "1.0.0", "Production")
 prod = registry.get_production_model("lstm-price-predictor")
 ```
 
-### `core/inference.py` ??InferenceEngine
+### `core/inference.py` â€“ InferenceEngine
 
 Sub-100 ms synchronous and async prediction endpoints.
 
@@ -105,10 +105,10 @@ engine = InferenceEngine(device="cpu")
 engine.load_model("lstm", my_model, feature_dim=20)
 
 result = await engine.predict("lstm", np.random.randn(1, 60, 20))
-# ??{"prediction": 50123.4, "confidence": 0.72, "latency_ms": 8.3}
+# â†’ {"prediction": 50123.4, "confidence": 0.72, "latency_ms": 8.3}
 
 metrics = engine.get_metrics("lstm")
-# ??{"inference_count": 42, "latency_p95_ms": 14.2, ...}
+# â†’ {"inference_count": 42, "latency_p95_ms": 14.2, ...}
 ```
 
 ---
@@ -129,13 +129,13 @@ await model.train(X_train, y_train, X_val, y_val, epochs=50)
 
 # Predict next 5 candles
 result = await model.predict("BTC/KRW", "1h", horizon=5)
-# result["predictions"]       ??[50000, 50200, ...]
-# result["confidence_lower"]  ??[49500, ...]
-# result["confidence_upper"]  ??[50500, ...]
+# result["predictions"]       â†’ [50000, 50200, ...]
+# result["confidence_lower"]  â†’ [49500, ...]
+# result["confidence_upper"]  â†’ [50500, ...]
 
 # Evaluate
 metrics = await model.evaluate(X_test, y_test)
-# ??{"mae": 123.4, "rmse": 201.0, "direction_accuracy": 58.2}
+# â†’ {"mae": 123.4, "rmse": 201.0, "direction_accuracy": 58.2}
 ```
 
 Supported architectures: `"lstm"`, `"bilstm"`, `"transformer"`, `"xgboost"`.
@@ -149,7 +149,7 @@ from src._06_ai.prediction.pattern_detector import PatternDetector
 
 detector = PatternDetector()
 result = detector.detect(open_, high, low, close, volume)
-signal = detector.get_signal(result)   # ?? ??+1
+signal = detector.get_signal(result)   # âˆ’1 â€¦ +1
 ```
 
 Detected patterns: Doji, Hammer, ShootingStar, BullishEngulfing, BearishEngulfing, Breakout, VolumeSpike (+ TA-Lib patterns when available).
@@ -165,7 +165,7 @@ detector = AnomalyDetector(input_dim=10, threshold_sigma=3.0)
 detector.train(X_normal, epochs=50)
 
 result = detector.detect(X_new)
-# result["anomalies"][0] ??{"index": 0, "score": 0.012, "is_anomaly": False, "severity": "low"}
+# result["anomalies"][0] â†’ {"index": 0, "score": 0.012, "is_anomaly": False, "severity": "low"}
 ```
 
 ---
@@ -183,9 +183,9 @@ analyzer = NewsSentimentAnalyzer(
     rss_feeds=["https://feeds.reuters.com/reuters/businessNews"],
 )
 result = await analyzer.analyze("BTC/KRW")
-# result["sentiment_score"]               ??0.42  (-1 ??+1)
-# result["aggregated_metrics"]["1h_sentiment"]  ??0.31
-# result["aggregated_metrics"]["news_volume"]   ??15
+# result["sentiment_score"]               â†’ 0.42  (-1 â€¦ +1)
+# result["aggregated_metrics"]["1h_sentiment"]  â†’ 0.31
+# result["aggregated_metrics"]["news_volume"]   â†’ 15
 ```
 
 ### `sentiment/social_analyzer.py`
@@ -201,8 +201,8 @@ analyzer = SocialSentimentAnalyzer(
     reddit_client_secret="YOUR_SECRET",
 )
 result = await analyzer.analyze("BTC/KRW")
-# result["coordinated_activity_alert"]  ??False
-# result["trending_hashtags"]           ??["#Bitcoin", ...]
+# result["coordinated_activity_alert"]  â†’ False
+# result["trending_hashtags"]           â†’ ["#Bitcoin", ...]
 ```
 
 ---
@@ -347,8 +347,8 @@ See `docker-compose.yml` for the `ai-engine` and `mlflow` service definitions.
 | `REDIS_URI`               | `redis://localhost:6379`         | Redis connection URI      |
 | `MLFLOW_TRACKING_URI`     | `http://localhost:5000`          | MLflow tracking URI       |
 | `AI_PREDICTION_THRESHOLD` | `0.55`                           | Minimum signal confidence |
-| `OPENAI_API_KEY`          | ??                               | GPT-4o API key            |
-| `GOOGLE_API_KEY`          | ??                               | Gemini API key            |
+| `OPENAI_API_KEY`          | â€“                                | GPT-4o API key            |
+| `GOOGLE_API_KEY`          | â€“                                | Gemini API key            |
 
 ---
 
@@ -367,11 +367,10 @@ Prometheus metrics are registered automatically:
 ## Model Lifecycle
 
 ```
-Data Collection ??Feature Engineering ??Training (Optuna HPO)
-    ??MLflow Registration ??Staging Validation ??Production Promotion
-    ??Real-time Inference ??Drift Detection ??Auto-Retraining
+Data Collection â†’ Feature Engineering â†’ Training (Optuna HPO)
+    â†’ MLflow Registration â†’ Staging Validation â†’ Production Promotion
+    â†’ Real-time Inference â†’ Drift Detection â†’ Auto-Retraining
 ```
 
 Drift detection is handled by `ai_engine/engine/drift_detector.py`.
 Auto-retraining is scheduled via `ai_engine/training/automation/auto_retraining.py`.
-
