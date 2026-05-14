@@ -1,267 +1,267 @@
-﻿# CHANGELOG
-# 2026-03-15 | Copilot | ?낃렇?덉씠?? src/README.md v4.0. ?대뜑紐?紐낇솗??諛?援ъ“ 理쒖쟻??
-# 2026-03-13 | Copilot | ?낃렇?덉씠?? src/README.md v3.0. ?꾨줈?앺듃 媛쒖슂, 15媛吏 ?ㅺ퀎 ?먯튃, ?쒖옉 媛?대뱶, 湲곗뿬 媛?대뱶, ?꾩껜 ?붾젆?좊━ 援ъ“ 異붽?.
-# 2026-03-13 | Copilot | ?낅뜲?댄듃: src/README.md 媛깆떊. 01~13踰?紐⑤뱢 援ъ“濡?蹂寃? backup UI/?꾩젽 ?뚯씪 ?듯빀 諛섏쁺.
-# 2026-01-31 | Copilot | ?앹꽦: src/README.md ?묒꽦. ?곹뼢: src ?대뜑 臾몄꽌??
+# CHANGELOG
+# 2026-03-15 | Copilot | 업그레이드: src/README.md v4.0. 폴더명 명확화 및 구조 최적화.
+# 2026-03-13 | Copilot | 업그레이드: src/README.md v3.0. 프로젝트 개요, 15가지 설계 원칙, 시작 가이드, 기여 가이드, 전체 디렉토리 구조 추가.
+# 2026-03-13 | Copilot | 업데이트: src/README.md 갱신. 01~13번 모듈 구조로 변경. backup UI/위젯 파일 통합 반영.
+# 2026-01-31 | Copilot | 생성: src/README.md 작성. 영향: src 폴더 문서화.
 Current Stage: N/A
 Version: v4.0
 Last Modified: 2026-03-15
 References:
-  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
-  - work_order/DB?ㅺ퀎.md
+  - work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md
+  - work_order/DB설계.md
 
-# Upbit Trader ??湲곌? ?먯씠?꾪듃湲??몃젅?대뵫 ?쒖뒪??
+# Upbit Trader — 기관 에이전트급 트레이딩 시스템
 
-## ?꾨줈?앺듃 媛쒖슂
+## 프로젝트 개요
 
-Upbit Trader??**湲곌?쨌?먯씠?꾪듃湲??섏????뷀샇?뷀룓 ?먮룞 ?몃젅?대뵫 ?뚮옯??*?낅땲??
-??珥?遺???二??????⑥쐞 ?쒓퀎???곗씠?곕? ?ㅼ떆媛꾩쑝濡??섏쭛쨌??ν븯怨? 硫?곗감?맞룻샇媛李승룹뒪罹먮꼫쨌AI/ML ?덉륫쨌?먮룞留ㅻℓ源뚯? ?듯빀????ㅽ깮 ?곗뒪?ы넲 + ?쒕쾭 ?붾（?섏엯?덈떎.
+Upbit Trader는 **기관·에이전트급 수준의 암호화폐 자동 트레이딩 플랫폼**입니다.
+틱/초/분/일/주/월/년 단위 시계열 데이터를 실시간으로 수집·저장하고, 멀티차트·호가창·스캐너·AI/ML 예측·자동매매까지 통합한 풀스택 데스크톱 + 서버 솔루션입니다.
 
-### 二쇱슂 湲곕뒫
+### 주요 기능
 
-| ?곸뿭 | 湲곕뒫 |
+| 영역 | 기능 |
 |------|------|
-| **AI/ML** | LSTM쨌XGBoost쨌Transformer ?덉륫, PPO 媛뺥솕?숈뒿, VAE ?댁긽?먯?, ?숈긽釉?|
-| **?ㅼ틦??* | 237媛? 醫낅ぉ ?ㅼ떆媛??ㅼ틪, 湲곗닠 吏?쑣룻뙣?는룸낵瑜?議곌굔 寃?? ?꾨━??愿由?|
-| **李⑦듃** | 5媛??붿쭊(matplotlib/mplfinance/plotly/lightweight/bokeh), 100+ 吏?? 硫?곗감??|
-| **?ы듃?대━??* | 蹂댁쑀?먯궛 ?꾪솴, ?뚯씠李⑦듃, ?섏씡瑜?遺꾩꽍, ?ы듃?대━??理쒖쟻??|
-| **?몃젅?대뱶** | 吏?뺢?쨌?쒖옣媛쨌議곌굔遺 二쇰Ц, 由ъ뒪??愿由? ?먮룞留ㅻℓ(PAPER/LIVE) |
-| **?곗씠??* | TimescaleDB(?쒓퀎??, Redis(罹먯떆), MongoDB(硫뷀?), Kafka(?ㅽ듃由щ컢), ClickHouse(遺꾩꽍) |
-| **?쒕쾭** | FastAPI REST + WebSocket, ?ㅼ떆媛??곗씠???ㅽ듃由щ컢, ?ㅼ젙 UI |
-| **媛먯꽦遺꾩꽍** | ?댁뒪쨌?뚯뀥(?몄쐞??Reddit) 媛먯꽦, FinBERT/KoBERT 湲곕컲 ?좏샇 ?앹꽦 |
+| **AI/ML** | LSTM·XGBoost·Transformer 예측, PPO 강화학습, VAE 이상탐지, 앙상블 |
+| **스캐너** | 237개+ 종목 실시간 스캔, 기술 지표·패턴·볼륨 조건 검색, 프리셋 관리 |
+| **차트** | 5개 엔진(matplotlib/mplfinance/plotly/lightweight/bokeh), 100+ 지표, 멀티차트 |
+| **포트폴리오** | 보유자산 현황, 파이차트, 수익률 분석, 포트폴리오 최적화 |
+| **트레이드** | 지정가·시장가·조건부 주문, 리스크 관리, 자동매매(PAPER/LIVE) |
+| **데이터** | TimescaleDB(시계열), Redis(캐시), MongoDB(메타), Kafka(스트리밍), ClickHouse(분석) |
+| **서버** | FastAPI REST + WebSocket, 실시간 데이터 스트리밍, 설정 UI |
+| **감성분석** | 뉴스·소셜(트위터/Reddit) 감성, FinBERT/KoBERT 기반 신호 생성 |
 
-> **李멸퀬**: `work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md` 諛?`work_order/DB?ㅺ퀎.md` v8/v9 湲곗??쇰줈 ?ㅺ퀎?섏뿀?듬땲??
+> **참고**: `work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md` 및 `work_order/DB설계.md` v8/v9 기준으로 설계되었습니다.
 
-## ?붾젆?좊━ 援ъ“ (v4.0 ??踰덊샇 紐⑤뱢 湲곕컲)
+## 디렉토리 구조 (v4.0 — 번호 모듈 기반)
 
 ```
 src/
-?쒋?? __init__.py
-?쒋?? README.md                   # ???뚯씪
-??
-?쒋?? 01_core/                    # ?듭떖 ?명봽??(?몄쬆, DI, ?ㅼ젙, ?대깽??
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? auth/                   # ?몄쬆 諛?濡쒓렇??
-??  ??  ?쒋?? ui/                 # login.ui, widget_login.py
-??  ??  ?붴?? services/
-??  ?쒋?? base/                   # 湲곕낯 ?명봽??(?대깽??猷⑦봽)
-??  ?쒋?? config/                 # ?ㅼ젙 愿由?
-??  ?쒋?? di/                     # ?섏〈??二쇱엯
-??  ?쒋?? events/                 # ?대깽??踰꾩뒪
-??  ?쒋?? lib/                    # ?듭떖 ?쇱씠釉뚮윭由?
-??  ?붴?? utils/                  # 怨듯넻 ?좏떥由ы떚
-??
-?쒋?? data_01/                    # ?곗씠???덉씠??(DB, ?뚯씠?꾨씪??
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? timescale/              # TimescaleDB (?쒓퀎??OHLCV)
-??  ?쒋?? redis/                  # Redis (?ㅼ떆媛?罹먯떆, PubSub)
-??  ?쒋?? mongodb/                # MongoDB (硫뷀??곗씠??
-??  ?쒋?? kafka/                  # Kafka (?ㅽ듃由щ컢 ?뚯씠?꾨씪??
-??  ?쒋?? clickhouse/             # ClickHouse (遺꾩꽍 荑쇰━)
-??  ?쒋?? pipeline/               # ?곗씠???뚯씠?꾨씪??
-??  ?쒋?? gap/                    # 媛??먯? 諛?蹂댁젙
-??  ?쒋?? features/               # AI/ML ?쇱쿂 ?ㅽ넗??
-??  ?쒋?? core/                   # DataManager
-??  ?붴?? workers/                # 諛깃렇?쇱슫???뚯빱
-??
-?쒋?? 03_market/                  # 留덉폆 ?곗씠??(醫낅ぉ, ?멸?, 泥닿껐)
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? coinlist/
-??  ??  ?쒋?? ui/                 # coin_list.ui, favorite.ui, widget_*.py
-??  ??  ?쒋?? logic/
-??  ??  ?붴?? services/
-??  ?쒋?? orderbook/              # ?멸?李?
-??  ?쒋?? trades/                 # 泥닿껐 ?곗씠??
-??  ?쒋?? websocket/              # WebSocket ?대씪?댁뼵??
-??  ?붴?? rest/                   # REST API ?대씪?댁뼵??
-??
-?쒋?? 04_chart/                   # 李⑦듃 ?붿쭊 (5媛??붿쭊, 100+ 吏??
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? ui/                     # chart.ui, chart_settings_dialog.ui, widget_chart.py
-??  ?쒋?? manager/                # ui_manager, period_manager, engine_manager, data_manager, settings_manager
-??  ?쒋?? ai/                     # AI 湲곕컲 李⑦듃 遺꾩꽍 (?⑦꽩, LSTM ?덉륫, 媛먯꽦 ?ㅻ쾭?덉씠)
-??  ?쒋?? multi/
-??  ??  ?붴?? ui/                 # multi_chart_dialog.ui
-??  ?쒋?? realtime/
-??  ??  ?붴?? ui/                 # realtime_chart_dialog.ui
-??  ?쒋?? engines/                # matplotlib/mplfinance/plotly/lightweight/bokeh
-??  ??  ?붴?? matplotlib/        # ??Matplotlib ?좏떥由ы떚 ?듯빀 ?꾨즺
-??  ?쒋?? indicators/             # trend/momentum/volatility/volume
-??  ?붴?? utils/
-??
-?쒋?? 05_strategy/                # ?몃젅?대뵫 ?꾨왂 (諛깊뀒?ㅽ똿, 理쒖쟻??
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? core/                   # SignalManager, BaseStrategy, StrategyRegistry
-??  ?쒋?? strategies/             # ?꾨왂 援ы쁽泥?(strategy/ shim ?쒓굅??
-??  ?쒋?? widgets/                # ?꾨왂 愿由?UI
-??  ?붴?? risk/                   # 由ъ뒪??愿由?
-??
-?쒋?? 06_ai/                      # AI/ML ?붿쭊 (?덉륫, 媛뺥솕?숈뒿, ?댁긽?먯?)
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? ui/                     # AI UI ?듯빀 吏꾩엯??(v4.0)
-??  ??  ?쒋?? __init__.py
-??  ??  ?쒋?? ai_engine/          # ai_engine.ui, widget_ai_engine.py (?듯빀 ?꾨즺)
-??  ??  ?붴?? prediction/         # prediction.ui, widget_prediction.py (?듯빀 ?꾨즺)
-??  ?쒋?? ai_engine/
-??  ??  ?쒋?? ui/                 # compat shim ??ui/ai_engine/ 李몄“
-??  ??  ?붴?? logic/
-??  ?쒋?? prediction/
-??  ??  ?쒋?? ui/                 # compat shim ??ui/prediction/ 李몄“
-??  ??  ?붴?? logic/
-??  ?쒋?? models/                 # LSTM, XGBoost, Transformer
-??  ?쒋?? rl/                     # 媛뺥솕?숈뒿 (PPO)
-??  ?쒋?? detection/              # ?댁긽?먯? (VAE)
-??  ?쒋?? sentiment/              # 媛먯꽦 遺꾩꽍 ?붿쭊
-??  ?붴?? prompt/                 # ?꾨＼?꾪듃 愿由?
-??
-?쒋?? 07_scanner/                 # 留덉폆 ?ㅼ틦??(議곌굔 ?ㅼ틪, ?뚮┝)
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?붴?? engine/
-??      ?쒋?? ui/                 # widget_scanner_frame.ui/.py
-??      ??                      # popup_scanner_settings.ui/.py
-??      ??                      # scanner_settings_advanced_popup.ui/.py
-??      ??                      # tab_basic_indicators.ui, tab_advanced_indicators.ui
-??      ??                      # tab_patterns_volume.ui, tab_filters.ui, tab_alerts_presets.ui
-??      ?쒋?? logic/
-??      ?쒋?? workers/
-??      ?쒋?? models/
-??      ?쒋?? indicators/
-??      ?붴?? patterns/
-??
-?쒋?? 08_portfolio/               # ?ы듃?대━??愿由?(?먯궛 ?꾪솴, 理쒖쟻??
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? holdings/
-??  ??  ?붴?? ui/                 # detailholdinglist.ui, widget_portfolio.py
-??  ?쒋?? userinfo/
-??  ??  ?붴?? ui/                 # userinfo.ui, widget_piechart.py
-??  ?붴?? optimizer/
-??
-?쒋?? 09_sentiment/               # 媛먯꽦 遺꾩꽍 (?댁뒪/?뚯뀥)
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?붴?? analysis/
-??      ?쒋?? ui/                 # widget_sentiment.py
-??      ?쒋?? core/               # sentiment_engine.py, scrapers, signal_generator
-??      ?쒋?? models/
-??      ?쒋?? preprocessing/
-??      ?쒋?? analytics/          # correlation, topic_modeling ??(analysis/ ??analytics/ 蹂寃?
-??      ?붴?? workers/
-??
-?쒋?? 10_trade/                   # ?몃젅?대뱶 ?ㅽ뻾 (二쇰Ц, 由ъ뒪??愿由?
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? orders/                 # ??order/ ??orders/ ?꾩쟾 ?듯빀
-??  ??  ?쒋?? market_order.py     # ?쒖옣媛 二쇰Ц 鍮뚮뜑
-??  ??  ?쒋?? limit_order.py      # 吏?뺢? 二쇰Ц 鍮뚮뜑
-??  ??  ?쒋?? stop_order.py       # ?ㅽ깙 二쇰Ц 鍮뚮뜑
-??  ??  ?쒋?? trailing_stop.py    # ?몃젅?쇰쭅 ?ㅽ깙 鍮뚮뜑
-??  ??  ?붴?? ui/                 # trade.ui, widget_trade.py
-??  ?쒋?? signals/
-??  ?쒋?? risk/
-??  ?붴?? core/
-??
-?쒋?? 11_server/                  # FastAPI ?쒕쾭 (REST, WebSocket)
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? api/                    # REST API ?쇱슦??
-??  ?쒋?? core/                   # ??肄붿뼱, WebSocket
-??  ?쒋?? middleware/             # ?몄쬆, CORS, ?띾룄?쒗븳
-??  ?쒋?? settings/
-??  ??  ?붴?? ui/                 # settings.ui, widget_settings.py
-??  ?붴?? utils/
-??
-?쒋?? 12_realtime/                # ?ㅼ떆媛??곗씠???ㅽ듃由щ컢
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? component/
-??  ?쒋?? workers/
-??  ?붴?? ui/
-??
-?쒋?? 13_compute/                 # 怨꾩궛 ?붿쭊 (吏??怨꾩궛, 吏묎퀎)
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? engine/                 # ??compute/ ??engine/ 蹂寃?
-??  ?쒋?? aggregation/
-??  ?붴?? workers/
-??
-?쒋?? app/                        # 硫붿씤 ?좏뵆由ъ??댁뀡
-??  ?쒋?? __init__.py
-??  ?쒋?? README.md
-??  ?쒋?? config/
-??  ?쒋?? core/
-??  ?쒋?? services/
-??  ?붴?? ui/
-??
-?쒋?? resources/                  # 怨듯넻 由ъ냼??
-??  ?쒋?? __init__.py
-??  ?쒋?? icons/
-??  ?붴?? images/
-??
-?붴?? styles/                     # UI ?ㅽ???
-    ?쒋?? __init__.py
-    ?쒋?? dark_theme.qss
-    ?붴?? light_theme.qss
+├── __init__.py
+├── README.md                   # 이 파일
+│
+├── 01_core/                    # 핵심 인프라 (인증, DI, 설정, 이벤트)
+│   ├── __init__.py
+│   ├── README.md
+│   ├── auth/                   # 인증 및 로그인
+│   │   ├── ui/                 # login.ui, widget_login.py
+│   │   └── services/
+│   ├── base/                   # 기본 인프라 (이벤트 루프)
+│   ├── config/                 # 설정 관리
+│   ├── di/                     # 의존성 주입
+│   ├── events/                 # 이벤트 버스
+│   ├── lib/                    # 핵심 라이브러리
+│   └── utils/                  # 공통 유틸리티
+│
+├── 02_data/                    # 데이터 레이어 (DB, 파이프라인)
+│   ├── __init__.py
+│   ├── README.md
+│   ├── timescale/              # TimescaleDB (시계열 OHLCV)
+│   ├── redis/                  # Redis (실시간 캐시, PubSub)
+│   ├── mongodb/                # MongoDB (메타데이터)
+│   ├── kafka/                  # Kafka (스트리밍 파이프라인)
+│   ├── clickhouse/             # ClickHouse (분석 쿼리)
+│   ├── pipeline/               # 데이터 파이프라인
+│   ├── gap/                    # 갭 탐지 및 보정
+│   ├── features/               # AI/ML 피처 스토어
+│   ├── core/                   # DataManager
+│   └── workers/                # 백그라운드 워커
+│
+├── 03_market/                  # 마켓 데이터 (종목, 호가, 체결)
+│   ├── __init__.py
+│   ├── README.md
+│   ├── coinlist/
+│   │   ├── ui/                 # coin_list.ui, favorite.ui, widget_*.py
+│   │   ├── logic/
+│   │   └── services/
+│   ├── orderbook/              # 호가창
+│   ├── trades/                 # 체결 데이터
+│   ├── websocket/              # WebSocket 클라이언트
+│   └── rest/                   # REST API 클라이언트
+│
+├── 04_chart/                   # 차트 엔진 (5개 엔진, 100+ 지표)
+│   ├── __init__.py
+│   ├── README.md
+│   ├── ui/                     # chart.ui, chart_settings_dialog.ui, widget_chart.py
+│   ├── manager/                # ui_manager, period_manager, engine_manager, data_manager, settings_manager
+│   ├── ai/                     # AI 기반 차트 분석 (패턴, LSTM 예측, 감성 오버레이)
+│   ├── multi/
+│   │   └── ui/                 # multi_chart_dialog.ui
+│   ├── realtime/
+│   │   └── ui/                 # realtime_chart_dialog.ui
+│   ├── engines/                # matplotlib/mplfinance/plotly/lightweight/bokeh
+│   │   └── matplotlib/        # ✅ Matplotlib 유틸리티 통합 완료
+│   ├── indicators/             # trend/momentum/volatility/volume
+│   └── utils/
+│
+├── 05_strategy/                # 트레이딩 전략 (백테스팅, 최적화)
+│   ├── __init__.py
+│   ├── README.md
+│   ├── core/                   # SignalManager, BaseStrategy, StrategyRegistry
+│   ├── strategies/             # 전략 구현체 (strategy/ shim 제거됨)
+│   ├── widgets/                # 전략 관리 UI
+│   └── risk/                   # 리스크 관리
+│
+├── 06_ai/                      # AI/ML 엔진 (예측, 강화학습, 이상탐지)
+│   ├── __init__.py
+│   ├── README.md
+│   ├── ui/                     # AI UI 통합 진입점 (v4.0)
+│   │   ├── __init__.py
+│   │   ├── ai_engine/          # ai_engine.ui, widget_ai_engine.py (통합 완료)
+│   │   └── prediction/         # prediction.ui, widget_prediction.py (통합 완료)
+│   ├── ai_engine/
+│   │   ├── ui/                 # compat shim → ui/ai_engine/ 참조
+│   │   └── logic/
+│   ├── prediction/
+│   │   ├── ui/                 # compat shim → ui/prediction/ 참조
+│   │   └── logic/
+│   ├── models/                 # LSTM, XGBoost, Transformer
+│   ├── rl/                     # 강화학습 (PPO)
+│   ├── detection/              # 이상탐지 (VAE)
+│   ├── sentiment/              # 감성 분석 엔진
+│   └── prompt/                 # 프롬프트 관리
+│
+├── 07_scanner/                 # 마켓 스캐너 (조건 스캔, 알림)
+│   ├── __init__.py
+│   ├── README.md
+│   └── engine/
+│       ├── ui/                 # widget_scanner_frame.ui/.py
+│       │                       # popup_scanner_settings.ui/.py
+│       │                       # scanner_settings_advanced_popup.ui/.py
+│       │                       # tab_basic_indicators.ui, tab_advanced_indicators.ui
+│       │                       # tab_patterns_volume.ui, tab_filters.ui, tab_alerts_presets.ui
+│       ├── logic/
+│       ├── workers/
+│       ├── models/
+│       ├── indicators/
+│       └── patterns/
+│
+├── 08_portfolio/               # 포트폴리오 관리 (자산 현황, 최적화)
+│   ├── __init__.py
+│   ├── README.md
+│   ├── holdings/
+│   │   └── ui/                 # detailholdinglist.ui, widget_portfolio.py
+│   ├── userinfo/
+│   │   └── ui/                 # userinfo.ui, widget_piechart.py
+│   └── optimizer/
+│
+├── 09_sentiment/               # 감성 분석 (뉴스/소셜)
+│   ├── __init__.py
+│   ├── README.md
+│   └── analysis/
+│       ├── ui/                 # widget_sentiment.py
+│       ├── core/               # sentiment_engine.py, scrapers, signal_generator
+│       ├── models/
+│       ├── preprocessing/
+│       ├── analytics/          # correlation, topic_modeling ✅ (analysis/ → analytics/ 변경)
+│       └── workers/
+│
+├── 10_trade/                   # 트레이드 실행 (주문, 리스크 관리)
+│   ├── __init__.py
+│   ├── README.md
+│   ├── orders/                 # ✅ order/ → orders/ 완전 통합
+│   │   ├── market_order.py     # 시장가 주문 빌더
+│   │   ├── limit_order.py      # 지정가 주문 빌더
+│   │   ├── stop_order.py       # 스탑 주문 빌더
+│   │   ├── trailing_stop.py    # 트레일링 스탑 빌더
+│   │   └── ui/                 # trade.ui, widget_trade.py
+│   ├── signals/
+│   ├── risk/
+│   └── core/
+│
+├── 11_server/                  # FastAPI 서버 (REST, WebSocket)
+│   ├── __init__.py
+│   ├── README.md
+│   ├── api/                    # REST API 라우터
+│   ├── core/                   # 앱 코어, WebSocket
+│   ├── middleware/             # 인증, CORS, 속도제한
+│   ├── settings/
+│   │   └── ui/                 # settings.ui, widget_settings.py
+│   └── utils/
+│
+├── 12_realtime/                # 실시간 데이터 스트리밍
+│   ├── __init__.py
+│   ├── README.md
+│   ├── component/
+│   ├── workers/
+│   └── ui/
+│
+├── 13_compute/                 # 계산 엔진 (지표 계산, 집계)
+│   ├── __init__.py
+│   ├── README.md
+│   ├── engine/                 # ✅ compute/ → engine/ 변경
+│   ├── aggregation/
+│   └── workers/
+│
+├── app/                        # 메인 애플리케이션
+│   ├── __init__.py
+│   ├── README.md
+│   ├── config/
+│   ├── core/
+│   ├── services/
+│   └── ui/
+│
+├── resources/                  # 공통 리소스
+│   ├── __init__.py
+│   ├── icons/
+│   └── images/
+│
+└── styles/                     # UI 스타일
+    ├── __init__.py
+    ├── dark_theme.qss
+    └── light_theme.qss
 ```
 
 ---
 
-## 15媛吏 ?ㅺ퀎 ?먯튃
+## 15가지 설계 원칙
 
-| # | ?먯튃 | ?ㅻ챸 |
+| # | 원칙 | 설명 |
 |---|------|------|
-| 1 | **?쇨???* | 紐⑤뱺 紐⑤뱢??`ui/` + `logic/` + `workers/` ?⑦꽩 以??|
-| 2 | **?쇰━??* | 湲곕뒫蹂?紐낇솗??洹몃９??(踰덊샇 01~13?쇰줈 ?꾨찓??援щ텇) |
-| 3 | **?듯빀??* | 以묐났 ?곸뿭 ?듯빀 ??backup UI ?뚯씪??src濡??쇱썝??|
-| 4 | **紐⑤뱢??* | ?뚯씪??500~700以?紐⑺몴, ?뚯씪 遺꾨━ ?먯튃 以??|
-| 5 | **?뺤옣??* | ?뚮윭洹몄씤 湲곕컲 援ъ“ ???꾨왂/?붿쭊/?ㅼ틦???덉??ㅽ듃由?|
-| 6 | **?좎뿰??* | ?ㅼ뼇??DB쨌李⑦듃 ?붿쭊 援먯껜 媛??(異붿긽??怨꾩링) |
-| 7 | **?곹샇蹂댁셿??* | UI? 濡쒖쭅??紐낇솗???곌껐 (MVC/MVP ?⑦꽩) |
-| 8 | **洹좏삎??* | ?대뜑 源딆씠 3~5?④퀎 ?좎? |
-| 9 | **?먯쭊??* | 紐⑤땲?????ㅼ틦????AI ???먮룞留ㅻℓ ?④퀎??援ы쁽 |
-| 10 | **?꾧껐??* | 紐⑤뱺 湲곕뒫(李⑦듃/?ㅼ틦??AI/?몃젅?대뱶/?쒕쾭) ?꾩쟾 援ы쁽 |
-| 11 | **?ъ궗?⑹꽦** | `01_core/utils/`쨌`resources/`쨌`styles/` 怨듯넻 紐⑤뱢 |
-| 12 | **怨꾩링??* | Core ??Data ??Market ??Chart ??Strategy ??AI ??Trade |
-| 13 | **?꾪솚??* | ?섏쐞 ?명솚???좎? ??DeprecationWarning 湲곕컲 shim 吏??|
-| 14 | **媛뺤“??* | ?듭떖 湲곕뒫(AI/?ㅼ틦?? 蹂꾨룄 踰덊샇 紐⑤뱢濡?媛뺤“ |
-| 15 | **諛섎났??* | `ui/`, `logic/`, `workers/`, `models/` ?⑦꽩 諛섎났 ?곸슜 |
+| 1 | **일관성** | 모든 모듈이 `ui/` + `logic/` + `workers/` 패턴 준수 |
+| 2 | **논리성** | 기능별 명확한 그룹화 (번호 01~13으로 도메인 구분) |
+| 3 | **통합성** | 중복 영역 통합 — backup UI 파일을 src로 일원화 |
+| 4 | **모듈성** | 파일당 500~700줄 목표, 파일 분리 원칙 준수 |
+| 5 | **확장성** | 플러그인 기반 구조 — 전략/엔진/스캐너 레지스트리 |
+| 6 | **유연성** | 다양한 DB·차트 엔진 교체 가능 (추상화 계층) |
+| 7 | **상호보완성** | UI와 로직의 명확한 연결 (MVC/MVP 패턴) |
+| 8 | **균형성** | 폴더 깊이 3~5단계 유지 |
+| 9 | **점진성** | 모니터 → 스캐너 → AI → 자동매매 단계적 구현 |
+| 10 | **완결성** | 모든 기능(차트/스캐너/AI/트레이드/서버) 완전 구현 |
+| 11 | **재사용성** | `01_core/utils/`·`resources/`·`styles/` 공통 모듈 |
+| 12 | **계층성** | Core → Data → Market → Chart → Strategy → AI → Trade |
+| 13 | **전환성** | 하위 호환성 유지 — DeprecationWarning 기반 shim 지원 |
+| 14 | **강조성** | 핵심 기능(AI/스캐너) 별도 번호 모듈로 강조 |
+| 15 | **반복성** | `ui/`, `logic/`, `workers/`, `models/` 패턴 반복 적용 |
 
-> **?덈? ?먯튃**: ??以묐났 湲덉? ??遺꾩궛 湲덉? ??`.ui` ?뚯씪 ?쒖닔 PyQt5 ?좎? ??誘쇨컧?뺣낫 而ㅻ컠 湲덉?
+> **절대 원칙**: ✅ 중복 금지 ✅ 분산 금지 ✅ `.ui` 파일 순수 PyQt5 유지 ✅ 민감정보 커밋 금지
 
 ---
 
-## ?쒖옉 媛?대뱶
+## 시작 가이드
 
-### 1. ?ъ쟾 ?붽뎄?ы빆
+### 1. 사전 요구사항
 
-- **OS**: Windows 10/11 (沅뚯옣), Linux/macOS 吏??
-- **Python**: 3.11.11 (Anaconda ?섍꼍 沅뚯옣)
-- **Docker**: TimescaleDB, Redis, MongoDB, Kafka, ClickHouse 而⑦뀒?대꼫
+- **OS**: Windows 10/11 (권장), Linux/macOS 지원
+- **Python**: 3.11.11 (Anaconda 환경 권장)
+- **Docker**: TimescaleDB, Redis, MongoDB, Kafka, ClickHouse 컨테이너
 
-### 2. ?섏〈???ㅼ튂
+### 2. 의존성 설치
 
 ```bash
-# 媛?곹솚寃??앹꽦 諛??쒖꽦??
+# 가상환경 생성 및 활성화
 conda create -n py311 python=3.11.11
 conda activate py311
 
-# ?섏〈???ㅼ튂
+# 의존성 설치
 pip install -r requirements.txt
 ```
 
-### 3. ?섍꼍 ?ㅼ젙
+### 3. 환경 설정
 
 ```bash
-# .env ?뚯씪 ?앹꽦 (猷⑦듃 ?붾젆?좊━)
+# .env 파일 생성 (루트 디렉토리)
 cp .env.example .env
-# .env ?뚯씪?먯꽌 API ??諛?DB ?ㅼ젙 ?낅젰
+# .env 파일에서 API 키 및 DB 설정 입력
 # UPBIT_ACCESS_KEY=your_access_key
 # UPBIT_SECRET_KEY=your_secret_key
 # TIMESCALE_HOST=localhost
@@ -269,99 +269,99 @@ cp .env.example .env
 # MONGODB_HOST=localhost
 ```
 
-### 4. Docker ?쒕퉬???쒖옉
+### 4. Docker 서비스 시작
 
 ```bash
 docker-compose up -d
 ```
 
-### 5. ?좏뵆由ъ??댁뀡 ?ㅽ뻾
+### 5. 애플리케이션 실행
 
 ```bash
-# GUI ?좏뵆由ъ??댁뀡
+# GUI 애플리케이션
 python -m src.app.main
 
-# FastAPI ?쒕쾭
+# FastAPI 서버
 python -m src._11_server.core.app
 
-# ?뚯뒪???ㅽ뻾
+# 테스트 실행
 python -m pytest tools/tests/ -q
 ```
 
 ---
 
-## 紐⑤뱢 媛쒖슂
+## 모듈 개요
 
-| 紐⑤뱢 | ?ㅻ챸 | ?듭떖 湲곗닠 |
+| 모듈 | 설명 | 핵심 기술 |
 |------|------|-----------|
-| `01_core/` | ?듭떖 ?명봽??(?몄쬆, DI, ?ㅼ젙) | PyQt5, asyncio |
-| `data_01/` | ?곗씠???덉씠??(DB, ?뚯씠?꾨씪?? | TimescaleDB, Redis, MongoDB, Kafka, ClickHouse |
-| `03_market/` | 留덉폆 ?곗씠??(醫낅ぉ, ?멸?, 泥닿껐) | Upbit WebSocket/REST API |
-| `04_chart/` | 李⑦듃 ?붿쭊 (5媛??붿쭊, 100+ 吏?? | matplotlib, mplfinance, plotly, lightweight-charts, bokeh |
-| `05_strategy/` | ?몃젅?대뵫 ?꾨왂 (諛깊뀒?ㅽ똿, 理쒖쟻?? | 蹂?숈꽦?뚰뙆, 異붿꽭異붿쥌, DCA, 洹몃━??|
-| `06_ai/` | AI/ML ?붿쭊 (?덉륫, 媛뺥솕?숈뒿, ?댁긽?먯?) | LSTM, XGBoost, Transformer, PPO, VAE |
-| `07_scanner/` | 留덉폆 ?ㅼ틦??(議곌굔 ?ㅼ틪, ?뚮┝) | 湲곗닠吏?? ?⑦꽩, 蹂쇰ⅷ 議곌굔 |
-| `08_portfolio/` | ?ы듃?대━??愿由?(?먯궛 ?꾪솴, 理쒖쟻?? | ?뚯씠李⑦듃, ?섏씡瑜?遺꾩꽍 |
-| `09_sentiment/` | 媛먯꽦 遺꾩꽍 (?댁뒪/?뚯뀥) | FinBERT, KoBERT |
-| `10_trade/` | ?몃젅?대뱶 ?ㅽ뻾 (二쇰Ц, 由ъ뒪??愿由? | Upbit 二쇰Ц API, PAPER/LIVE 紐⑤뱶 |
-| `11_server/` | FastAPI ?쒕쾭 (REST, WebSocket) | FastAPI, uvicorn, WebSocket |
-| `12_realtime/` | ?ㅼ떆媛??곗씠???ㅽ듃由щ컢 | Upbit WebSocket, ???섏떊 |
-| `13_compute/` | 怨꾩궛 ?붿쭊 (吏??怨꾩궛, 吏묎퀎) | 罹붾뱾 吏묎퀎, O(1) 利앸텇 怨꾩궛 |
+| `01_core/` | 핵심 인프라 (인증, DI, 설정) | PyQt5, asyncio |
+| `02_data/` | 데이터 레이어 (DB, 파이프라인) | TimescaleDB, Redis, MongoDB, Kafka, ClickHouse |
+| `03_market/` | 마켓 데이터 (종목, 호가, 체결) | Upbit WebSocket/REST API |
+| `04_chart/` | 차트 엔진 (5개 엔진, 100+ 지표) | matplotlib, mplfinance, plotly, lightweight-charts, bokeh |
+| `05_strategy/` | 트레이딩 전략 (백테스팅, 최적화) | 변동성돌파, 추세추종, DCA, 그리드 |
+| `06_ai/` | AI/ML 엔진 (예측, 강화학습, 이상탐지) | LSTM, XGBoost, Transformer, PPO, VAE |
+| `07_scanner/` | 마켓 스캐너 (조건 스캔, 알림) | 기술지표, 패턴, 볼륨 조건 |
+| `08_portfolio/` | 포트폴리오 관리 (자산 현황, 최적화) | 파이차트, 수익률 분석 |
+| `09_sentiment/` | 감성 분석 (뉴스/소셜) | FinBERT, KoBERT |
+| `10_trade/` | 트레이드 실행 (주문, 리스크 관리) | Upbit 주문 API, PAPER/LIVE 모드 |
+| `11_server/` | FastAPI 서버 (REST, WebSocket) | FastAPI, uvicorn, WebSocket |
+| `12_realtime/` | 실시간 데이터 스트리밍 | Upbit WebSocket, 틱 수신 |
+| `13_compute/` | 계산 엔진 (지표 계산, 집계) | 캔들 집계, O(1) 증분 계산 |
 
 ---
 
-## 湲곗뿬 媛?대뱶
+## 기여 가이드
 
-### 肄붾뱶 ?ㅽ???
+### 코드 스타일
 
-- **Python**: PEP 8 以?? ????뚰듃 ?ъ슜
-- **?뚯씪 ?ш린**: ?뚯씪??500~700以?紐⑺몴 (理쒕? 800以?
-- **紐낅챸 洹쒖튃**: `snake_case` (?뚯씪/蹂??, `PascalCase` (?대옒??
-- **UI ?뚯씪**: `.ui` ?뚯씪? ?쒖닔 PyQt5 Qt Designer ?뺤떇 ?좎?
+- **Python**: PEP 8 준수, 타입 힌트 사용
+- **파일 크기**: 파일당 500~700줄 목표 (최대 800줄)
+- **명명 규칙**: `snake_case` (파일/변수), `PascalCase` (클래스)
+- **UI 파일**: `.ui` 파일은 순수 PyQt5 Qt Designer 형식 유지
 
-### ??紐⑤뱢 異붽? ??
+### 새 모듈 추가 시
 
-1. ?대떦 踰덊샇 ?대뜑 ?섏쐞??`logic/`, `ui/`, `workers/` 援ъ“ ?앹꽦
-2. `__init__.py` 諛?`README.md` ?앹꽦 ?꾩닔
-3. 15媛吏 ?ㅺ퀎 ?먯튃 以???щ? ?뺤씤
+1. 해당 번호 폴더 하위에 `logic/`, `ui/`, `workers/` 구조 생성
+2. `__init__.py` 및 `README.md` 생성 필수
+3. 15가지 설계 원칙 준수 여부 확인
 
-### PR ?묒꽦 諛⑸쾿
+### PR 작성 방법
 
-1. feature 釉뚮옖移??앹꽦: `git checkout -b feature/紐⑤뱢紐?湲곕뒫紐?
-2. 蹂寃쎌궗??而ㅻ컠 (??PR????湲곕뒫 吏묒쨷)
-3. ?뚯뒪???ㅽ뻾: `python -m pytest tools/tests/ -q`
-4. PR ?ㅻ챸??蹂寃?紐⑤뱢, ?곹뼢 踰붿쐞, ?뚯뒪??寃곌낵 ?ы븿
+1. feature 브랜치 생성: `git checkout -b feature/모듈명-기능명`
+2. 변경사항 커밋 (한 PR에 한 기능 집중)
+3. 테스트 실행: `python -m pytest tools/tests/ -q`
+4. PR 설명에 변경 모듈, 영향 범위, 테스트 결과 포함
 
-### ?뚯뒪??媛?대뱶
+### 테스트 가이드
 
 ```bash
-# ?꾩껜 ?뚯뒪??(app/ ?쒖쇅 ??headless ?섍꼍)
+# 전체 테스트 (app/ 제외 — headless 환경)
 python -m pytest tools/tests/ -q --ignore=tools/tests/app
 
-# ?뱀젙 紐⑤뱢 ?뚯뒪??
+# 특정 모듈 테스트
 python -m pytest tools/tests/test_scanner.py -v
 
-# 肄붾뱶 ?덉쭏 寃??
+# 코드 품질 검사
 flake8 src/
 ```
 
 ---
 
-## ?좑툘 蹂댁븞 諛??ㅺ굅??二쇱쓽?ы빆
+## ⚠️ 보안 및 실거래 주의사항
 
-- **API ??愿由?*: `.env` ?뚯씪 ?ъ슜, ?덈? 而ㅻ컠 湲덉?
-- **LIVE 紐⑤뱶**: `10_trade/` 紐⑤뱢? ?ㅺ굅??API瑜??몄텧?⑸땲????PAPER 紐⑤뱶濡?異⑸텇??寃利????ъ슜
-- **STAGE_LOCKED**: `work_order/*.md` ?뚯씪??STAGE_X_LOCKED ?좏겙 以??
+- **API 키 관리**: `.env` 파일 사용, 절대 커밋 금지
+- **LIVE 모드**: `10_trade/` 모듈은 실거래 API를 호출합니다 — PAPER 모드로 충분히 검증 후 사용
+- **STAGE_LOCKED**: `work_order/*.md` 파일의 STAGE_X_LOCKED 토큰 준수
 
 ---
 
-## 李멸퀬 臾몄꽌
+## 참고 문서
 
-- [`work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md`](../work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md) ???쒖뒪???꾩껜 ?ㅺ퀎 媛?대뱶
-- [`work_order/DB?ㅺ퀎.md`](../work_order/DB?ㅺ퀎.md) ???곗씠?곕쿋?댁뒪 ?ㅺ퀎 v8/v9
-- [`work_order/洹쒖튃.md`](../work_order/洹쒖튃.md) ??媛쒕컻 洹쒖튃 諛??먯튃
-- [`work_order/README_?묒꽦_媛?대뱶.md`](../work_order/README_?묒꽦_媛?대뱶.md) ??README ?묒꽦 媛?대뱶
+- [`work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md`](../work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md) — 시스템 전체 설계 가이드
+- [`work_order/DB설계.md`](../work_order/DB설계.md) — 데이터베이스 설계 v8/v9
+- [`work_order/규칙.md`](../work_order/규칙.md) — 개발 규칙 및 원칙
+- [`work_order/README_작성_가이드.md`](../work_order/README_작성_가이드.md) — README 작성 가이드
 
 Last Modified: 2026-03-13 | Copilot
 
-?
+끝

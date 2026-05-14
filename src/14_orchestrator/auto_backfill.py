@@ -1,22 +1,22 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-AutoBackfill 愿由ш린 (諛⑹뼱??援ы쁽)
+AutoBackfill 관리기 (방어적 구현)
 
-二쇱슂 ?먯튃:
-- import ???대뼡 ?먮룞 ?ㅽ뻾???섏? ?딆뒿?덈떎.
-- ?앹꽦(create_auto_backfill_manager) / ?깅줉(register_auto_backfill_manager) / ?쒖옉(run_once_nonblocking/start_periodic)
-  ??紐낇솗??遺꾨━?⑸땲??
-- symbols(?щ낵) 以鍮??щ?瑜??뺤씤?섏뿬 遺덊븘?뷀븳 鍮??ㅽ뻾??諛⑹??⑸땲??
-- waiter ?ㅻ젅?쒕? ?듯븳 ?ъ떆?꾨뒗 '?湲? ?곹깭濡?痍④툒?섎ŉ, ?ㅼ젣 Gap detection ?ㅽ뻾 ?쒖뿉留?True瑜?諛섑솚?⑸땲??
-- 紐⑤뱢 ?섏? ?뚯씪-濡쒕뵫 ?대갚? 媛?ν븳 ???ㅼ엫?ㅽ럹?댁뒪 import瑜??곗꽑?쇰줈 ?섎ŉ, 理쒗썑 ?섎떒?쇰줈留??ъ슜?⑸땲??
+주요 원칙:
+- import 시 어떤 자동 실행도 하지 않습니다.
+- 생성(create_auto_backfill_manager) / 등록(register_auto_backfill_manager) / 시작(run_once_nonblocking/start_periodic)
+  을 명확히 분리합니다.
+- symbols(심볼) 준비 여부를 확인하여 불필요한 빈 실행을 방지합니다.
+- waiter 스레드를 통한 재시도는 '대기' 상태로 취급하며, 실제 Gap detection 실행 시에만 True를 반환합니다.
+- 모듈 수준 파일-로딩 폴백은 가능한 한 네임스페이스 import를 우선으로 하며, 최후 수단으로만 사용합니다.
 
-異붽? 媛쒖꽑:
-- graceful shutdown API 異붽?: stop_once(), stop_periodic(), stop_waiter(), stop_all()/shutdown(timeout)
-- thread join/timeout 泥섎━ 異붽?
-- BackfillStartResult ?닿굅??異붽?: run_once_nonblocking() 諛섑솚 ?댁쑀瑜??곹깭肄붾뱶濡?遺꾨쪟
-- last_start_result ?띿꽦: ?몄텧?먭? False 諛섑솚 ?먯씤??利됱떆 ?뚯븙 媛??
-- 荑⑤떎??湲곌컙(cooldown_seconds) 吏?? ?숈씪 ?몄텧 諛섎났 ?듭젣
+추가 개선:
+- graceful shutdown API 추가: stop_once(), stop_periodic(), stop_waiter(), stop_all()/shutdown(timeout)
+- thread join/timeout 처리 추가
+- BackfillStartResult 열거형 추가: run_once_nonblocking() 반환 이유를 상태코드로 분류
+- last_start_result 속성: 호출자가 False 반환 원인을 즉시 파악 가능
+- 쿨다운 기간(cooldown_seconds) 지원: 동일 호출 반복 억제
 """
 from __future__ import annotations
 
@@ -42,58 +42,58 @@ __all__ = [
 
 
 class BackfillStartResult(enum.Enum):
-    """run_once_nonblocking() ?몄텧 寃곌낵瑜??섑??대뒗 ?곹깭 肄붾뱶.
+    """run_once_nonblocking() 호출 결과를 나타내는 상태 코드.
 
-    媛?硫ㅻ쾭???ㅼ쓬 異붽? ?띿꽦??媛吏묐땲??(``__new__`` ?먯꽌 ?숈쟻 ?ㅼ젙):
+    각 멤버는 다음 추가 속성을 가집니다 (``__new__`` 에서 동적 설정):
 
     Attributes:
-        value (str): 怨좎쑀 肄붾뱶 臾몄옄??(?? "STARTED", "ALREADY_RUNNING")
-        success (bool): True?대㈃ ?ㅼ젣 Gap ?먯? ?뚯빱媛 ?쒖옉??寃껋쓣 ?섎?
-        description (str): ?щ엺???쎌쓣 ???덈뒗 ?곹깭 ?ㅻ챸 (?쒓?)
+        value (str): 고유 코드 문자열 (예: "STARTED", "ALREADY_RUNNING")
+        success (bool): True이면 실제 Gap 탐지 워커가 시작된 것을 의미
+        description (str): 사람이 읽을 수 있는 상태 설명 (한글)
 
-    ?ъ슜踰?
+    사용법:
         mgr.run_once_nonblocking()
         reason = mgr.last_start_result
         if reason != BackfillStartResult.STARTED:
             print(reason.description)
     """
 
-    STARTED = ("STARTED", True, "Gap ?먯? ?뚯빱 ?ㅻ젅???쒖옉 ?깃났")
-    ALREADY_RUNNING = ("ALREADY_RUNNING", False, "?대? ?ㅽ뻾 以???以묐났 ?몄텧 臾댁떆")
+    STARTED = ("STARTED", True, "Gap 탐지 워커 스레드 시작 성공")
+    ALREADY_RUNNING = ("ALREADY_RUNNING", False, "이미 실행 중 — 중복 호출 무시")
     SYMBOLS_NOT_READY_WAITING = (
         "SYMBOLS_NOT_READY_WAITING",
         False,
-        "?щ낵 紐⑸줉 誘몄?鍮????湲??ㅻ젅??waiter) ?좉퇋 ?쒖옉?섏뿬 ?щ낵 ?섏떊 ???먮룞 ?ъ떎???덉젙",
+        "심볼 목록 미준비 — 대기 스레드(waiter) 신규 시작하여 심볼 수신 후 자동 재실행 예정",
     )
     SYMBOLS_NOT_READY_WAITER_RUNNING = (
         "SYMBOLS_NOT_READY_WAITER_RUNNING",
         False,
-        "?щ낵 紐⑸줉 誘몄?鍮????湲??ㅻ젅??waiter)媛 ?대? ?숈옉 以묒씠誘濡?異붽? ?몄텧 臾댁떆",
+        "심볼 목록 미준비 — 대기 스레드(waiter)가 이미 동작 중이므로 추가 호출 무시",
     )
     SYMBOLS_NOT_READY_WAITER_ALREADY_WAITING = (
         "SYMBOLS_NOT_READY_WAITER_ALREADY_WAITING",
         False,
-        "?щ낵 紐⑸줉 誘몄?鍮???_waiting ?뚮옒洹??쒖꽦 以묒쑝濡?以묐났 ?湲?諛⑹?",
+        "심볼 목록 미준비 — _waiting 플래그 활성 중으로 중복 대기 방지",
     )
     WAITER_START_FAILED = (
         "WAITER_START_FAILED",
         False,
-        "?湲??ㅻ젅??waiter) ?쒖옉 ?ㅽ뙣 ???ㅻ젅???앹꽦 ?덉쇅 諛쒖깮",
+        "대기 스레드(waiter) 시작 실패 — 스레드 생성 예외 발생",
     )
     THREAD_START_FAILED = (
         "THREAD_START_FAILED",
         False,
-        "Gap ?먯? ?뚯빱 ?ㅻ젅???쒖옉 ?ㅽ뙣 ??OS ?ㅻ젅???앹꽦 ?덉쇅 諛쒖깮",
+        "Gap 탐지 워커 스레드 시작 실패 — OS 스레드 생성 예외 발생",
     )
     COOLDOWN_ACTIVE = (
         "COOLDOWN_ACTIVE",
         False,
-        "荑⑤떎??湲곌컙 以???理쒓렐 False 諛섑솚 ???湲??쒓컙??吏?섏? ?딆븯??,
+        "쿨다운 기간 중 — 최근 False 반환 후 대기 시간이 지나지 않았음",
     )
     NOT_INITIALIZED = (
         "NOT_INITIALIZED",
         False,
-        "?꾩쭅 run_once_nonblocking() ?몄텧 ??(珥덇린 ?곹깭)",
+        "아직 run_once_nonblocking() 호출 전 (초기 상태)",
     )
 
     def __new__(cls, code: str, success: bool, description: str) -> "BackfillStartResult":
@@ -117,11 +117,11 @@ class AutoBackfillManager:
         cooldown_seconds: float = 30.0,
     ):
         """
-        logger: 濡쒓굅 媛앹껜
-        on_run_complete: gap ?먯? ?????ㅽ뻾 ?꾨즺 ???몄텧?섎뒗 肄쒕갚(success: bool)
-        ready_wait_seconds: ?щ낵 ?湲??ъ떆?? 理쒕? ?쒓컙 (珥?
-        ready_poll_interval: ?щ낵 議댁옱 ?щ? ?뺤씤 二쇨린 (珥?
-        cooldown_seconds: False 諛섑솚 ???ы샇異쒓퉴吏 ?湲??쒓컙(珥?. 0?대㈃ 荑⑤떎???놁쓬.
+        logger: 로거 객체
+        on_run_complete: gap 탐지 한 회 실행 완료 시 호출되는 콜백(success: bool)
+        ready_wait_seconds: 심볼 대기(재시도) 최대 시간 (초)
+        ready_poll_interval: 심볼 존재 여부 확인 주기 (초)
+        cooldown_seconds: False 반환 후 재호출까지 대기 시간(초). 0이면 쿨다운 없음.
         """
         self.log = logger or logging.getLogger(DEFAULT_LOGGER_NAME)
 
@@ -131,36 +131,36 @@ class AutoBackfillManager:
         self._periodic_interval = 60
         self._lock = threading.Lock()
         self._running = False
-        self._waiting = False  # waiter(?щ낵 ?湲? ?곹깭 ?쒖떆
+        self._waiting = False  # waiter(심볼 대기) 상태 표시
 
-        # readiness 愿???뚮씪誘명꽣
+        # readiness 관련 파라미터
         self._ready_wait_seconds = int(ready_wait_seconds)
         self._ready_poll_interval = float(ready_poll_interval)
 
-        # 荑⑤떎??湲곌컙 (False 諛섑솚 ???ы샇異??듭젣)
+        # 쿨다운 기간 (False 반환 후 재호출 억제)
         self._cooldown_seconds = max(0.0, float(cooldown_seconds))
         self._last_false_time: float = 0.0
 
-        # ?대? ?곹깭: 留덉?留됱쑝濡??앹꽦??waiter/once ?ㅻ젅??媛앹껜
+        # 내부 상태: 마지막으로 생성한 waiter/once 스레드 객체
         self._delayed_wait_thread: Optional[threading.Thread] = None
         self._once_thread: Optional[threading.Thread] = None
 
-        # 留덉?留?run_once_nonblocking ?몄텧 寃곌낵 (?몄텧?먭? ?먯씤 ?뚯븙???쒖슜)
+        # 마지막 run_once_nonblocking 호출 결과 (호출자가 원인 파악에 활용)
         self.last_start_result: BackfillStartResult = BackfillStartResult.NOT_INITIALIZED
 
-        # 留덉?留??ㅻ쪟 ?ъ쑀 ??UI ?곹깭李??쒖텧??(?쒓? 援ъ껜 ?ㅻ챸)
+        # 마지막 오류 사유 — UI 상태창 표출용 (한글 구체 설명)
         self.last_error_reason: str = ""
 
-        # 諛깊븘 ?듦퀎 移댁슫??(UI ?쒖떆??
-        self._processed_count: int = 0   # ?대쾲 ?몄뀡?먯꽌 ?깃났?곸쑝濡?諛깊븘??Gap ??
-        self._failed_count: int = 0      # ?ㅽ뙣??Gap ??
-        self._pending_count: int = 0     # 留덉?留?泥섎━ ???⑥? Gap ??
+        # 백필 통계 카운터 (UI 표시용)
+        self._processed_count: int = 0   # 이번 세션에서 성공적으로 백필된 Gap 수
+        self._failed_count: int = 0      # 실패한 Gap 수
+        self._pending_count: int = 0     # 마지막 처리 후 남은 Gap 수
         self._execution_state: str = "idle"  # idle / detecting / processing / completed / error
 
         self.log.debug("[AutoBackfill] Manager initialized (ready_wait=%ss, poll=%ss, cooldown=%ss)",
                        self._ready_wait_seconds, self._ready_poll_interval, self._cooldown_seconds)
     # --------------------------
-    # ?꾩뿭 static 紐⑤뱢 ?먯깋 ?좏떥
+    # 전역 static 모듈 탐색 유틸
     # --------------------------
     def _get_static_module(self) -> Optional[Any]:
         candidates = (
@@ -179,7 +179,7 @@ class AutoBackfillManager:
         return None
 
     # --------------------------
-    # ?щ낵 以鍮??щ? ?먮떒
+    # 심볼 준비 여부 판단
     # --------------------------
     def _has_symbols_available(self) -> bool:
         try:
@@ -253,7 +253,7 @@ class AutoBackfillManager:
             return False
 
     # --------------------------
-    # symbols 以鍮??湲???run
+    # symbols 준비 대기 후 run
     # --------------------------
     def _wait_for_symbols_then_run(self, timeout: Optional[int] = None) -> None:
         if timeout is None:
@@ -286,7 +286,7 @@ class AutoBackfillManager:
             self._waiting = False
 
     # --------------------------
-    # repo ?뚯씪 寃??(蹂댁“)
+    # repo 파일 검색 (보조)
     # --------------------------
     def _search_repo_for_gap_finder(self, repo_root: str, max_results: int = 20) -> List[str]:
         matches: List[str] = []
@@ -301,16 +301,16 @@ class AutoBackfillManager:
         return matches
 
     # --------------------------
-    # gap_finder 紐⑤뱢 ?먯깋/濡쒕뵫
+    # gap_finder 모듈 탐색/로딩
     # --------------------------
     def _find_gap_finder_module(self):
         candidates = (
             "app.core.gap_finder",
             "app.core.auto_backfill_gap_finder",
-            "data_01.timescale.operations.gap_finder",
-            "src.data_01.timescale.operations.gap_finder",
-            "data_01.timescale.timescale_gap_finder",
-            "src.data_01.timescale.timescale_gap_finder",
+            "02_data.timescale.operations.gap_finder",
+            "src.02_data.timescale.operations.gap_finder",
+            "02_data.timescale.timescale_gap_finder",
+            "src.02_data.timescale.timescale_gap_finder",
             "timescale.operations.gap_finder",
             "timescale_gap_finder",
             "src.timescale_gap_finder",
@@ -327,7 +327,7 @@ class AutoBackfillManager:
             except Exception as e:
                 self.log.debug("[AutoBackfill] import %s failed: %s", p, f"{type(e).__name__}: {e}")
 
-        # ?뚯씪 寃??理쒗썑 ?섎떒)
+        # 파일 검색(최후 수단)
         try:
             here = os.path.dirname(os.path.abspath(__file__))
 
@@ -380,11 +380,11 @@ class AutoBackfillManager:
         return None
 
     # --------------------------
-    # 諛깊븘 泥섎━ ?ы띁 硫붿꽌??
+    # 백필 처리 헬퍼 메서드
     # --------------------------
 
     def _load_backfill_manager_class(self):
-        """backfill.auto_backfill_manager.AutoBackfillManager ?대옒???숈쟻 濡쒕뱶."""
+        """backfill.auto_backfill_manager.AutoBackfillManager 클래스 동적 로드."""
         try:
             from .backfill.auto_backfill_manager import AutoBackfillManager as _BfMgr
             return _BfMgr
@@ -407,13 +407,13 @@ class AutoBackfillManager:
                 if _mod is not None:
                     return getattr(_mod, "AutoBackfillManager", None)
         except Exception:
-            self.log.debug("[AutoBackfill] BackfillManager ?대옒??濡쒕뱶 ?ㅽ뙣", exc_info=True)
+            self.log.debug("[AutoBackfill] BackfillManager 클래스 로드 실패", exc_info=True)
         return None
 
     def _load_timescale_connector_class(self):
-        """TimescaleConnector ?대옒?ㅻ? ?숈쟻?쇰줈 濡쒕뱶?⑸땲??(怨듯넻 ?ы띁)."""
+        """TimescaleConnector 클래스를 동적으로 로드합니다 (공통 헬퍼)."""
         _ts_db_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "data_01", "timescale", "timescale_db.py")
+            os.path.join(os.path.dirname(__file__), "..", "02_data", "timescale", "timescale_db.py")
         )
         alias = "_timescale_db"
         _mod = sys.modules.get(alias)
@@ -426,12 +426,12 @@ class AutoBackfillManager:
                     sys.modules[alias] = _mod
                     _spec.loader.exec_module(_mod)
             except Exception as e:
-                self.log.debug("[AutoBackfill] TimescaleConnector 濡쒕뱶 ?ㅽ뙣: %s", e)
+                self.log.debug("[AutoBackfill] TimescaleConnector 로드 실패: %s", e)
                 return None
         return getattr(_mod, "TimescaleConnector", None) if _mod else None
 
     def _get_pending_gaps_from_db(self, max_items: int = 50) -> list:
-        """TimescaleDB gap_fill_queue ?뚯씠釉붿뿉??pending ?곹깭 Gap 議고쉶 (Redis ZSET ?대갚??."""
+        """TimescaleDB gap_fill_queue 테이블에서 pending 상태 Gap 조회 (Redis ZSET 폴백용)."""
         try:
             TimescaleConnector = self._load_timescale_connector_class()
             if TimescaleConnector is None:
@@ -451,11 +451,11 @@ class AutoBackfillManager:
                 for r in rows
             ]
         except Exception as e:
-            self.log.debug("[AutoBackfill] DB pending gaps 議고쉶 ?ㅽ뙣: %s", e)
+            self.log.debug("[AutoBackfill] DB pending gaps 조회 실패: %s", e)
             return []
 
     def _get_pending_count_from_db(self) -> int:
-        """TimescaleDB gap_fill_queue ?뚯씠釉붿뿉??pending ?곹깭 Gap ??議고쉶."""
+        """TimescaleDB gap_fill_queue 테이블에서 pending 상태 Gap 수 조회."""
         try:
             TimescaleConnector = self._load_timescale_connector_class()
             if TimescaleConnector is None:
@@ -468,17 +468,17 @@ class AutoBackfillManager:
                 row = cur.fetchone()
             return int(row[0]) if row else 0
         except Exception as e:
-            self.log.debug("[AutoBackfill] DB pending count 議고쉶 ?ㅽ뙣: %s", e)
+            self.log.debug("[AutoBackfill] DB pending count 조회 실패: %s", e)
             return -1
 
     def _process_queue_sync(self, max_gaps: Optional[int] = None) -> tuple:
-        """Queue?먯꽌 Gap??爰쇰궡 諛깊븘 泥섎━?⑸땲??
+        """Queue에서 Gap을 꺼내 백필 처리합니다.
 
-        ?먮쫫:
-          1) in-memory deque?먯꽌 pop_next() 濡?理쒕? max_gaps 嫄댁쓣 媛?몄샂
-          2) in-memory媛 鍮꾩뼱?덉쑝硫?TimescaleDB gap_fill_queue(pending) 議고쉶
-          3) backfill/auto_backfill_manager.AutoBackfillManager濡?媛?gap 諛깊븘
-          4) 泥섎━ 寃곌낵(processed, failed, remaining) 諛섑솚
+        흐름:
+          1) in-memory deque에서 pop_next() 로 최대 max_gaps 건을 가져옴
+          2) in-memory가 비어있으면 TimescaleDB gap_fill_queue(pending) 조회
+          3) backfill/auto_backfill_manager.AutoBackfillManager로 각 gap 백필
+          4) 처리 결과(processed, failed, remaining) 반환
 
         Returns:
             (processed: int, failed: int, remaining: int)
@@ -492,8 +492,8 @@ class AutoBackfillManager:
             prev_state = self._execution_state
             self._execution_state = "processing"
 
-            # ?? ?깅뒫 ?ㅼ젙 SSOT 濡쒕뱶 (UI ?ㅼ씠?쇰줈洹몄뿉??蹂寃?媛?? ??
-            #   None ?대㈃ UI ?ㅼ젙媛??ъ슜. 紐낆떆??媛믪씠 ?덉쑝硫?洹몃?濡??ъ슜.
+            # ── 성능 설정 SSOT 로드 (UI 다이얼로그에서 변경 가능) ──
+            #   None 이면 UI 설정값 사용. 명시적 값이 있으면 그대로 사용.
             try:
                 from .backfill.performance_settings import (
                     get_max_concurrency,
@@ -503,7 +503,7 @@ class AutoBackfillManager:
                 _perf_max_concurrency = int(get_max_concurrency())
             except Exception as _exc:
                 self.log.debug(
-                    "[AutoBackfill] performance_settings 濡쒕뱶 ?ㅽ뙣(湲곕낯媛??ъ슜): %s", _exc,
+                    "[AutoBackfill] performance_settings 로드 실패(기본값 사용): %s", _exc,
                 )
                 _perf_max_gaps = 200
                 _perf_max_concurrency = 12
@@ -512,16 +512,16 @@ class AutoBackfillManager:
             else:
                 max_gaps = max(1, int(max_gaps))
 
-            # gap_finder 紐⑤뱢?먯꽌 pop/len ?⑥닔 媛?몄삤湲?
+            # gap_finder 모듈에서 pop/len 함수 가져오기
             mod = self._find_gap_finder_module()
             pop_fn = getattr(mod, "pop_next", None) if mod else None
             get_len_fn = getattr(mod, "get_queue_length", None) if mod else None
 
-            # BackfillManager ?대옒??濡쒕뱶 (?ㅼ젣 泥섎━湲?
+            # BackfillManager 클래스 로드 (실제 처리기)
             BfMgr = self._load_backfill_manager_class()
             if BfMgr is None:
-                self.log.warning("[AutoBackfill] BackfillManager ?놁쓬 - ??泥섎━ 遺덇?")
-                # pending count 媛깆떊 ?쒕룄
+                self.log.warning("[AutoBackfill] BackfillManager 없음 - 큐 처리 불가")
+                # pending count 갱신 시도
                 remaining = 0
                 if get_len_fn:
                     try:
@@ -535,17 +535,17 @@ class AutoBackfillManager:
                 return (0, 0, self._pending_count)
 
             bf_mgr = BfMgr(logger=self.log)
-            # ?ъ씠?대퀎 遺꾨쪟 移댁슫??珥덇린??(UI 硫붿떆吏 紐낇솗?붿슜)
+            # 사이클별 분류 카운터 초기화 (UI 메시지 명확화용)
             try:
                 if hasattr(bf_mgr, "reset_classification"):
                     bf_mgr.reset_classification()
             except Exception:
                 pass
 
-            # 泥섎━??gap 紐⑸줉 ?섏쭛
+            # 처리할 gap 목록 수집
             gaps_to_process: list = []
 
-            # 1李? in-memory deque?먯꽌 pop
+            # 1차: in-memory deque에서 pop
             if pop_fn and callable(pop_fn):
                 for _ in range(max_gaps):
                     gap = pop_fn()
@@ -558,12 +558,12 @@ class AutoBackfillManager:
                         "gap_end": getattr(gap, "gap_end", None),
                     })
 
-            # 2李? in-memory媛 鍮꾩뼱?덉쑝硫?DB pending 議고쉶
+            # 2차: in-memory가 비어있으면 DB pending 조회
             if not gaps_to_process:
                 gaps_to_process = self._get_pending_gaps_from_db(max_items=max_gaps)
 
             if not gaps_to_process:
-                self.log.debug("[AutoBackfill] 泥섎━??Gap ?놁쓬 (??鍮꾩뼱?덉쓬)")
+                self.log.debug("[AutoBackfill] 처리할 Gap 없음 (큐 비어있음)")
                 remaining = 0
                 if get_len_fn:
                     try:
@@ -576,14 +576,14 @@ class AutoBackfillManager:
                 self._pending_count = remaining
                 return (0, 0, self._pending_count)
 
-            self.log.info("[AutoBackfill] 諛깊븘 泥섎━ ?쒖옉: %d嫄????, len(gaps_to_process))
+            self.log.info("[AutoBackfill] 백필 처리 시작: %d건 대상", len(gaps_to_process))
 
-            # 鍮꾨룞湲?泥섎━ ?⑥닔
+            # 비동기 처리 함수
             async def _process_all_async(gap_list: list):
-                # ?숈떆?? SSOT(`backfill_scheduler.performance.max_concurrency`)
-                # ???섍꼍蹂??`AUTO_BACKFILL_MAX_CONCURRENCY` ??湲곕낯 12.
-                # 湲濡쒕쾶 AsyncRateLimiter(9 req/s 쨌 550 req/min)媛 ?ㅼ젣 ?몃? ?몄텧
-                # ?띾룄瑜??덉쟾?섍쾶 吏곷젹?뷀븯誘濡????숈떆??媛믩룄 ?덉쟾.
+                # 동시성: SSOT(`backfill_scheduler.performance.max_concurrency`)
+                # → 환경변수 `AUTO_BACKFILL_MAX_CONCURRENCY` → 기본 12.
+                # 글로벌 AsyncRateLimiter(9 req/s · 550 req/min)가 실제 외부 호출
+                # 속도를 안전하게 직렬화하므로 큰 동시성 값도 안전.
                 max_concurrency = max(1, min(int(_perf_max_concurrency), 32))
                 sem = _asyncio.Semaphore(max_concurrency)
 
@@ -593,7 +593,7 @@ class AutoBackfillManager:
                             return bool(await bf_mgr._process_one_gap(gap_dict))
                         except Exception as _e:
                             self.log.error(
-                                "[AutoBackfill] Gap 泥섎━ ?덉쇅 (symbol=%s): %s",
+                                "[AutoBackfill] Gap 처리 예외 (symbol=%s): %s",
                                 gap_dict.get("symbol", "?"),
                                 _e,
                             )
@@ -604,18 +604,18 @@ class AutoBackfillManager:
                 f = len(results) - p
                 return p, f
 
-            # asyncio.run?쇰줈 ?숆린 ?ㅽ뻾 (?ㅻ젅???대? ???대깽??猷⑦봽 ?놁쓬)
+            # asyncio.run으로 동기 실행 (스레드 내부 — 이벤트 루프 없음)
             try:
                 processed, failed = _asyncio.run(_process_all_async(gaps_to_process))
             except Exception as e:
-                self.log.error("[AutoBackfill] asyncio.run ?ㅽ뙣: %s", e)
+                self.log.error("[AutoBackfill] asyncio.run 실패: %s", e)
                 processed = 0
                 failed = len(gaps_to_process)
 
             self._processed_count += processed
             self._failed_count += failed
 
-            # 遺꾨쪟 ?붿빟 罹먯떆 (UI 硫붿떆吏 紐낇솗?붿슜)
+            # 분류 요약 캐시 (UI 메시지 명확화용)
             try:
                 summary_fn = getattr(bf_mgr, "classification_summary", None)
                 if callable(summary_fn):
@@ -625,9 +625,9 @@ class AutoBackfillManager:
             except Exception:
                 self._last_classification_summary = ""
 
-            # remaining count 媛깆떊
-            # gap_finder ??湲몄씠 ?곗꽑 (pop_next濡?in-memory deque ?뚮퉬??
-            # DB pending count???뺤씤 (Redis 紐⑤뱶??DB-湲곕컲 泥섎━?먯꽌 ???뺥솗)
+            # remaining count 갱신
+            # gap_finder 큐 길이 우선 (pop_next로 in-memory deque 소비됨)
+            # DB pending count도 확인 (Redis 모드나 DB-기반 처리에서 더 정확)
             remaining = 0
             if get_len_fn:
                 try:
@@ -640,21 +640,21 @@ class AutoBackfillManager:
             self._pending_count = remaining
 
             self.log.info(
-                "[AutoBackfill] 諛깊븘 泥섎━ ?꾨즺: ?깃났=%d, ?ㅽ뙣=%d, ?붿뿬=%d",
+                "[AutoBackfill] 백필 처리 완료: 성공=%d, 실패=%d, 잔여=%d",
                 processed, failed, self._pending_count,
             )
             return (processed, failed, self._pending_count)
 
         except Exception as e:
-            self.log.error("[AutoBackfill] _process_queue_sync ?ㅻ쪟: %s", e, exc_info=True)
+            self.log.error("[AutoBackfill] _process_queue_sync 오류: %s", e, exc_info=True)
             return (0, 0, self._pending_count)
         finally:
-            # 泥섎━ ?곹깭 蹂듭썝 (detecting?댁뿀?쇰㈃ ?좎?, ?꾨땲硫?idle)
+            # 처리 상태 복원 (detecting이었으면 유지, 아니면 idle)
             if self._execution_state == "processing":
                 self._execution_state = "idle"
 
     # --------------------------
-    # gap ?먯? ?숆린 ?ㅽ뻾
+    # gap 탐지 동기 실행
     # --------------------------
     def _run_gap_detection_sync(self) -> bool:
         success = False
@@ -662,7 +662,7 @@ class AutoBackfillManager:
             self._execution_state = "detecting"
             mod = self._find_gap_finder_module()
             if mod is None:
-                reason = "Gap Finder 紐⑤뱢??李얠쓣 ???놁쓬 (?ㅼ튂/寃쎈줈 ?뺤씤 ?꾩슂)"
+                reason = "Gap Finder 모듈을 찾을 수 없음 (설치/경로 확인 필요)"
                 self.last_error_reason = reason
                 self._execution_state = "error"
                 self.log.warning("[AutoBackfill] Gap finder module not found; skipping run")
@@ -684,7 +684,7 @@ class AutoBackfillManager:
                     break
 
             if fn is None:
-                reason = "Gap Finder 紐⑤뱢???명솚 吏꾩엯???놁쓬 (detect_all_and_enqueue ???꾩슂)"
+                reason = "Gap Finder 모듈에 호환 진입점 없음 (detect_all_and_enqueue 등 필요)"
                 self.last_error_reason = reason
                 self._execution_state = "error"
                 self.log.warning("[AutoBackfill] Gap finder module has no compatible entrypoint")
@@ -710,7 +710,7 @@ class AutoBackfillManager:
                     self.log.debug("[AutoBackfill] gap finder call with args=%s TypeError: %s", args, e)
                     continue
                 except Exception as e:
-                    reason = f"Gap ?먯? ?ㅽ뻾 ?덉쇅: {type(e).__name__}: {e}"
+                    reason = f"Gap 탐지 실행 예외: {type(e).__name__}: {e}"
                     self.last_error_reason = reason
                     self.log.exception("[AutoBackfill] gap finder function raised an exception")
                     called = True
@@ -721,45 +721,45 @@ class AutoBackfillManager:
                     fn([])
                     called = True
                 except Exception as e:
-                    reason = f"Gap ?먯? 理쒖쥌 ?몄텧 ?ㅽ뙣: {type(e).__name__}: {e}"
+                    reason = f"Gap 탐지 최종 호출 실패: {type(e).__name__}: {e}"
                     self.last_error_reason = reason
                     self.log.exception("[AutoBackfill] final gap finder invocation attempts failed")
 
             if called:
                 self.log.debug("[AutoBackfill] Gap detection finished (called=%s)", called)
-                # ??????????????????????????????????????????????????????????????
-                # Gap ?먯? ?꾨즺 ????泥섎━ (諛깊븘 ?ㅽ뻾): ?먯???Gap???ㅼ젣濡?DB??諛섏쁺
-                # ?깃났 湲곗?: API ?몄텧 ?깃났???꾨땶 DB 諛섏쁺 ?됱닔 > 0 ?먮뒗 Gap ?곹깭 closed
-                # ??????????????????????????????????????????????????????????????
+                # ──────────────────────────────────────────────────────────────
+                # Gap 탐지 완료 후 큐 처리 (백필 실행): 탐지된 Gap을 실제로 DB에 반영
+                # 성공 기준: API 호출 성공이 아닌 DB 반영 행수 > 0 또는 Gap 상태 closed
+                # ──────────────────────────────────────────────────────────────
                 try:
-                    # ?ъ씠???쒖옉 ??bf_mgr ?ъ깮?깆? _process_queue_sync ?대??먯꽌.
+                    # 사이클 시작 — bf_mgr 재생성은 _process_queue_sync 내부에서.
                     processed_in_batch, failed_in_batch, remaining_count = self._process_queue_sync()
-                    # ?ㅼ젣 DB 諛섏쁺???덉뿀嫄곕굹 ?먭? 鍮꾩뼱?덉쑝硫??먯? ?④퀎?먯꽌 媛??놁쓬) ?깃났
+                    # 실제 DB 반영이 있었거나 큐가 비어있으면(탐지 단계에서 갭 없음) 성공
                     success = (processed_in_batch > 0) or (remaining_count == 0)
                     if not success and failed_in_batch > 0:
-                        # 遺꾨쪟 移댁슫???붿빟 ?곗꽑 ???놁쑝硫?湲곗〈 ?⑥닚 硫붿떆吏濡??대갚.
-                        # _process_queue_sync 媛 ?ъ씠???앹뿉 _last_classification_summary
-                        # ?띿꽦????ν븳 ?붿빟???ъ슜?쒕떎.
+                        # 분류 카운터 요약 우선 — 없으면 기존 단순 메시지로 폴백.
+                        # _process_queue_sync 가 사이클 끝에 _last_classification_summary
+                        # 속성에 저장한 요약을 사용한다.
                         f_summary = getattr(self, "_last_classification_summary", "")
                         if f_summary:
                             self.last_error_reason = (
-                                f"諛깊븘 泥섎━ 寃곌낵 ??{f_summary} (?붿뿬 {remaining_count}嫄?"
+                                f"백필 처리 결과 — {f_summary} (잔여 {remaining_count}건)"
                             )
                         else:
                             self.last_error_reason = (
-                                f"諛깊븘 泥섎━ ?ㅽ뙣 {failed_in_batch}嫄?"
-                                f"(?깃났 {processed_in_batch}嫄? ?붿뿬 {remaining_count}嫄?"
+                                f"백필 처리 실패 {failed_in_batch}건 "
+                                f"(성공 {processed_in_batch}건, 잔여 {remaining_count}건)"
                             )
                     elif not success and processed_in_batch == 0 and remaining_count == 0:
-                        # 泥섎━??Gap ?놁쓬 ??gap detection ?먯껜???깃났
+                        # 처리할 Gap 없음 → gap detection 자체는 성공
                         success = True
                 except Exception as e:
-                    reason = f"諛깊븘 泥섎━ 以??ㅻ쪟: {type(e).__name__}: {e}"
+                    reason = f"백필 처리 중 오류: {type(e).__name__}: {e}"
                     self.last_error_reason = reason
                     self.log.exception("[AutoBackfill] _process_queue_sync raised an exception")
                     success = False
             else:
-                reason = "Gap ?먯? ?몄텧 遺덇? (?명솚 ?쒓렇?덉쿂 ?놁쓬)"
+                reason = "Gap 탐지 호출 불가 (호환 시그니처 없음)"
                 self.last_error_reason = reason
                 success = False
                 self._execution_state = "error"
@@ -772,7 +772,7 @@ class AutoBackfillManager:
 
             return success
         except Exception as e:
-            reason = f"Gap ?먯? ?덇린移??딆? ?ㅻ쪟: {type(e).__name__}: {e}"
+            reason = f"Gap 탐지 예기치 않은 오류: {type(e).__name__}: {e}"
             self.last_error_reason = reason
             self._execution_state = "error"
             self.log.exception("[AutoBackfill] Unexpected error in _run_gap_detection_sync")
@@ -788,45 +788,45 @@ class AutoBackfillManager:
                 self.log.debug("[AutoBackfill] on_run_complete invocation failed", exc_info=True)
 
     # --------------------------
-    # ??踰?鍮꾨룞湲??ㅽ뻾 (諛⑹뼱??
+    # 한 번 비동기 실행 (방어적)
     # --------------------------
     def run_once_nonblocking(self, force: bool = False) -> bool:
         """
-        gap ?먯?瑜???踰?鍮꾨룞湲??ㅽ뻾.
+        gap 탐지를 한 번 비동기 실행.
 
-        諛섑솚媛? ?ㅼ젣 Gap detection worker(諛깊븘 ?묒뾽)媛 ?쒖옉?섏뿀???뚮쭔 True瑜?諛섑솚?⑸땲??
-          ?щ낵 誘몄?鍮꾨줈 'waiter' ?ㅻ젅?쒕? ?쒖옉??寃쎌슦?먮뒗 False瑜?諛섑솚(?湲?以?.
-          force=True?대㈃ symbols 以鍮?泥댄겕瑜??고쉶?섏뿬 諛붾줈 worker瑜??쒖옉(?? ?대? _running?대㈃ False).
+        반환값: 실제 Gap detection worker(백필 작업)가 시작되었을 때만 True를 반환합니다.
+          심볼 미준비로 'waiter' 스레드를 시작한 경우에는 False를 반환(대기 중).
+          force=True이면 symbols 준비 체크를 우회하여 바로 worker를 시작(단, 이미 _running이면 False).
 
-        self.last_start_result ??援ъ껜?곸씤 BackfillStartResult ?곹깭肄붾뱶媛 ?ㅼ젙?⑸땲??
-        ?몄텧?먮뒗 ???띿꽦?쇰줈 False 諛섑솚 ?먯씤??利됱떆 ?뚯븙?????덉뒿?덈떎.
+        self.last_start_result 에 구체적인 BackfillStartResult 상태코드가 설정됩니다.
+        호출자는 이 속성으로 False 반환 원인을 즉시 파악할 수 있습니다.
 
-        荑⑤떎??cooldown_seconds):
-          吏곸쟾 False 諛섑솚 ?댄썑 cooldown_seconds 媛 吏?섏? ?딆븯?쇰㈃ COOLDOWN_ACTIVE 諛섑솚.
-          ?대? ?ㅽ뻾 以?ALREADY_RUNNING) 諛?force=True ?몄텧? 荑⑤떎?댁쓣 臾댁떆?⑸땲??
+        쿨다운(cooldown_seconds):
+          직전 False 반환 이후 cooldown_seconds 가 지나지 않았으면 COOLDOWN_ACTIVE 반환.
+          이미 실행 중(ALREADY_RUNNING) 및 force=True 호출은 쿨다운을 무시합니다.
         """
         def _set(result: BackfillStartResult) -> bool:
             self.last_start_result = result
             if not result.success:  # type: ignore[attr-defined]
                 self._last_false_time = time.monotonic()
-                # ?ㅽ뙣 ?먯씤??last_error_reason ??湲곕줉 (UI ?곹깭李??쒖텧??
+                # 실패 원인을 last_error_reason 에 기록 (UI 상태창 표출용)
                 if not self.last_error_reason:
                     self.last_error_reason = result.description  # type: ignore[attr-defined]
             else:
-                # ?깃났 ???ㅻ쪟 ?ъ쑀 珥덇린??
+                # 성공 시 오류 사유 초기화
                 self.last_error_reason = ""
             return bool(result)
 
         with self._lock:
             if self._running:
                 self.log.info(
-                    "[AutoBackfill] run_once_nonblocking ???곹깭: %s | %s",
+                    "[AutoBackfill] run_once_nonblocking — 상태: %s | %s",
                     BackfillStartResult.ALREADY_RUNNING.value,
                     BackfillStartResult.ALREADY_RUNNING.description,
                 )
                 return _set(BackfillStartResult.ALREADY_RUNNING)
 
-            # 荑⑤떎??泥댄겕 (force 諛?ALREADY_RUNNING ?댄썑???쒖쇅)
+            # 쿨다운 체크 (force 및 ALREADY_RUNNING 이후는 제외)
             if not force and self._cooldown_seconds > 0 and self._last_false_time > 0:
                 elapsed = time.monotonic() - self._last_false_time
                 if (
@@ -835,7 +835,7 @@ class AutoBackfillManager:
                 ):
                     remaining = self._cooldown_seconds - elapsed
                     self.log.info(
-                        "[AutoBackfill] run_once_nonblocking ???곹깭: %s | %s (?⑥? 荑⑤떎?? %.0fs)",
+                        "[AutoBackfill] run_once_nonblocking — 상태: %s | %s (남은 쿨다운: %.0fs)",
                         BackfillStartResult.COOLDOWN_ACTIVE.value,
                         BackfillStartResult.COOLDOWN_ACTIVE.description,
                         remaining,
@@ -846,14 +846,14 @@ class AutoBackfillManager:
             if not force and not self._has_symbols_available():
                 if self._delayed_wait_thread and self._delayed_wait_thread.is_alive():
                     self.log.info(
-                        "[AutoBackfill] run_once_nonblocking ???곹깭: %s | %s",
+                        "[AutoBackfill] run_once_nonblocking — 상태: %s | %s",
                         BackfillStartResult.SYMBOLS_NOT_READY_WAITER_RUNNING.value,
                         BackfillStartResult.SYMBOLS_NOT_READY_WAITER_RUNNING.description,
                     )
                     return _set(BackfillStartResult.SYMBOLS_NOT_READY_WAITER_RUNNING)
                 if self._waiting:
                     self.log.info(
-                        "[AutoBackfill] run_once_nonblocking ???곹깭: %s | %s",
+                        "[AutoBackfill] run_once_nonblocking — 상태: %s | %s",
                         BackfillStartResult.SYMBOLS_NOT_READY_WAITER_ALREADY_WAITING.value,
                         BackfillStartResult.SYMBOLS_NOT_READY_WAITER_ALREADY_WAITING.description,
                     )
@@ -869,14 +869,14 @@ class AutoBackfillManager:
                 try:
                     self._delayed_wait_thread.start()
                     self.log.info(
-                        "[AutoBackfill] run_once_nonblocking ???곹깭: %s | %s (理쒕? %ss ?湲?",
+                        "[AutoBackfill] run_once_nonblocking — 상태: %s | %s (최대 %ss 대기)",
                         BackfillStartResult.SYMBOLS_NOT_READY_WAITING.value,
                         BackfillStartResult.SYMBOLS_NOT_READY_WAITING.description,
                         self._ready_wait_seconds,
                     )
                     return _set(BackfillStartResult.SYMBOLS_NOT_READY_WAITING)
                 except Exception as e:
-                    self.last_error_reason = f"?щ낵 ?湲??ㅻ젅???쒖옉 ?ㅽ뙣: {type(e).__name__}: {e}"
+                    self.last_error_reason = f"심볼 대기 스레드 시작 실패: {type(e).__name__}: {e}"
                     self.log.exception("[AutoBackfill] Failed to start delayed waiter thread")
                     return _set(BackfillStartResult.WAITER_START_FAILED)
 
@@ -887,7 +887,7 @@ class AutoBackfillManager:
             try:
                 self._run_gap_detection_sync()
             except Exception as e:
-                self.last_error_reason = f"?뚯빱 ?ㅽ뻾 以??덉쇅: {type(e).__name__}: {e}"
+                self.last_error_reason = f"워커 실행 중 예외: {type(e).__name__}: {e}"
                 self.log.exception("[AutoBackfill] error in non-blocking worker")
             finally:
                 with self._lock:
@@ -902,7 +902,7 @@ class AutoBackfillManager:
             self.last_start_result = BackfillStartResult.STARTED
             self.last_error_reason = ""
             self.log.info(
-                "[AutoBackfill] run_once_nonblocking ???곹깭: %s | %s",
+                "[AutoBackfill] run_once_nonblocking — 상태: %s | %s",
                 BackfillStartResult.STARTED.value,
                 BackfillStartResult.STARTED.description,
             )
@@ -910,7 +910,7 @@ class AutoBackfillManager:
         except Exception as e:
             with self._lock:
                 self._running = False
-            self.last_error_reason = f"Gap ?먯? ?뚯빱 ?ㅻ젅???쒖옉 ?ㅽ뙣: {type(e).__name__}: {e}"
+            self.last_error_reason = f"Gap 탐지 워커 스레드 시작 실패: {type(e).__name__}: {e}"
             self.log.exception("[AutoBackfill] Failed to start non-blocking backfill thread")
             return _set(BackfillStartResult.THREAD_START_FAILED)
 
@@ -922,14 +922,14 @@ class AutoBackfillManager:
         return bool(self._waiting)
 
     # --------------------------
-    # 二쇨린 ?ㅽ뻾 (二쇨린 ?쒖옉 ??readiness 泥댄겕)
+    # 주기 실행 (주기 시작 전 readiness 체크)
     # --------------------------
     def _periodic_loop(self, interval_seconds: int):
         self.log.debug("[AutoBackfill] Periodic loop started (interval=%ss)", interval_seconds)
         while not self._stop_event.wait(interval_seconds):
             try:
-                # ?щ낵 泥댄겕 ?놁씠 ??긽 gap ?먯? ?ㅽ뻾 ??gap_finder 媛 DB 湲곗? ?щ낵??吏곸젒 議고쉶?⑸땲??
-                # static 紐⑤뱢???щ낵???깅줉?섏? ?딆? UI ?꾩슜 ?ㅽ뻾 ?섍꼍?먯꽌???숈옉?⑸땲??
+                # 심볼 체크 없이 항상 gap 탐지 실행 — gap_finder 가 DB 기준 심볼을 직접 조회합니다.
+                # static 모듈에 심볼이 등록되지 않은 UI 전용 실행 환경에서도 동작합니다.
                 self._run_gap_detection_sync()
             except Exception:
                 self.log.exception("[AutoBackfill] exception in periodic loop")
@@ -1045,7 +1045,7 @@ class AutoBackfillManager:
             self.log.info("[AutoBackfill] shutdown completed")
 
     # --------------------------
-    # 蹂댁“ API: ??湲몄씠 諛??ㅻ깄??議고쉶
+    # 보조 API: 큐 길이 및 스냅샷 조회
     # --------------------------
     def get_queue_length(self) -> int:
         try:
@@ -1075,8 +1075,8 @@ class AutoBackfillManager:
             candidates = (
                 "src.data.timescale.timescale_db",
                 "data.timescale.timescale_db",
-                "src.data_01.timescale.timescale_db",
-                "data_01.timescale.timescale_db",
+                "src.02_data.timescale.timescale_db",
+                "02_data.timescale.timescale_db",
             )
             for p in candidates:
                 try:
@@ -1124,8 +1124,8 @@ class AutoBackfillManager:
 
 
 # --------------------------
-# ?⑺넗由?諛??깅줉 ?ы띁 (紐⑤뱢 ?덈꺼 ?⑥닔)
-# - import ???대뼡 ?몄뒪?댁뒪???앹꽦/?쒖옉?섏? ?딆뒿?덈떎.
+# 팩토리 및 등록 헬퍼 (모듈 레벨 함수)
+# - import 시 어떤 인스턴스도 생성/시작하지 않습니다.
 # --------------------------
 def create_auto_backfill_manager(
     static: Optional[Any] = None,
@@ -1135,9 +1135,9 @@ def create_auto_backfill_manager(
     ready_poll_interval: float = 1.0,
 ) -> Optional[AutoBackfillManager]:
     """
-    AutoBackfillManager ?몄뒪?댁뒪瑜??앹꽦?섏뿬 諛섑솚?⑸땲??
-    - static???쒓났?섎㈃ register_auto_backfill_manager瑜??쒕룄?⑸땲??
-    - ?몄뒪?댁뒪???앹꽦留??섎ŉ ?먮룞 ?쒖옉?섏? ?딆뒿?덈떎.
+    AutoBackfillManager 인스턴스를 생성하여 반환합니다.
+    - static이 제공되면 register_auto_backfill_manager를 시도합니다.
+    - 인스턴스는 생성만 하며 자동 시작하지 않습니다.
     """
     try:
         mgr = AutoBackfillManager(
@@ -1161,14 +1161,14 @@ def create_auto_backfill_manager(
 
 def register_auto_backfill_manager(mgr: AutoBackfillManager, static: Optional[Any] = None) -> bool:
     """
-    mgr瑜?static???덉쟾???깅줉?⑸땲??
-    諛섑솚媛? ?깅줉?덉쑝硫?True, ?대? ?깅줉?섏뼱 ?덇굅???ㅽ뙣?섎㈃ False.
+    mgr를 static에 안전히 등록합니다.
+    반환값: 등록했으면 True, 이미 등록되어 있거나 실패하면 False.
     """
     if mgr is None:
         return False
     target_static = static
     if target_static is None:
-        # ?먯깋
+        # 탐색
         candidates = ("src.11_server.app.static", "11_server.app.static", "app.static", "static", "src.app.static")
         for name in candidates:
             try:
@@ -1183,7 +1183,7 @@ def register_auto_backfill_manager(mgr: AutoBackfillManager, static: Optional[An
 
     existing = getattr(target_static, "auto_backfill_manager", None) or getattr(target_static, "AutoBackfillManager", None)
     if existing:
-        logging.getLogger(DEFAULT_LOGGER_NAME).debug("[AutoBackfill] AutoBackfillManager already registered on static ??skipping duplicate registration")
+        logging.getLogger(DEFAULT_LOGGER_NAME).debug("[AutoBackfill] AutoBackfillManager already registered on static — skipping duplicate registration")
         return False
 
     try:
@@ -1204,7 +1204,7 @@ def register_auto_backfill_manager(mgr: AutoBackfillManager, static: Optional[An
 
 def get_registered_auto_backfill_manager(static: Optional[Any] = None) -> Optional[AutoBackfillManager]:
     """
-    static?먯꽌 ?깅줉??AutoBackfillManager瑜?諛섑솚?⑸땲???놁쑝硫?None).
+    static에서 등록된 AutoBackfillManager를 반환합니다(없으면 None).
     """
     target_static = static
     if target_static is None:
@@ -1219,4 +1219,3 @@ def get_registered_auto_backfill_manager(static: Optional[Any] = None) -> Option
     if target_static is None:
         return None
     return getattr(target_static, "auto_backfill_manager", None) or getattr(target_static, "AutoBackfillManager", None)
-

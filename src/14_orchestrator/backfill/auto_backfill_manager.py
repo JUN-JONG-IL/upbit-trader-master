@@ -1,9 +1,9 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-?먮룞 諛깊븘 愿由ш린 (Gap 泥섎━ ?꾨떞)
+자동 백필 관리기 (Gap 처리 전담)
 
-Gap 寃異???REST API 諛깊븘 ??candles ?뚯씠釉??????gap_fill_queue ?곹깭 媛깆떊
+Gap 검출 → REST API 백필 → candles 테이블 저장 → gap_fill_queue 상태 갱신
 """
 from __future__ import annotations
 
@@ -14,55 +14,55 @@ from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger("auto_backfill_manager")
 
-# ??????????????????????????????????????????????????????????????????????
-# Upbit ?쒓컙? ?곸닔 ??pyupbit get_ohlcv 媛 `to` ?몄옄瑜?naive 臾몄옄?대줈
-# 蹂?섑븯硫댁꽌 TZ ?뺣낫瑜??쇨퀬 蹂대궡誘濡? ?쒕쾭????긽 KST 濡??댁꽍?쒕떎.
-# UTC datetime ??KST naive 臾몄옄??蹂?????ъ슜.
-# ??????????????????????????????????????????????????????????????????????
+# ──────────────────────────────────────────────────────────────────────
+# Upbit 시간대 상수 — pyupbit get_ohlcv 가 `to` 인자를 naive 문자열로
+# 변환하면서 TZ 정보를 떼고 보내므로, 서버는 항상 KST 로 해석한다.
+# UTC datetime → KST naive 문자열 변환 시 사용.
+# ──────────────────────────────────────────────────────────────────────
 _KST = timezone(timedelta(hours=9))
 
 __all__ = ["AutoBackfillManager"]
 
 
 class AutoBackfillManager:
-    """Gap 1嫄댁쓣 泥섎━?섎뒗 諛깊븘 愿由ъ옄."""
+    """Gap 1건을 처리하는 백필 관리자."""
 
     def __init__(self, logger: Optional[logging.Logger] = None) -> None:
         self.log = logger or logging.getLogger("auto_backfill_manager")
-        # 遺꾨쪟 移댁슫?????ъ씠??泥섎━ 以?遺꾧린蹂?寃곌낵 吏묎퀎??(UI 硫붿떆吏 紐낇솗??.
-        # ?몄텧?먭? ?ъ씠???쒖옉 ??reset_classification() ?쇰줈 珥덇린?뷀븳??
+        # 분류 카운터 — 사이클 처리 중 분기별 결과 집계용 (UI 메시지 명확화).
+        # 호출자가 사이클 시작 시 reset_classification() 으로 초기화한다.
         self.classification: Dict[str, int] = {
-            "rate_limit_requeued": 0,  # ?덉씠?몃━諛?異붿젙 ??pending ?좎?(?ъ떆???湲?
-            "empty_no_data": 0,        # ?곗씠???놁쓬 (?쇱떆 ?μ븷 異붿젙) ??failed (retry 媛??
-            "no_listing": 0,           # 30??珥덇낵 媛?+ 鍮?DF ???곸옣 ??遺꾨쪟 (do_not_retry)
-            "exception": 0,            # 泥섎━ 以??덉쇅 諛쒖깮 ??failed
-            "success": 0,              # ?뺤긽 ?????resolved
+            "rate_limit_requeued": 0,  # 레이트리밋 추정 → pending 유지(재시도 대기)
+            "empty_no_data": 0,        # 데이터 없음 (일시 장애 추정) → failed (retry 가능)
+            "no_listing": 0,           # 30일 초과 갭 + 빈 DF → 상장 전 분류 (do_not_retry)
+            "exception": 0,            # 처리 중 예외 발생 → failed
+            "success": 0,              # 정상 저장 → resolved
         }
 
     def reset_classification(self) -> None:
-        """?ㅼ쓬 ?ъ씠???쒖옉 ??移댁슫?곕? 0?쇰줈 珥덇린??"""
+        """다음 사이클 시작 전 카운터를 0으로 초기화."""
         for k in self.classification:
             self.classification[k] = 0
 
     def classification_summary(self) -> str:
-        """?ъ슜?먯뿉寃??몄텧????以??붿빟 硫붿떆吏 (?섏튂 0????ぉ ?앸왂)."""
+        """사용자에게 노출할 한 줄 요약 메시지 (수치 0인 항목 생략)."""
         c = self.classification
         parts: List[str] = []
         if c.get("success", 0) > 0:
-            parts.append(f"?깃났 {c['success']}嫄?)
+            parts.append(f"성공 {c['success']}건")
         if c.get("rate_limit_requeued", 0) > 0:
-            parts.append(f"?ъ떆???湲?{c['rate_limit_requeued']}嫄??덉씠?몃━諛?")
+            parts.append(f"재시도 대기 {c['rate_limit_requeued']}건(레이트리밋)")
         if c.get("empty_no_data", 0) > 0:
-            parts.append(f"?곗씠???놁쓬 {c['empty_no_data']}嫄?)
+            parts.append(f"데이터 없음 {c['empty_no_data']}건")
         if c.get("no_listing", 0) > 0:
-            parts.append(f"?곸옣 ??{c['no_listing']}嫄?do_not_retry)")
+            parts.append(f"상장 전 {c['no_listing']}건(do_not_retry)")
         if c.get("exception", 0) > 0:
-            parts.append(f"?덉쇅 {c['exception']}嫄?)
-        return ", ".join(parts) if parts else "泥섎━ 寃곌낵 ?놁쓬"
+            parts.append(f"예외 {c['exception']}건")
+        return ", ".join(parts) if parts else "처리 결과 없음"
 
     @staticmethod
     def _gap_age_days(start: Any) -> Optional[float]:
-        """gap_start ?쒓컖???꾩옱(UTC)濡쒕???紐????꾩씤吏 怨꾩궛. ?ㅽ뙣 ??None."""
+        """gap_start 시각이 현재(UTC)로부터 몇 일 전인지 계산. 실패 시 None."""
         try:
             dt = AutoBackfillManager._to_utc_datetime(start)
             if dt is None:
@@ -74,7 +74,7 @@ class AutoBackfillManager:
 
     @staticmethod
     def _to_utc_datetime(value: Any) -> Optional[datetime]:
-        """?낅젰 ?쒓컙??UTC aware datetime?쇰줈 ?뺢퇋?뷀빀?덈떎."""
+        """입력 시간을 UTC aware datetime으로 정규화합니다."""
         try:
             if value is None:
                 return None
@@ -107,13 +107,13 @@ class AutoBackfillManager:
 
     async def _process_one_gap(self, gap: Dict) -> bool:
         """
-        Gap 1嫄?泥섎━ (諛깊븘 ??寃利???candles ???
+        Gap 1건 처리 (백필 → 검증 → candles 저장)
 
         Args:
-            gap: Gap ?뺣낫 (symbol, gap_start, gap_end, gap_seconds)
+            gap: Gap 정보 (symbol, gap_start, gap_end, gap_seconds)
 
         Returns:
-            bool: 泥섎━ ?깃났 ?щ?
+            bool: 처리 성공 여부
         """
         symbol = gap.get("symbol", "")
         timeframe = gap.get("timeframe", "1m")
@@ -121,59 +121,59 @@ class AutoBackfillManager:
         end = gap.get("gap_end")
 
         try:
-            self.log.info("[AutoBackfill] Gap 泥섎━ ?쒖옉: %s (%s ~ %s)", symbol, start, end)
+            self.log.info("[AutoBackfill] Gap 처리 시작: %s (%s ~ %s)", symbol, start, end)
 
-            # 1?④퀎: Upbit REST API濡?罹붾뱾 議고쉶
+            # 1단계: Upbit REST API로 캔들 조회
             fetch_result = await self._fetch_candles(symbol=symbol, start=start, end=end, interval=timeframe)
             if isinstance(fetch_result, tuple):
                 candles, last_error_kind = fetch_result
-            else:  # ?명솚?? 怨쇨굅 ?뺥깭(list留?諛섑솚) ?鍮?
+            else:  # 호환성: 과거 형태(list만 반환) 대비
                 candles, last_error_kind = fetch_result, None
 
             if not candles:
-                # ?덉씠?몃━諛??ㅽ듃?뚰겕 異붿젙 ??'pending' ?좎? + retry_count 利앷? (?ы걧)
+                # 레이트리밋/네트워크 추정 시 'pending' 유지 + retry_count 증가 (재큐)
                 if last_error_kind == "rate_limit":
                     self.log.warning(
-                        "[AutoBackfill] %s/%s: ?덉씠?몃━諛?異붿젙 ???ъ떆???먮줈 ?좎?", symbol, timeframe,
+                        "[AutoBackfill] %s/%s: 레이트리밋 추정 — 재시도 큐로 유지", symbol, timeframe,
                     )
                     await self._requeue_pending(gap, "rate_limit")
                     self.classification["rate_limit_requeued"] = (
                         self.classification.get("rate_limit_requeued", 0) + 1
                     )
                     return False
-                # 鍮?寃곌낵 ??媛??곕졊???곕씪 遺꾨쪟:
-                #  ??30??珥덇낵 媛?+ 鍮?DF: ?곸옣 ???먮뒗 ?곸옣 ?먯?) 媛?μ꽦 ?믪쓬
-                #    ??do_not_retry=true 濡?留덊궧?섏뿬 ?ы걧??李⑤떒
-                #  ??30???대궡 媛?+ 鍮?DF: ?쇱떆 ?μ븷 媛?μ꽦 ???쇰컲 failed (retry_count ?꾩쟻)
+                # 빈 결과 — 갭 연령에 따라 분류:
+                #  • 30일 초과 갭 + 빈 DF: 상장 전(또는 상장 폐지) 가능성 높음
+                #    → do_not_retry=true 로 마킹하여 재큐잉 차단
+                #  • 30일 이내 갭 + 빈 DF: 일시 장애 가능성 → 일반 failed (retry_count 누적)
                 gap_age_days = self._gap_age_days(start)
                 if gap_age_days is not None and gap_age_days > 30:
                     self.log.warning(
-                        "[AutoBackfill] %s/%s: 30??珥덇낵 媛?뿉???곗씠???놁쓬 ???곸옣 ?꾩쑝濡?遺꾨쪟(do_not_retry)",
+                        "[AutoBackfill] %s/%s: 30일 초과 갭에서 데이터 없음 — 상장 전으로 분류(do_not_retry)",
                         symbol, timeframe,
                     )
                     await self._update_queue_status(
-                        gap, "failed", "諛깊븘 ?곗씠???놁쓬 (30??珥덇낵 ???곸옣 ??異붿젙)", 0,
+                        gap, "failed", "백필 데이터 없음 (30일 초과 — 상장 전 추정)", 0,
                         do_not_retry=True,
                     )
                     self.classification["no_listing"] = (
                         self.classification.get("no_listing", 0) + 1
                     )
                 else:
-                    self.log.warning("[AutoBackfill] %s: 諛깊븘 ?곗씠???놁쓬", symbol)
-                    await self._update_queue_status(gap, "failed", "諛깊븘 ?곗씠???놁쓬", 0)
+                    self.log.warning("[AutoBackfill] %s: 백필 데이터 없음", symbol)
+                    await self._update_queue_status(gap, "failed", "백필 데이터 없음", 0)
                     self.classification["empty_no_data"] = (
                         self.classification.get("empty_no_data", 0) + 1
                     )
                 return False
 
-            # 2?④퀎: candles ?뚯씠釉????
+            # 2단계: candles 테이블 저장
             success_count = await self._write_candles(candles)
 
-            # 3?④퀎: gap_fill_queue ?곹깭 ?낅뜲?댄듃
+            # 3단계: gap_fill_queue 상태 업데이트
             await self._update_queue_status(gap, "resolved", None, success_count)
 
             self.log.info(
-                "[AutoBackfill] Gap 泥섎━ ?꾨즺: %s (%d媛?罹붾뱾 ???", symbol, success_count
+                "[AutoBackfill] Gap 처리 완료: %s (%d개 캔들 저장)", symbol, success_count
             )
             self.classification["success"] = (
                 self.classification.get("success", 0) + 1
@@ -182,7 +182,7 @@ class AutoBackfillManager:
 
         except Exception as e:
             self.log.error(
-                "[AutoBackfill] Gap 泥섎━ ?ㅽ뙣: %s - %s", symbol, e, exc_info=True
+                "[AutoBackfill] Gap 처리 실패: %s - %s", symbol, e, exc_info=True
             )
             try:
                 await self._update_queue_status(gap, "failed", str(e)[:500], 0)
@@ -202,21 +202,21 @@ class AutoBackfillManager:
         count: int = 200,
     ) -> Tuple[List[Dict[str, Any]], Optional[str]]:
         """
-        Upbit REST API?먯꽌 罹붾뱾 ?곗씠??議고쉶
+        Upbit REST API에서 캔들 데이터 조회
 
         Returns:
             (candles, last_error_kind):
-              - candles: 罹붾뱾 ?곗씠??紐⑸줉
-              - last_error_kind: None | "rate_limit" | "network" ??鍮?寃곌낵???먯씤 遺꾨쪟
-                (?몄텧遺?먯꽌 ?ы걧 vs failed 援щ텇???ъ슜)
+              - candles: 캔들 데이터 목록
+              - last_error_kind: None | "rate_limit" | "network" — 빈 결과의 원인 분류
+                (호출부에서 재큐 vs failed 구분에 사용)
         """
-        # 湲濡쒕쾶 limiter / 諛깆삤???좏떥 ??怨듯넻 紐⑤뱢?먯꽌 濡쒕뱶 (?ㅽ뙣 ??臾댁떆)
+        # 글로벌 limiter / 백오프 유틸 — 공통 모듈에서 로드 (실패 시 무시)
         try:
             import importlib.util
             import pathlib
             import sys
             _arl_base = pathlib.Path(__file__).resolve().parents[2]
-            _arl_path = _arl_base / "data_01" / "collectors" / "async_rate_limiter.py"
+            _arl_path = _arl_base / "02_data" / "collectors" / "async_rate_limiter.py"
             _arl_mod = sys.modules.get("_async_rate_limiter")
             if _arl_mod is None and _arl_path.exists():
                 _spec = importlib.util.spec_from_file_location("_async_rate_limiter", str(_arl_path))
@@ -236,13 +236,13 @@ class AutoBackfillManager:
             try:
                 import aiopyupbit  # type: ignore
             except Exception:
-                self.log.warning("[AutoBackfill] aiopyupbit ?놁쓬 - 罹붾뱾 議고쉶 遺덇?")
+                self.log.warning("[AutoBackfill] aiopyupbit 없음 - 캔들 조회 불가")
                 return [], "network"
 
             start_dt = self._to_utc_datetime(start)
             end_dt = self._to_utc_datetime(end)
             if start_dt is None or end_dt is None:
-                self.log.warning("[AutoBackfill] 鍮꾩젙??gap ?쒓컙媛? start=%s end=%s", start, end)
+                self.log.warning("[AutoBackfill] 비정상 gap 시간값: start=%s end=%s", start, end)
                 return [], None
             if start_dt > end_dt:
                 start_dt, end_dt = end_dt, start_dt
@@ -264,20 +264,20 @@ class AutoBackfillManager:
             candles: List[Dict[str, Any]] = []
             seen_times = set()
             cursor = end_dt + timedelta(seconds=1)
-            # ??????????????????????????????????????????????????????????????
-            # ?뵩 [洹쇰낯 ?먯씤 ?섏젙 ??5踰덉쓽 ?쒕룄媛 紐⑤몢 ?ㅽ뙣???댁쑀]
-            # pyupbit `get_ohlcv` ??`to` ?몄옄瑜?諛쏆쑝硫??대??먯꽌
-            #   pd.to_datetime(to).to_pydatetime() ??strftime("%Y-%m-%d %H:%M:%S")
-            # 濡?**TZ ?뺣낫瑜??쇨퀬 naive 臾몄옄??*濡?Upbit ?쒕쾭???꾩넚?쒕떎.
-            # Upbit ?쒕쾭??naive ?쒓컖??**KST 濡??댁꽍**?섎?濡? UTC `cursor` 瑜?
-            # 洹몃?濡?蹂대궡硫??쒕쾭媛 +9 ?쒓컙 誘몃옒濡??몄떇?섏뿬 紐⑤뱺 ?щ낵?먯꽌
-            # 鍮?DataFrame ??諛섑솚?쒕떎.
-            # ???곕씪??cursor 瑜?KST 濡?蹂?섑븳 ??naive ?뺤떇?쇰줈 ?꾨떖?댁빞 ?쒕떎.
-            # 紐⑤뱢 ?곸닔 `_KST` ?ъ슜 (?뚯씪 ?곷떒 ?뺤쓽).
-            # 李몄“: pyupbit/quotation_api.py get_ohlcv() ??to 泥섎━ 濡쒖쭅
-            # ??????????????????????????????????????????????????????????????
+            # ──────────────────────────────────────────────────────────────
+            # 🔧 [근본 원인 수정 — 5번의 시도가 모두 실패한 이유]
+            # pyupbit `get_ohlcv` 는 `to` 인자를 받으면 내부에서
+            #   pd.to_datetime(to).to_pydatetime() → strftime("%Y-%m-%d %H:%M:%S")
+            # 로 **TZ 정보를 떼고 naive 문자열**로 Upbit 서버에 전송한다.
+            # Upbit 서버는 naive 시각을 **KST 로 해석**하므로, UTC `cursor` 를
+            # 그대로 보내면 서버가 +9 시간 미래로 인식하여 모든 심볼에서
+            # 빈 DataFrame 이 반환된다.
+            # → 따라서 cursor 를 KST 로 변환한 뒤 naive 형식으로 전달해야 한다.
+            # 모듈 상수 `_KST` 사용 (파일 상단 정의).
+            # 참조: pyupbit/quotation_api.py get_ohlcv() 의 to 처리 로직
+            # ──────────────────────────────────────────────────────────────
             # max_pages: SSOT(`backfill_scheduler.performance.max_pages_per_gap`)
-            # ???섍꼍蹂????湲곕낯 100. UI ?ㅼ씠?쇰줈洹몄뿉??10~500 踰붿쐞 ??議곗젙 媛??
+            # → 환경변수 → 기본 100. UI 다이얼로그에서 10~500 범위 내 조정 가능.
             try:
                 from .performance_settings import get_max_pages_per_gap
                 max_pages = int(get_max_pages_per_gap())
@@ -286,11 +286,11 @@ class AutoBackfillManager:
             max_pages = max(10, min(max_pages, 500))
 
             for _ in range(max_pages):
-                # cursor(UTC) ??KST 蹂????naive 臾몄옄?대줈 ?꾨떖 (Upbit ?쒕쾭??KST ?댁꽍)
+                # cursor(UTC) → KST 변환 후 naive 문자열로 전달 (Upbit 서버는 KST 해석)
                 cursor_kst = cursor.astimezone(_KST)
                 to_str = cursor_kst.strftime("%Y-%m-%d %H:%M:%S")
 
-                # 湲濡쒕쾶 ?덉씠?몃━諛?+ 吏??諛깆삤???ъ떆??
+                # 글로벌 레이트리밋 + 지수 백오프 재시도
                 df = None
                 page_error_kind: Optional[str] = None
                 for attempt in range(len(backoffs) + 1):
@@ -309,14 +309,14 @@ class AutoBackfillManager:
                         if callable(is_rl_error) and is_rl_error(exc) and attempt < len(backoffs):
                             delay = backoffs[attempt]
                             self.log.info(
-                                "[AutoBackfill] %s/%s ?덉씠?몃━諛?媛먯? ??%.1fs ???ъ떆??%d/%d)",
+                                "[AutoBackfill] %s/%s 레이트리밋 감지 — %.1fs 후 재시도(%d/%d)",
                                 symbol, interval, delay, attempt + 1, len(backoffs),
                             )
                             await asyncio.sleep(delay)
                             page_error_kind = "rate_limit"
                             continue
                         self.log.debug(
-                            "[AutoBackfill] %s/%s get_ohlcv ?덉쇅: %s", symbol, interval, exc
+                            "[AutoBackfill] %s/%s get_ohlcv 예외: %s", symbol, interval, exc
                         )
                         page_error_kind = "rate_limit" if (callable(is_rl_error) and is_rl_error(exc)) else "network"
                         df = None
@@ -364,16 +364,16 @@ class AutoBackfillManager:
             candles.sort(key=lambda x: x.get("time"))
             return candles, last_error_kind
         except Exception as e:
-            self.log.error("[AutoBackfill] 罹붾뱾 議고쉶 ?ㅽ뙣: %s", e)
+            self.log.error("[AutoBackfill] 캔들 조회 실패: %s", e)
             kind = "rate_limit" if (callable(is_rl_error) and is_rl_error(e)) else "network"
             return [], kind
 
     async def _write_candles(self, candles: List[Dict[str, Any]]) -> int:
         """
-        candles ?뚯씠釉붿뿉 吏곸젒 ???(CandleWriter ?ъ슜)
+        candles 테이블에 직접 저장 (CandleWriter 사용)
 
         Returns:
-            int: ????깃났 嫄댁닔
+            int: 저장 성공 건수
         """
         if not candles:
             return 0
@@ -383,7 +383,7 @@ class AutoBackfillManager:
             import sys
 
             _base = pathlib.Path(__file__).resolve().parents[2]
-            _ts_db_path = _base / "data_01" / "timescale" / "timescale_db.py"
+            _ts_db_path = _base / "02_data" / "timescale" / "timescale_db.py"
             _mod = sys.modules.get("_timescale_db")
             if _mod is None and _ts_db_path.exists():
                 _spec = importlib.util.spec_from_file_location("_timescale_db", str(_ts_db_path))
@@ -393,12 +393,12 @@ class AutoBackfillManager:
                     _spec.loader.exec_module(_mod)
             TimescaleConnector = getattr(_mod, "TimescaleConnector", None) if _mod else None
             if TimescaleConnector is None:
-                self.log.warning("[AutoBackfill] TimescaleConnector ?놁쓬 - 罹붾뱾 ???遺덇?")
+                self.log.warning("[AutoBackfill] TimescaleConnector 없음 - 캔들 저장 불가")
                 return 0
 
             conn = TimescaleConnector()
             if not conn.connect() or not conn.conn or conn.conn.closed:
-                self.log.warning("[AutoBackfill] TimescaleDB ?곌껐 ?ㅽ뙣 - 罹붾뱾 ???遺덇?")
+                self.log.warning("[AutoBackfill] TimescaleDB 연결 실패 - 캔들 저장 불가")
                 return 0
 
             grouped: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
@@ -415,10 +415,10 @@ class AutoBackfillManager:
                     inserted = conn.write_candles(sym, tf, items, exchange="upbit")
                     success_count += int(inserted or 0)
                 except Exception as e:
-                    self.log.debug("[AutoBackfill] write_candles ?ㅽ뙣 (%s/%s): %s", sym, tf, e)
+                    self.log.debug("[AutoBackfill] write_candles 실패 (%s/%s): %s", sym, tf, e)
             return success_count
         except Exception as e:
-            self.log.error("[AutoBackfill] 罹붾뱾 ?곌린 ?ㅽ뙣: %s", e)
+            self.log.error("[AutoBackfill] 캔들 쓰기 실패: %s", e)
             return 0
 
     async def _update_queue_status(
@@ -429,12 +429,12 @@ class AutoBackfillManager:
         filled_candles: int,
         do_not_retry: bool = False,
     ) -> None:
-        """gap_fill_queue ?뚯씠釉??곹깭 ?낅뜲?댄듃.
+        """gap_fill_queue 테이블 상태 업데이트.
 
         Args:
-            do_not_retry: True 硫?do_not_retry=true 濡?留덊궧?섏뿬 GapFinder 媛
-                ?숈씪 (symbol, timeframe, gap_start) 媛?쓣 ?ㅼ떆 ?먯뿉 ?ｌ? 紐삵븯寃??쒕떎.
-                (?곸옣 ???먯? 異붿젙 ???ъ슜)
+            do_not_retry: True 면 do_not_retry=true 로 마킹하여 GapFinder 가
+                동일 (symbol, timeframe, gap_start) 갭을 다시 큐에 넣지 못하게 한다.
+                (상장 전/폐지 추정 시 사용)
         """
         symbol = gap.get("symbol", "")
         timeframe = gap.get("timeframe", "1m")
@@ -444,7 +444,7 @@ class AutoBackfillManager:
         try:
             import importlib.util, pathlib, sys
             _base = pathlib.Path(__file__).resolve().parents[2]
-            _ts_db_path = _base / "data_01" / "timescale" / "timescale_db.py"
+            _ts_db_path = _base / "02_data" / "timescale" / "timescale_db.py"
             _mod = sys.modules.get("_timescale_db")
             if _mod is None and _ts_db_path.exists():
                 _spec = importlib.util.spec_from_file_location("_timescale_db", str(_ts_db_path))
@@ -469,8 +469,8 @@ class AutoBackfillManager:
                 )
                 params = (filled_candles, symbol, timeframe, start, end)
             else:
-                # do_not_retry=true ??寃쎌슦 而щ읆??議댁옱?섎㈃ ?④퍡 ?낅뜲?댄듃.
-                # (援??ㅽ궎留덉뿉??而щ읆 遺?????덉쇅 ???대갚?쇰줈 而щ읆 ?놁씠 ?ъ떆??
+                # do_not_retry=true 인 경우 컬럼이 존재하면 함께 업데이트.
+                # (구 스키마에서 컬럼 부재 시 예외 → 폴백으로 컬럼 없이 재시도)
                 if do_not_retry:
                     sql = (
                         "UPDATE gap_fill_queue "
@@ -490,8 +490,8 @@ class AutoBackfillManager:
                     cur.execute(sql, params)
                 conn.conn.commit()
             except Exception as ie:
-                # do_not_retry 而щ읆???녿뒗 援??ㅽ궎留??대갚 (psycopg2 UndefinedColumn ?곗꽑 寃??
-                # ?쇱씠釉뚮윭由?媛?⑹꽦 李⑥씠瑜?怨좊젮??臾몄옄??留ㅼ묶??蹂댁“ ?좏샇濡??ъ슜)
+                # do_not_retry 컬럼이 없는 구 스키마 폴백 (psycopg2 UndefinedColumn 우선 검사,
+                # 라이브러리 가용성 차이를 고려해 문자열 매칭도 보조 신호로 사용)
                 _is_undefined_column = False
                 try:
                     import psycopg2.errors as _pgerr  # type: ignore
@@ -500,7 +500,7 @@ class AutoBackfillManager:
                 except Exception:
                     pass
                 if not _is_undefined_column:
-                    # ?대갚 ?좏샇: pgcode '42703' ?먮뒗 硫붿떆吏??而щ읆紐??ы븿
+                    # 폴백 신호: pgcode '42703' 또는 메시지에 컬럼명 포함
                     pgcode = getattr(ie, "pgcode", None)
                     if pgcode == "42703" or "do_not_retry" in str(ie):
                         _is_undefined_column = True
@@ -518,20 +518,20 @@ class AutoBackfillManager:
                         cur.execute(fb_sql, params)
                     conn.conn.commit()
                     self.log.debug(
-                        "[AutoBackfill] do_not_retry 而щ읆 誘몄〈?????쇰컲 failed ?대갚 (00_schema.sql 留덉씠洹몃젅?댁뀡 ?꾩슂)"
+                        "[AutoBackfill] do_not_retry 컬럼 미존재 — 일반 failed 폴백 (00_schema.sql 마이그레이션 필요)"
                     )
                 else:
                     raise
         except Exception as e:
-            self.log.debug("[AutoBackfill] ???곹깭 ?낅뜲?댄듃 ?ㅽ뙣: %s", e)
+            self.log.debug("[AutoBackfill] 큐 상태 업데이트 실패: %s", e)
 
     async def _requeue_pending(self, gap: Dict, reason: str) -> None:
-        """?덉씠?몃━諛??쇱떆 ?μ븷濡?鍮?寃곌낵媛 ?섏삩 gap ??'pending' ?쇰줈 ?좎??섍퀬
-        ``retry_count`` 瑜?1 利앷??쒗궓?? ?ㅼ쓬 ?ㅼ?以꾨윭 ?ъ씠?댁뿉???ъ떆?꾨맂??
+        """레이트리밋/일시 장애로 빈 결과가 나온 gap 을 'pending' 으로 유지하고
+        ``retry_count`` 를 1 증가시킨다. 다음 스케줄러 사이클에서 재시도된다.
 
         Args:
-            gap: gap ?뺣낫
-            reason: ?ы걧 ?ъ쑀 (error_message ??湲곕줉)
+            gap: gap 정보
+            reason: 재큐 사유 (error_message 에 기록)
         """
         symbol = gap.get("symbol", "")
         timeframe = gap.get("timeframe", "1m")
@@ -542,7 +542,7 @@ class AutoBackfillManager:
             import pathlib
             import sys
             _base = pathlib.Path(__file__).resolve().parents[2]
-            _ts_db_path = _base / "data_01" / "timescale" / "timescale_db.py"
+            _ts_db_path = _base / "02_data" / "timescale" / "timescale_db.py"
             _mod = sys.modules.get("_timescale_db")
             if _mod is None and _ts_db_path.exists():
                 _spec = importlib.util.spec_from_file_location("_timescale_db", str(_ts_db_path))
@@ -569,5 +569,4 @@ class AutoBackfillManager:
                 cur.execute(sql, params)
             conn.conn.commit()
         except Exception as e:
-            self.log.debug("[AutoBackfill] ???ы걧 ?ㅽ뙣: %s", e)
-
+            self.log.debug("[AutoBackfill] 큐 재큐 실패: %s", e)

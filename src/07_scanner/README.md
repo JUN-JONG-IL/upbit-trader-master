@@ -1,65 +1,65 @@
-﻿# CHANGELOG
-# 2026-03-16 | Copilot | ?낃렇?덉씠?? 07_scanner README v4.0. 踰꾩쟾 ?듭씪.
-# 2026-03-13 | Copilot | ?낃렇?덉씠?? 07_scanner scanner/ ??engine/ 蹂寃?
-# 2026-03-06 | Copilot | ?앹꽦: 07_scanner README 珥덉븞
+# CHANGELOG
+# 2026-03-16 | Copilot | 업그레이드: 07_scanner README v4.0. 버전 통일.
+# 2026-03-13 | Copilot | 업그레이드: 07_scanner scanner/ → engine/ 변경.
+# 2026-03-06 | Copilot | 생성: 07_scanner README 초안
 
 Version: v4.0
 Last Modified: 2026-03-16
 References:
-  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
-  - work_order/DB?ㅺ퀎.md
+  - work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md
+  - work_order/DB설계.md
 
-# 07_scanner - 醫낅ぉ ?ㅼ틦??紐⑤뱢
+# 07_scanner - 종목 스캐너 모듈
 
-## 媛쒖슂
+## 개요
 
-`07_scanner`??Upbit 嫄곕옒???꾩껜 醫낅ぉ???ㅼ떆媛꾩쑝濡??ㅼ틪?섏뿬 ?ъ슜?먭? ?뺤쓽??議곌굔??留욌뒗 醫낅ぉ???먮룞?쇰줈 李얠븘二쇰뒗 紐⑤뱢?낅땲??
+`07_scanner`는 Upbit 거래소 전체 종목을 실시간으로 스캔하여 사용자가 정의한 조건에 맞는 종목을 자동으로 찾아주는 모듈입니다.
 
 ---
 
-## ?대뜑 援ъ“
+## 폴더 구조
 
 ```
 src/07_scanner/
-?쒋?? __init__.py                    # 紐⑤뱢 吏꾩엯??(?щ끂異?
-?쒋?? README.md                      # ???뚯씪
-?붴?? engine/
-    ?쒋?? __init__.py                # engine ?⑦궎吏 吏꾩엯??
-    ?쒋?? README.md                  # engine ?몃? 臾몄꽌
-    ?쒋?? ui/                        # UI ?덉씠??
-    ?쒋?? logic/                     # 鍮꾩쫰?덉뒪 濡쒖쭅 ?덉씠??
-    ?쒋?? workers/                   # 諛깃렇?쇱슫???뚯빱 ?덉씠??
-    ?쒋?? models/                    # ?곗씠??紐⑤뜽
-    ?쒋?? indicators/                # 湲곗닠 吏??
-    ?쒋?? patterns/                  # ?⑦꽩 ?몄떇
-    ?쒋?? tests/                     # ?⑥쐞 ?뚯뒪??
-    ?붴?? docs/                      # 異붽? 臾몄꽌
+├── __init__.py                    # 모듈 진입점 (재노출)
+├── README.md                      # 이 파일
+└── engine/
+    ├── __init__.py                # engine 패키지 진입점
+    ├── README.md                  # engine 세부 문서
+    ├── ui/                        # UI 레이어
+    ├── logic/                     # 비즈니스 로직 레이어
+    ├── workers/                   # 백그라운드 워커 레이어
+    ├── models/                    # 데이터 모델
+    ├── indicators/                # 기술 지표
+    ├── patterns/                  # 패턴 인식
+    ├── tests/                     # 단위 테스트
+    └── docs/                      # 추가 문서
 ```
 
 ---
 
-## 二쇱슂 湲곕뒫
+## 주요 기능
 
-- **?ㅼ떆媛??ㅼ틦??*: 237媛? 醫낅ぉ ?숈떆 ?ㅼ틪 (蹂묐젹 泥섎━)
-- **湲곗닠??吏??*: MA, EMA, RSI, MACD, Bollinger Bands, Stochastic, ATR, OBV
-- **李⑦듃 ?⑦꽩**: 怨⑤뱺?щ줈?? ?곕뱶?щ줈?? Doji, Hammer, ?쇨컖?섎졃 ??
-- **?꾨━???쒖뒪??*: ?ъ슜???뺤쓽 議곌굔 ???濡쒕뱶 (湲곕낯: 湲곕낯/?⑦????ㅼ쐷??
-- **?꾩쿂由??꾪꽣**: 媛寃??쒓컙/釉붾옓由ъ뒪???꾪꽣
+- **실시간 스캐닝**: 237개+ 종목 동시 스캔 (병렬 처리)
+- **기술적 지표**: MA, EMA, RSI, MACD, Bollinger Bands, Stochastic, ATR, OBV
+- **차트 패턴**: 골든크로스, 데드크로스, Doji, Hammer, 삼각수렴 등
+- **프리셋 시스템**: 사용자 정의 조건 저장/로드 (기본: 기본/단타용/스윙용)
+- **후처리 필터**: 가격/시간/블랙리스트 필터
 
 ---
 
-## 鍮좊Ⅸ ?쒖옉
+## 빠른 시작
 
 ```python
 from src._07_scanner import ScannerEngine, ScannerWorker
 
-# 吏곸젒 ?ㅽ뻾
+# 직접 실행
 import asyncio
 engine = ScannerEngine()
 results = asyncio.run(engine.scan(settings))
 engine.cleanup()
 
-# PyQt5 ?뚯빱濡??ㅽ뻾
+# PyQt5 워커로 실행
 worker = ScannerWorker(settings)
 worker.scan_finished.connect(on_results)
 worker.start()
@@ -67,7 +67,7 @@ worker.start()
 
 ---
 
-## ?뚯뒪???ㅽ뻾
+## 테스트 실행
 
 ```bash
 pytest src/07_scanner/engine/tests/ -v
@@ -75,20 +75,19 @@ pytest src/07_scanner/engine/tests/ -v
 
 ---
 
-## ?섏〈??
+## 의존성
 
-- `src/01_core/` : ?ㅼ젙 愿由? ?대깽??踰꾩뒪 (?ㅼ틪 寃곌낵 ?뚮┝ 諛쒗뻾)
-- `src/data_01/timescale/` : OHLCV 罹붾뱾 ?곗씠??
-- `src/data_01/redis/` : ?ㅼ틪 寃곌낵 罹먯떆
-- `src/13_compute/` : 吏??怨꾩궛 ?붿쭊 (O(1) 利앸텇 怨꾩궛)
-- PyQt5 : UI ?꾩젽 (.ui ?뚯씪 ?ы븿)
-- pandas, numpy : ?곗씠??泥섎━
+- `src/01_core/` : 설정 관리, 이벤트 버스 (스캔 결과 알림 발행)
+- `src/02_data/timescale/` : OHLCV 캔들 데이터
+- `src/02_data/redis/` : 스캔 결과 캐시
+- `src/13_compute/` : 지표 계산 엔진 (O(1) 증분 계산)
+- PyQt5 : UI 위젯 (.ui 파일 포함)
+- pandas, numpy : 데이터 처리
 
-## 李멸퀬 臾몄꽌
+## 참고 문서
 
-- [`engine/docs/ARCHITECTURE.md`](engine/docs/ARCHITECTURE.md) ???ㅼ틦???꾪궎?띿쿂 ?ㅻ챸
-- [`engine/docs/API.md`](engine/docs/API.md) ??API ?덊띁?곗뒪
-- [`engine/docs/EXAMPLES.md`](engine/docs/EXAMPLES.md) ???ъ슜 ?덉젣
-- [`work_order/5_?④퀎_Scanner_Search_?붿쭊.md`](../../work_order/5_?④퀎_Scanner_Search_?붿쭊.md)
-- [`work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md`](../../work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md)
-
+- [`engine/docs/ARCHITECTURE.md`](engine/docs/ARCHITECTURE.md) — 스캐너 아키텍처 설명
+- [`engine/docs/API.md`](engine/docs/API.md) — API 레퍼런스
+- [`engine/docs/EXAMPLES.md`](engine/docs/EXAMPLES.md) — 사용 예제
+- [`work_order/5_단계_Scanner_Search_엔진.md`](../../work_order/5_단계_Scanner_Search_엔진.md)
+- [`work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md`](../../work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md)

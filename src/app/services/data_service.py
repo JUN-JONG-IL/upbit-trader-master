@@ -1,27 +1,27 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
-data_01 紐⑤뱢 ?명꽣?섏씠??
-TimescaleDB / Redis / MongoDB ?곗씠???묎렐 異붿긽??
+02_data 모듈 인터페이스
+TimescaleDB / Redis / MongoDB 데이터 접근 추상화
 """
 from __future__ import annotations
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-_data_dir = str(Path(__file__).parents[3] / "data_01")
+_data_dir = str(Path(__file__).parents[3] / "02_data")
 if _data_dir not in sys.path:
     sys.path.insert(0, _data_dir)
 
 
 class DataService:
-    """data_01 紐⑤뱢 ?쒕퉬???덉씠??""
+    """02_data 모듈 서비스 레이어"""
 
     def __init__(self) -> None:
         self._timescale: Optional[Any] = None
         self._redis: Optional[Any] = None
         self._mongo: Optional[Any] = None
 
-    # ?? TimescaleDB ??????????????????????????????????????????????????????????
+    # ── TimescaleDB ──────────────────────────────────────────────────────────
 
     def get_timescale(self) -> Any:
         if self._timescale is None:
@@ -32,7 +32,7 @@ class DataService:
                 pass
         return self._timescale
 
-    # ?? Redis ????????????????????????????????????????????????????????????????
+    # ── Redis ────────────────────────────────────────────────────────────────
 
     def get_redis(self) -> Any:
         if self._redis is None:
@@ -43,7 +43,7 @@ class DataService:
                 pass
         return self._redis
 
-    # ?? MongoDB ??????????????????????????????????????????????????????????????
+    # ── MongoDB ──────────────────────────────────────────────────────────────
 
     def get_mongo(self) -> Any:
         if self._mongo is None:
@@ -58,7 +58,7 @@ class DataService:
         self, symbol: str, tf: str, limit: int = 200
     ) -> List[Dict[str, Any]]:
         """
-        李⑦듃 ?곗씠??議고쉶 (L1 Redis 罹먯떆 ??TimescaleDB)
+        차트 데이터 조회 (L1 Redis 캐시 → TimescaleDB)
         """
         redis = self.get_redis()
         if redis is not None:
@@ -82,4 +82,3 @@ class DataService:
             except Exception:
                 pass
         return []
-

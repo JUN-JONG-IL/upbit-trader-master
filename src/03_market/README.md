@@ -1,68 +1,68 @@
-﻿# CHANGELOG
-# 2026-03-16 | Copilot | ?낃렇?덉씠?? 03_market README v4.0. ?대뜑紐?coinlist/trades 理쒖떊??
-# 2026-03-13 | Copilot | ?낃렇?덉씠?? 03_market README v3.0. ?쒓뎅???꾩껜 ?쒗뵆由우쑝濡??낃렇?덉씠??
-# 2026-03-05 | Copilot | Restructure: Renamed market ??symbol_list, added trade module
+# CHANGELOG
+# 2026-03-16 | Copilot | 업그레이드: 03_market README v4.0. 폴더명 coinlist/trades 최신화.
+# 2026-03-13 | Copilot | 업그레이드: 03_market README v3.0. 한국어 전체 템플릿으로 업그레이드.
+# 2026-03-05 | Copilot | Restructure: Renamed market → symbol_list, added trade module
 
 Version: v4.0
 Last Modified: 2026-03-16
 References:
-  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
-  - work_order/DB?ㅺ퀎.md
+  - work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md
+  - work_order/DB설계.md
 
-# src/03_market ??留덉폆 ?곗씠??
+# src/03_market — 마켓 데이터
 
-## 媛쒖슂
+## 개요
 
-?낅퉬??嫄곕옒?뚯쓽 **醫낅ぉ 紐⑸줉, ?멸?(?ㅻ뜑遺?, 泥닿껐 ?곗씠?곕? ?ㅼ떆媛꾩쑝濡??쒖떆**?섎뒗 留덉폆 ?곗씠??紐⑤뱢?낅땲??
-WebSocket 諛?REST API瑜??듯빐 ?쒖꽭 ?곗씠?곕? ?섏떊?섍퀬, PyQt5 ?꾩젽?쇰줈 ?쒖떆?⑸땲??
-醫낅ぉ ?좏깮 ?쒓렇?먯쓣 ?듯빐 李⑦듃쨌?ㅼ틦?댟룻듃?덉씠??紐⑤뱢怨??곕룞?⑸땲??
+업비트 거래소의 **종목 목록, 호가(오더북), 체결 데이터를 실시간으로 표시**하는 마켓 데이터 모듈입니다.
+WebSocket 및 REST API를 통해 시세 데이터를 수신하고, PyQt5 위젯으로 표시합니다.
+종목 선택 시그널을 통해 차트·스캐너·트레이드 모듈과 연동됩니다.
 
-## ?붾젆?좊━ 援ъ“
+## 디렉토리 구조
 
 ```
 src/03_market/
-?쒋?? __init__.py                    # 紐⑤뱢 吏꾩엯??
-?쒋?? README.md                      # ???뚯씪
-?쒋?? coinlist/                      # 醫낅ぉ 紐⑸줉 ?쒕툕紐⑤뱢
-??  ?쒋?? __init__.py
-??  ?쒋?? ui/                        # coin_list.ui, favorite.ui, widget_coin_list.py, widget_favorite.py
-??  ?쒋?? logic/                     # 醫낅ぉ ?뺣젹쨌?꾪꽣쨌寃??濡쒖쭅
-??  ??  ?쒋?? formatting/
-??  ??  ?쒋?? scanner/
-??  ??  ?붴?? search/
-??  ?쒋?? services/                  # 醫낅ぉ ?곗씠???쒕퉬??
-??  ?붴?? workers/                   # 諛깃렇?쇱슫??醫낅ぉ ?낅뜲?댄듃 ?뚯빱
-?쒋?? orderbook/                     # ?멸?李??쒕툕紐⑤뱢
-??  ?쒋?? __init__.py
-??  ?쒋?? ui/                        # ?멸?李??꾩젽
-??  ?붴?? logic/                     # ?멸? ?뚯떛쨌?뺢퇋??濡쒖쭅
-?쒋?? trades/                        # 泥닿껐 ?곗씠???쒕툕紐⑤뱢
-??  ?쒋?? __init__.py
-??  ?쒋?? ui/                        # 泥닿껐 ?꾩젽
-??  ?붴?? logic/                     # 泥닿껐 ?곗씠??泥섎━ 濡쒖쭅
-?쒋?? websocket/                     # WebSocket ?대씪?댁뼵??
-?붴?? rest/                          # REST API ?대씪?댁뼵??
+├── __init__.py                    # 모듈 진입점
+├── README.md                      # 이 파일
+├── coinlist/                      # 종목 목록 서브모듈
+│   ├── __init__.py
+│   ├── ui/                        # coin_list.ui, favorite.ui, widget_coin_list.py, widget_favorite.py
+│   ├── logic/                     # 종목 정렬·필터·검색 로직
+│   │   ├── formatting/
+│   │   ├── scanner/
+│   │   └── search/
+│   ├── services/                  # 종목 데이터 서비스
+│   └── workers/                   # 백그라운드 종목 업데이트 워커
+├── orderbook/                     # 호가창 서브모듈
+│   ├── __init__.py
+│   ├── ui/                        # 호가창 위젯
+│   └── logic/                     # 호가 파싱·정규화 로직
+├── trades/                        # 체결 데이터 서브모듈
+│   ├── __init__.py
+│   ├── ui/                        # 체결 위젯
+│   └── logic/                     # 체결 데이터 처리 로직
+├── websocket/                     # WebSocket 클라이언트
+└── rest/                          # REST API 클라이언트
 ```
 
-## 二쇱슂 湲곕뒫
+## 주요 기능
 
-- **醫낅ぉ 紐⑸줉**: ?낅퉬???꾩껜 醫낅ぉ ?쒖떆, ?ㅼ떆媛?媛寃㈑룸??숇쪧쨌嫄곕옒???낅뜲?댄듃
-- **寃?됀룹젙??*: 醫낅ぉ紐?肄붾뱶 寃?? ?ㅼ쨷 湲곗? ?뺣젹
-- **利먭꺼李얘린**: 愿??醫낅ぉ ?깅줉/?댁젣, 利먭꺼李얘린 ??遺꾨━
-- **?멸?李?*: 留ㅼ닔/留ㅻ룄 ?멸? ?ㅼ떆媛??쒖떆, ?붾웾 鍮꾩쑉 ?쒓컖??
-- **泥닿껐 ?댁뿭**: 理쒓렐 泥닿껐媛쨌?섎웾쨌?쒓컙 ?ㅼ떆媛??ㅽ듃由щ컢
-- **醫낅ぉ ?좏깮 ?곕룞**: Qt ?쒓렇?먮줈 李⑦듃쨌?ㅼ틦?댟룻듃?덉씠???꾩젽怨??숆린??
+- **종목 목록**: 업비트 전체 종목 표시, 실시간 가격·변동률·거래량 업데이트
+- **검색·정렬**: 종목명/코드 검색, 다중 기준 정렬
+- **즐겨찾기**: 관심 종목 등록/해제, 즐겨찾기 탭 분리
+- **호가창**: 매수/매도 호가 실시간 표시, 잔량 비율 시각화
+- **체결 내역**: 최근 체결가·수량·시간 실시간 스트리밍
+- **종목 선택 연동**: Qt 시그널로 차트·스캐너·트레이드 위젯과 동기화
 
-## ?ъ슜 ?덉떆
+## 사용 예시
 
 ```python
 from src._03_market import CoinlistWidget, OrderbookWidget, TradeWidget
 
-# ?꾩젽 ?앹꽦
+# 위젯 생성
 coinlist = CoinlistWidget()
 orderbook = OrderbookWidget()
 
-# 醫낅ぉ ?좏깮 ???멸?李??먮룞 ?낅뜲?댄듃
+# 종목 선택 시 호가창 자동 업데이트
 coinlist.symbol_selected.connect(orderbook.update_symbol)
 coinlist.symbol_selected.connect(trade_widget.update_symbol)
 
@@ -70,17 +70,16 @@ coinlist.show()
 orderbook.show()
 ```
 
-## ?섏〈??
+## 의존성
 
-- `src/01_core/` : ?ㅼ젙 愿由? ?대깽??踰꾩뒪
-- `src/data_01/redis/` : ?ㅼ떆媛??쒖꽭 罹먯떆
-- `src/data_01/timescale/` : OHLCV ?곗씠??議고쉶
-- PyQt5 : UI ?꾩젽
-- aiohttp, websockets : WebSocket ?ㅽ듃由щ컢
+- `src/01_core/` : 설정 관리, 이벤트 버스
+- `src/02_data/redis/` : 실시간 시세 캐시
+- `src/02_data/timescale/` : OHLCV 데이터 조회
+- PyQt5 : UI 위젯
+- aiohttp, websockets : WebSocket 스트리밍
 
-## 李멸퀬 臾몄꽌
+## 참고 문서
 
-- [`work_order/3_?④퀎_MONITOR_紐⑤뱶_?덉젙??md`](../../work_order/3_?④퀎_MONITOR_紐⑤뱶_?덉젙??md)
-- [`work_order/DB?ㅺ퀎.md`](../../work_order/DB?ㅺ퀎.md) ??TimescaleDB 醫낅ぉ ?곗씠???ㅽ궎留?
-- [`work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md`](../../work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md)
-
+- [`work_order/3_단계_MONITOR_모드_안정화.md`](../../work_order/3_단계_MONITOR_모드_안정화.md)
+- [`work_order/DB설계.md`](../../work_order/DB설계.md) — TimescaleDB 종목 데이터 스키마
+- [`work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md`](../../work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md)

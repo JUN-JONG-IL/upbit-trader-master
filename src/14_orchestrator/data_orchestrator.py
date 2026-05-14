@@ -1,25 +1,25 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
-DataOrchestrator ??諛깊븘/?ㅼ떆媛?蹂묐젹 ?섏쭛 ?ㅼ??ㅽ듃?덉씠??(Phase 2)
+DataOrchestrator — 백필/실시간 병렬 수집 오케스트레이터 (Phase 2)
 
-[梨낆엫]
-    REST 湲곕컲 ?곗씠???섏쭛 ?묒뾽(怨쇨굅 諛깊븘 / ?꾩옱 polling)???⑥씪 ?곗꽑?쒖쐞 ?먮줈
-    ?듯빀?섍퀬, ``async_rate_limiter.AsyncRateLimiter`` 湲濡쒕쾶 ?좏겙踰꾪궥???듯빐
-    Upbit ?쒕룄(REST 珥덈떦 10??/ 遺꾨떦 600??瑜??덈? ?섏? ?딅룄濡?吏곷젹?뷀븳??
-    WebSocket ?ㅼ떆媛?梨꾨꼸? REST ?쒕룄? 臾닿??섎?濡?蹂??ㅼ??ㅽ듃?덉씠?곗쓽 ?곹뼢??
-    諛쏆? ?딆쑝硫? 蹂꾨룄 ?(``websocket_pool``)?먯꽌 ?媛?숇맂??
+[책임]
+    REST 기반 데이터 수집 작업(과거 백필 / 현재 polling)을 단일 우선순위 큐로
+    통합하고, ``async_rate_limiter.AsyncRateLimiter`` 글로벌 토큰버킷을 통해
+    Upbit 한도(REST 초당 10회 / 분당 600회)를 절대 넘지 않도록 직렬화한다.
+    WebSocket 실시간 채널은 REST 한도와 무관하므로 본 오케스트레이터의 영향을
+    받지 않으며, 별도 풀(``websocket_pool``)에서 풀가동된다.
 
-[?ㅺ퀎 硫붾え]
-    - ???곗꽑?쒖쐞: ``historical_high`` > ``historical_normal`` > ``realtime_polling``.
-    - ?좏겙 諛곕텇: ?곗꽑?쒖쐞??鍮꾨? (high:normal:realtime = 5:3:2). 留??ъ씠?대쭏??
-      ``per_second`` ?좏겙??鍮꾩쑉?濡??섎닠 媛???꾩뿉 ?덈뒗 ?묒뾽遺??泥섎━.
-    - ?뚯빱???⑥씪 鍮꾨룞湲??쒖뒪?щ줈 ?숈옉(吏곷젹 ?ㅽ뻾). 媛??묒뾽 ?쒖옉 ??
-      ``await limiter.acquire()`` 濡?湲濡쒕쾶 ?쒕룄 以??
-    - 蹂?紐⑤뱢? **?낅┰ 異붽? 紐⑤뱢**?대ŉ 湲곗〈 RestCandleCollector / AutoBackfill
-      ?먮쫫???먮룞?쇰줈 hooking ?섏? ?딅뒗?????몄텧 痢≪씠 紐낆떆?곸쑝濡?enqueue ?쒕떎.
-      ?대줈???뚭? ?꾪뿕??0???섎졃?쒗궓??
+[설계 메모]
+    - 큐 우선순위: ``historical_high`` > ``historical_normal`` > ``realtime_polling``.
+    - 토큰 배분: 우선순위에 비례 (high:normal:realtime = 5:3:2). 매 사이클마다
+      ``per_second`` 토큰을 비율대로 나눠 가장 위에 있는 작업부터 처리.
+    - 워커는 단일 비동기 태스크로 동작(직렬 실행). 각 작업 시작 전
+      ``await limiter.acquire()`` 로 글로벌 한도 준수.
+    - 본 모듈은 **독립 추가 모듈**이며 기존 RestCandleCollector / AutoBackfill
+      흐름에 자동으로 hooking 되지 않는다 — 호출 측이 명시적으로 enqueue 한다.
+      이로써 회귀 위험을 0에 수렴시킨다.
 
-[?ъ슜 ??
+[사용 예]
     >>> orch = DataOrchestrator()
     >>> await orch.start()
     >>> orch.enqueue_historical(symbol="KRW-BTC", timeframe="1m",
@@ -44,14 +44,14 @@ from collections import deque
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# 湲濡쒕쾶 limiter 濡쒕뱶 (吏???덉쟾)
+# 글로벌 limiter 로드 (지연/안전)
 # ---------------------------------------------------------------------------
 
 
 def _load_global_limiter():
     try:
         base = pathlib.Path(__file__).resolve().parents[1]
-        path = base / "data_01" / "collectors" / "async_rate_limiter.py"
+        path = base / "02_data" / "collectors" / "async_rate_limiter.py"
         if not path.exists():
             return None
         mod = sys.modules.get("_async_rate_limiter")
@@ -65,12 +65,12 @@ def _load_global_limiter():
         getter = getattr(mod, "get_global_upbit_rate_limiter", None)
         return getter() if callable(getter) else None
     except Exception as exc:  # pragma: no cover
-        logger.debug("[DataOrchestrator] limiter 濡쒕뱶 ?ㅽ뙣: %s", exc)
+        logger.debug("[DataOrchestrator] limiter 로드 실패: %s", exc)
         return None
 
 
 # ---------------------------------------------------------------------------
-# Job ?뺤쓽
+# Job 정의
 # ---------------------------------------------------------------------------
 
 PRIORITY_HISTORICAL_HIGH = "historical_high"
@@ -83,7 +83,7 @@ _PRIORITY_RANK = {
     PRIORITY_REALTIME_POLLING: 2,
 }
 
-# ?좏겙 諛곕텇 鍮꾩쑉 (遺꾩옄 ?⑷퀎媛 ?좏겙 1珥덈떦 遺꾨같 ?섏튂)
+# 토큰 배분 비율 (분자 합계가 토큰 1초당 분배 수치)
 _TOKEN_RATIOS = {
     PRIORITY_HISTORICAL_HIGH: 5,
     PRIORITY_HISTORICAL_NORMAL: 3,
@@ -93,10 +93,10 @@ _TOKEN_RATIOS = {
 
 @dataclass(order=False)
 class FetchJob:
-    """?⑥씪 REST ?몄텧 ?묒뾽 ?⑥쐞.
+    """단일 REST 호출 작업 단위.
 
-    ``executor`` ???몄옄 ?놁씠 ?몄텧 媛?ν븳 肄붾（???⑥닔?ъ빞 ?쒕떎. ?묒뾽??寃곌낵??
-    ``future`` 濡??꾨떖?섎ŉ ?몄텧?먭? await ?????덈떎.
+    ``executor`` 는 인자 없이 호출 가능한 코루틴 함수여야 한다. 작업의 결과는
+    ``future`` 로 전달되며 호출자가 await 할 수 있다.
     """
 
     priority: str
@@ -116,11 +116,11 @@ class FetchJob:
 
 
 class DataOrchestrator:
-    """?곗꽑?쒖쐞 湲곕컲 鍮꾨룞湲?REST ?묒뾽 ?ㅼ??ㅽ듃?덉씠??
+    """우선순위 기반 비동기 REST 작업 오케스트레이터.
 
-    ?⑥씪 ?뚯빱 + ?곗꽑?쒖쐞 ??deque횞3) 援ъ“. 湲濡쒕쾶 ``AsyncRateLimiter`` ?
-    怨듭쑀?섎?濡?``RestCandleCollector`` / ``AutoBackfillManager`` 媛 吏곸젒 ?몄텧
-    ?섎뒗 耳?댁뒪????쒕룄媛 ?⑹궛?섏뼱 ?덉쟾?섎떎.
+    단일 워커 + 우선순위 큐(deque×3) 구조. 글로벌 ``AsyncRateLimiter`` 와
+    공유하므로 ``RestCandleCollector`` / ``AutoBackfillManager`` 가 직접 호출
+    하는 케이스와도 한도가 합산되어 안전하다.
     """
 
     def __init__(self, limiter: Any = None) -> None:
@@ -139,28 +139,28 @@ class DataOrchestrator:
             "failed": 0,
             "rate_limited": 0,
         }
-        # ?곗꽑?쒖쐞蹂??꾩쟻 泥섎━ 移댁슫????鍮꾩쑉 湲곕컲 ?쇱슫?쒕줈鍮?蹂댁젙???ъ슜
+        # 우선순위별 누적 처리 카운터 — 비율 기반 라운드로빈 보정에 사용
         self._served: Dict[str, int] = {p: 0 for p in _PRIORITY_RANK}
 
     # ------------------------------------------------------------------
-    # ?쇱씠?꾩궗?댄겢
+    # 라이프사이클
     # ------------------------------------------------------------------
 
     async def start(self) -> None:
-        """?뚯빱 ?쒖뒪???쒖옉. ?대? ?ㅽ뻾 以묒씠硫?臾댁떆."""
+        """워커 태스크 시작. 이미 실행 중이면 무시."""
         if self._running:
             return
         self._cv = asyncio.Condition()
         self._running = True
         self._worker = asyncio.create_task(self._run(), name="data-orchestrator")
-        logger.info("[DataOrchestrator] ?쒖옉")
+        logger.info("[DataOrchestrator] 시작")
 
     async def stop(self) -> None:
-        """?뚯빱 ?뺤? 諛??湲?以??묒뾽 痍⑥냼."""
+        """워커 정지 및 대기 중 작업 취소."""
         if not self._running:
             return
         self._running = False
-        # ?湲?以묒씤 ?뚯빱 源⑥슦湲?
+        # 대기 중인 워커 깨우기
         if self._cv is not None:
             async with self._cv:
                 self._cv.notify_all()
@@ -171,13 +171,13 @@ class DataOrchestrator:
                 self._worker.cancel()
             finally:
                 self._worker = None
-        # 誘몄쿂由?future 痍⑥냼
+        # 미처리 future 취소
         for q in self._queues.values():
             while q:
                 job = q.popleft()
                 if job.future is not None and not job.future.done():
                     job.future.cancel()
-        logger.info("[DataOrchestrator] ?뺤?")
+        logger.info("[DataOrchestrator] 정지")
 
     # ------------------------------------------------------------------
     # Enqueue API
@@ -191,7 +191,7 @@ class DataOrchestrator:
         executor: Callable[[], Awaitable[Any]],
         priority: str = "normal",
     ) -> asyncio.Future:
-        """怨쇨굅 諛깊븘 ?묒뾽 ?깅줉. ``priority`` ??{"high", "normal"}."""
+        """과거 백필 작업 등록. ``priority`` ∈ {"high", "normal"}."""
         pri = (
             PRIORITY_HISTORICAL_HIGH
             if str(priority).lower() == "high"
@@ -206,7 +206,7 @@ class DataOrchestrator:
         timeframe: str,
         executor: Callable[[], Awaitable[Any]],
     ) -> asyncio.Future:
-        """?꾩옱(?대쭅) 1罹붾뱾 ?섏쭛 ?묒뾽 ?깅줉."""
+        """현재(폴링) 1캔들 수집 작업 등록."""
         return self._enqueue(PRIORITY_REALTIME_POLLING, symbol, timeframe, executor)
 
     def _enqueue(
@@ -230,7 +230,7 @@ class DataOrchestrator:
         )
         self._queues[priority].append(job)
         self._stats["submitted"] += 1
-        # ?뚯빱 源⑥슦湲?
+        # 워커 깨우기
         if self._cv is not None:
             async def _notify() -> None:
                 async with self._cv:  # type: ignore[arg-type]
@@ -262,7 +262,7 @@ class DataOrchestrator:
                     try:
                         await self._limiter.acquire()
                     except Exception as exc:  # pragma: no cover
-                        logger.debug("[DataOrchestrator] limiter.acquire ?ㅽ뙣: %s", exc)
+                        logger.debug("[DataOrchestrator] limiter.acquire 실패: %s", exc)
 
                 try:
                     result = await job.executor()
@@ -272,7 +272,7 @@ class DataOrchestrator:
                     self._served[job.priority] += 1
                 except Exception as exc:
                     msg = str(exc).lower()
-                    if "?붿껌 ???쒗븳" in msg or "rate limit" in msg or "429" in msg:
+                    if "요청 수 제한" in msg or "rate limit" in msg or "429" in msg:
                         self._stats["rate_limited"] += 1
                     self._stats["failed"] += 1
                     if job.future is not None and not job.future.done():
@@ -280,21 +280,21 @@ class DataOrchestrator:
         except asyncio.CancelledError:
             pass
         except Exception as exc:  # pragma: no cover
-            logger.error("[DataOrchestrator] ?뚯빱 ?덉쇅: %s", exc)
+            logger.error("[DataOrchestrator] 워커 예외: %s", exc)
 
     def _select_next_job(self) -> Optional[FetchJob]:
-        """?곗꽑?쒖쐞 + 鍮꾩쑉 蹂댁젙?쇰줈 ?ㅼ쓬 ?묒뾽 ?좏깮.
+        """우선순위 + 비율 보정으로 다음 작업 선택.
 
-        蹂댁젙 洹쒖튃: ???믪? ?곗꽑?쒖쐞 ?먭? 鍮꾩뼱?덉? ?딆쑝硫?洹몄そ????긽 ?곗꽑?댁?留?
-        ?대떦 ?먭? ?먭린 鍮꾩쑉(`_TOKEN_RATIOS[p]`) 留뚰겮 ?곗냽 泥섎━???ㅼ뿉????踰?
-        ?섏쐞 ?곗꽑?쒖쐞???묐낫?섏뿬 starvation ??諛⑹??쒕떎.
+        보정 규칙: 더 높은 우선순위 큐가 비어있지 않으면 그쪽이 항상 우선이지만,
+        해당 큐가 자기 비율(`_TOKEN_RATIOS[p]`) 만큼 연속 처리된 뒤에는 한 번
+        하위 우선순위에 양보하여 starvation 을 방지한다.
         """
-        # 媛???믪? 鍮꾩뼱?덉? ?딆? ???먯깋
+        # 가장 높은 비어있지 않은 큐 탐색
         for p in (PRIORITY_HISTORICAL_HIGH, PRIORITY_HISTORICAL_NORMAL, PRIORITY_REALTIME_POLLING):
             q = self._queues[p]
             if not q:
                 continue
-            # starvation 蹂댄샇: ?곗냽 泥섎━?됱씠 鍮꾩쑉??珥덇낵?덇퀬 ?섏쐞 ?먯뿉 ?쇱씠 ?덉쑝硫??묐낫
+            # starvation 보호: 연속 처리량이 비율을 초과했고 하위 큐에 일이 있으면 양보
             served_now = self._served[p]
             ratio = _TOKEN_RATIOS[p]
             lower_has_job = any(
@@ -303,7 +303,7 @@ class DataOrchestrator:
                 if _PRIORITY_RANK[lp] > _PRIORITY_RANK[p]
             )
             if served_now > 0 and served_now % (ratio + 1) == 0 and lower_has_job:
-                # ??踰??묐낫: ?ㅼ쓬 鍮꾩뼱?덉? ?딆? ?섏쐞 ?먯뿉???좏깮
+                # 한 번 양보: 다음 비어있지 않은 하위 큐에서 선택
                 continue
             return q.popleft()
         return None
@@ -325,14 +325,14 @@ class DataOrchestrator:
 
 
 # ---------------------------------------------------------------------------
-# 湲濡쒕쾶 ?깃???(?좏깮???ъ슜)
+# 글로벌 싱글톤 (선택적 사용)
 # ---------------------------------------------------------------------------
 
 _global_orchestrator: Optional[DataOrchestrator] = None
 
 
 def get_global_orchestrator() -> DataOrchestrator:
-    """?꾨줈?몄뒪 ?꾩뿭 ?⑥씪 ?ㅼ??ㅽ듃?덉씠???몄뒪?댁뒪 諛섑솚."""
+    """프로세스 전역 단일 오케스트레이터 인스턴스 반환."""
     global _global_orchestrator
     if _global_orchestrator is None:
         _global_orchestrator = DataOrchestrator()
@@ -347,4 +347,3 @@ __all__ = [
     "PRIORITY_REALTIME_POLLING",
     "get_global_orchestrator",
 ]
-

@@ -1,82 +1,81 @@
-﻿# CHANGELOG
-# 2026-03-16 | Copilot | ?낃렇?덉씠?? 08_portfolio README v4.0. ?대뜑紐?holdings 理쒖떊??
-# 2026-03-13 | Copilot | ?낃렇?덉씠?? 08_portfolio README v2.0. ?쒓뎅???꾩껜 ?쒗뵆由우쑝濡??낃렇?덉씠??
-# 2026-03-06 | Copilot | ?앹꽦: 08_portfolio README 珥덉븞
+# CHANGELOG
+# 2026-03-16 | Copilot | 업그레이드: 08_portfolio README v4.0. 폴더명 holdings 최신화.
+# 2026-03-13 | Copilot | 업그레이드: 08_portfolio README v2.0. 한국어 전체 템플릿으로 업그레이드.
+# 2026-03-06 | Copilot | 생성: 08_portfolio README 초안
 
 Version: v4.0
 Last Modified: 2026-03-16
 References:
-  - work_order/16_?④퀎_?ы듃?대━??遺꾩꽍.md
-  - work_order/DB?ㅺ퀎.md
+  - work_order/16_단계_포트폴리오_분석.md
+  - work_order/DB설계.md
 
-# src/08_portfolio ???ы듃?대━??愿由?
+# src/08_portfolio — 포트폴리오 관리
 
-## 媛쒖슂
+## 개요
 
-蹂댁쑀?먯궛 ?꾪솴, ?섏씡瑜?遺꾩꽍, ?ы듃?대━??理쒖쟻?붾? ?듯빀??**?ы듃?대━??愿由?紐⑤뱢**?낅땲??
-蹂댁쑀 醫낅ぉ???됰떒쨌?섏씡瑜졖룻뙆?댁감???쒓컖?붿? ?④퍡, Markowitz쨌Black-Litterman 湲곕컲 ?ы듃?대━??理쒖쟻?붾? ?쒓났?⑸땲??
+보유자산 현황, 수익률 분석, 포트폴리오 최적화를 통합한 **포트폴리오 관리 모듈**입니다.
+보유 종목의 평단·수익률·파이차트 시각화와 함께, Markowitz·Black-Litterman 기반 포트폴리오 최적화를 제공합니다.
 
-## ?붾젆?좊━ 援ъ“
+## 디렉토리 구조
 
 ```
 src/08_portfolio/
-?쒋?? __init__.py                    # 紐⑤뱢 吏꾩엯??(PortfolioWidget, UserinfoWidget ?щ끂異?
-?쒋?? README.md                      # ???뚯씪
-?쒋?? holdings/                      # 蹂댁쑀?먯궛 遺꾩꽍 ?쒕툕紐⑤뱢
-??  ?쒋?? __init__.py
-??  ?쒋?? ui/                        # detailholdinglist.ui, widget_portfolio.py, widget_detail_holding.py
-??  ?쒋?? logic/                     # ?ы듃?대━??遺꾩꽍 ?뚯궗??
-??  ?쒋?? analysis/                  # ?섏씡瑜졖텺DD쨌Sharpe 遺꾩꽍
-??  ?쒋?? optimization/              # Markowitz, Black-Litterman, RL 理쒖쟻??
-??  ?쒋?? reporting/                 # ?쇨컙쨌二쇨컙쨌PDF 由ы룷??
-??  ?붴?? workers/                   # 諛깃렇?쇱슫??遺꾩꽍 ?뚯빱
-?붴?? userinfo/                      # ?ъ슜???뺣낫 ?쒕툕紐⑤뱢
-    ?쒋?? __init__.py
-    ?쒋?? ui/                        # userinfo.ui, widget_piechart.py, widget_userinfo.py
-    ?쒋?? logic/                     # ?붽퀬쨌?됯?湲덉븸쨌?섏씡瑜?怨꾩궛 濡쒖쭅
-    ?붴?? workers/                   # ?붽퀬 ?낅뜲?댄듃 ?뚯빱
+├── __init__.py                    # 모듈 진입점 (PortfolioWidget, UserinfoWidget 재노출)
+├── README.md                      # 이 파일
+├── holdings/                      # 보유자산 분석 서브모듈
+│   ├── __init__.py
+│   ├── ui/                        # detailholdinglist.ui, widget_portfolio.py, widget_detail_holding.py
+│   ├── logic/                     # 포트폴리오 분석 파사드
+│   ├── analysis/                  # 수익률·MDD·Sharpe 분석
+│   ├── optimization/              # Markowitz, Black-Litterman, RL 최적화
+│   ├── reporting/                 # 일간·주간·PDF 리포트
+│   └── workers/                   # 백그라운드 분석 워커
+└── userinfo/                      # 사용자 정보 서브모듈
+    ├── __init__.py
+    ├── ui/                        # userinfo.ui, widget_piechart.py, widget_userinfo.py
+    ├── logic/                     # 잔고·평가금액·수익률 계산 로직
+    └── workers/                   # 잔고 업데이트 워커
 ```
 
-## 二쇱슂 湲곕뒫
+## 주요 기능
 
-- **蹂댁쑀?먯궛 ?꾪솴**: 醫낅ぉ蹂??됰떒쨌?됯?湲덉븸쨌?섏씡瑜졖룹닔?듦툑 ?쒖떆
-- **?뚯씠李⑦듃**: 蹂댁쑀?먯궛 鍮꾩쨷 ?쒓컖??(matplotlib 湲곕컲)
-- **?ы듃?대━??遺꾩꽍**: 珥??섏씡瑜? MDD (Max Drawdown), Sharpe Ratio, 湲곗뿬??遺꾩꽍
-- **?ы듃?대━??理쒖쟻??*: Markowitz ?⑥쑉???ы듃?대━?? Black-Litterman, RL 湲곕컲 理쒖쟻??
-- **?뺢린 由ы룷??*: ?쇨컙쨌二쇨컙 ?깃낵 由ы룷???앹꽦 (PDF ?ы븿)
-- **?ㅼ떆媛??낅뜲?댄듃**: ?낅퉬???붽퀬 API ?대쭅?쇰줈 蹂댁쑀?먯궛 ?먮룞 媛깆떊
+- **보유자산 현황**: 종목별 평단·평가금액·수익률·수익금 표시
+- **파이차트**: 보유자산 비중 시각화 (matplotlib 기반)
+- **포트폴리오 분석**: 총 수익률, MDD (Max Drawdown), Sharpe Ratio, 기여도 분석
+- **포트폴리오 최적화**: Markowitz 효율적 포트폴리오, Black-Litterman, RL 기반 최적화
+- **정기 리포트**: 일간·주간 성과 리포트 생성 (PDF 포함)
+- **실시간 업데이트**: 업비트 잔고 API 폴링으로 보유자산 자동 갱신
 
-## ?ъ슜 ?덉떆
+## 사용 예시
 
 ```python
 from src._08_portfolio import PortfolioWidget, UserinfoWidget
 
-# 硫붿씤 ?꾩젽 ?앹꽦
+# 메인 위젯 생성
 portfolio = PortfolioWidget()
 userinfo = UserinfoWidget()
 
 portfolio.show()
 userinfo.show()
 
-# ?ы듃?대━??理쒖쟻??吏곸젒 ?ъ슜
+# 포트폴리오 최적화 직접 사용
 from src._08_portfolio.holdings.optimization import MarkowitzOptimizer
 optimizer = MarkowitzOptimizer()
 weights = optimizer.optimize(returns_df, risk_tolerance=0.5)
 print(weights)  # {'KRW-BTC': 0.4, 'KRW-ETH': 0.35, 'KRW-SOL': 0.25}
 ```
 
-## ?섏〈??
+## 의존성
 
-- `src/01_core/` : ?ㅼ젙 愿由? ?대깽??踰꾩뒪
-- `src/data_01/timescale/` : OHLCV ?곗씠??(?섏씡瑜?怨꾩궛)
-- `src/data_01/mongodb/` : ?ы듃?대━???ㅻ깄?????
-- PyQt5 : UI ?꾩젽
-- matplotlib : ?뚯씠李⑦듃, ?섏씡瑜?李⑦듃
-- scipy, numpy : ?ы듃?대━??理쒖쟻??怨꾩궛
+- `src/01_core/` : 설정 관리, 이벤트 버스
+- `src/02_data/timescale/` : OHLCV 데이터 (수익률 계산)
+- `src/02_data/mongodb/` : 포트폴리오 스냅샷 저장
+- PyQt5 : UI 위젯
+- matplotlib : 파이차트, 수익률 차트
+- scipy, numpy : 포트폴리오 최적화 계산
 
-## 李멸퀬 臾몄꽌
+## 참고 문서
 
-- [`work_order/16_?④퀎_?ы듃?대━??遺꾩꽍.md`](../../work_order/16_?④퀎_?ы듃?대━??遺꾩꽍.md)
-- [`work_order/DB?ㅺ퀎.md`](../../work_order/DB?ㅺ퀎.md) ???ы듃?대━???곗씠???ㅽ궎留?
-- [`work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md`](../../work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md)
-
+- [`work_order/16_단계_포트폴리오_분석.md`](../../work_order/16_단계_포트폴리오_분석.md)
+- [`work_order/DB설계.md`](../../work_order/DB설계.md) — 포트폴리오 데이터 스키마
+- [`work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md`](../../work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md)

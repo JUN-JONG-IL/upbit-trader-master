@@ -1,14 +1,14 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
-Loaders ?⑦궎吏 珥덇린??(吏??濡쒕뱶, ?뚯씪-?덈꺼 ?대갚, shim ?쒓굅)
+Loaders 패키지 초기화 (지연 로드, 파일-레벨 폴백, shim 제거)
 
-?ㅻ챸:
-- create_data_manager / setup_pipeline ?⑥닔瑜??몄텧?????대??먯꽌 ?ㅼ젣 援ы쁽 紐⑤뱢???숈쟻?쇰줈 濡쒕뱶?⑸땲??
-- ?ㅼ엫?ㅽ럹?댁뒪 import ?ㅽ뙣 ??src 猷⑦듃 諛묒쓽 ?뚯씪??吏곸젒 濡쒕뱶?섎뒗 ?뚯씪-?덈꺼 ?대갚???쒕룄?⑸땲??
-- ?뚯씪濡?濡쒕뱶??紐⑤뱢? 媛?ν븳 ???뺤떇 ?⑦궎吏 ?ㅼ엫?ㅽ럹?댁뒪(?? app.loaders.datamanager_loader)濡?
-  sys.modules???깅줉?섏뿬 'shim' 臾몄젣瑜??쒓굅?⑸땲??
-- shim(?꾩떆 ?⑦궎吏/?뚯씪) ?앹꽦?대굹 ?뚯씪 ?대룞? ?덈? ?섏? ?딆뒿?덈떎.
-- ?ㅽ뙣 ??媛?ν븳 紐⑤뱺 ?쒕룄 寃곌낵(紐⑤뱢 ?꾨낫, ?뚯씪 ?꾨낫, traceback)瑜??곸꽭??濡쒓퉭?⑸땲??
+설명:
+- create_data_manager / setup_pipeline 함수를 호출할 때 내부에서 실제 구현 모듈을 동적으로 로드합니다.
+- 네임스페이스 import 실패 시 src 루트 밑의 파일을 직접 로드하는 파일-레벨 폴백을 시도합니다.
+- 파일로 로드한 모듈은 가능한 한 정식 패키지 네임스페이스(예: app.loaders.datamanager_loader)로
+  sys.modules에 등록하여 'shim' 문제를 제거합니다.
+- shim(임시 패키지/파일) 생성이나 파일 이동은 절대 하지 않습니다.
+- 실패 시 가능한 모든 시도 결과(모듈 후보, 파일 후보, traceback)를 상세히 로깅합니다.
 """
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ __all__ = ["create_data_manager", "setup_pipeline"]
 
 def _log_static(static: Any, level: str, msg: str, *args) -> None:
     """
-    static??log 媛앹껜媛 ?덉쑝硫??ъ슜, ?놁쑝硫?print濡??대갚.
+    static에 log 객체가 있으면 사용, 없으면 print로 폴백.
     level: 'info', 'warning', 'error', 'debug'
     """
     try:
@@ -50,7 +50,7 @@ def _log_static(static: Any, level: str, msg: str, *args) -> None:
 
 def _find_src_root(start_path: Optional[str] = None) -> str:
     """
-    start_path?먯꽌 ?꾨줈 ?щ씪媛硫?'src' ?대뜑瑜?李얜뒗?? 紐?李얠쑝硫?start_path ?곸쐞 3?④퀎瑜?諛섑솚.
+    start_path에서 위로 올라가며 'src' 폴더를 찾는다. 못 찾으면 start_path 상위 3단계를 반환.
     """
     if start_path is None:
         start_path = os.path.abspath(__file__)
@@ -72,9 +72,9 @@ def _find_src_root(start_path: Optional[str] = None) -> str:
 
 def _module_name_from_path(src_root: str, file_path: str) -> Optional[str]:
     """
-    src_root 諛묒쓽 file_path濡쒕???紐⑤뱢 ?ㅼ엫?ㅽ럹?댁뒪(?꾪듃 ?쒓린)瑜??앹꽦?쒕떎.
-    ?? /.../src/app/loaders/datamanager_loader.py -> 'app.loaders.datamanager_loader'
-    諛섑솚 遺덇??ν븯硫?None.
+    src_root 밑의 file_path로부터 모듈 네임스페이스(도트 표기)를 생성한다.
+    예: /.../src/app/loaders/datamanager_loader.py -> 'app.loaders.datamanager_loader'
+    반환 불가능하면 None.
     """
     try:
         src_root = os.path.abspath(src_root)
@@ -100,10 +100,10 @@ def _module_name_from_path(src_root: str, file_path: str) -> Optional[str]:
 
 def _load_module_from_file(path: str, alias: Optional[str] = None, src_root: Optional[str] = None):
     """
-    ?뚯씪 寃쎈줈?먯꽌 紐⑤뱢???덉쟾?섍쾶 濡쒕뱶 (importlib.util).
-    - 媛?ν븳 寃쎌슦 ?뺤떇 ?⑦궎吏 ?ㅼ엫?ㅽ럹?댁뒪濡?sys.modules???깅줉?섏뿬 shim ?앹꽦??諛⑹?.
-    - alias: ?꾩떆 alias (?? 'file_loaded__...') ???대? 李몄“??
-    - src_root: src 猷⑦듃 寃쎈줈瑜?二쇰㈃, src_root ?섏쐞?쇰㈃ ?⑦궎吏 ?ㅼ엫?ㅽ럹?댁뒪濡??깅줉???쒕룄.
+    파일 경로에서 모듈을 안전하게 로드 (importlib.util).
+    - 가능한 경우 정식 패키지 네임스페이스로 sys.modules에 등록하여 shim 생성을 방지.
+    - alias: 임시 alias (예: 'file_loaded__...') — 내부 참조용.
+    - src_root: src 루트 경로를 주면, src_root 하위라면 패키지 네임스페이스로 등록을 시도.
     """
     try:
         if not os.path.isfile(path):
@@ -155,15 +155,15 @@ def _try_import_candidates(
     desc: str,
 ):
     """
-    - candidates: ?ㅼ엫?ㅽ럹?댁뒪 ?꾨낫(importlib.import_module濡??쒕룄)
-    - file_candidates: ?뚯씪 寃쎈줈 ?꾨낫(?꾨줈?앺듃 src 猷⑦듃 湲곗? ?곷? 寃쎈줈 ?먮뒗 ?덈?寃쎈줈)
-    - desc: 濡쒓퉭???ㅻ챸 ('datamanager_loader' ?먮뒗 'pipeline_loader' ??
-    諛섑솚: (module_or_None, attempts_list)
+    - candidates: 네임스페이스 후보(importlib.import_module로 시도)
+    - file_candidates: 파일 경로 후보(프로젝트 src 루트 기준 상대 경로 또는 절대경로)
+    - desc: 로깅용 설명 ('datamanager_loader' 또는 'pipeline_loader' 등)
+    반환: (module_or_None, attempts_list)
     attempts_list: [(kind, name, result_str), ...] where kind='import'|'file'
     """
     attempts: List[Tuple[str, str, str]] = []
 
-    # 1) namespace imports (?뺤떇 ?⑦궎吏 寃쎈줈 ?곗꽑)
+    # 1) namespace imports (정식 패키지 경로 우선)
     for nm in candidates:
         try:
             mod = importlib.import_module(nm)
@@ -174,7 +174,7 @@ def _try_import_candidates(
             attempts.append(("import", nm, f"{type(e).__name__}: {e}"))
             _log_static(static, "debug", "[loaders] %s import failed: %s -> %s", desc, nm, f"{type(e).__name__}: {e}")
 
-    # 2) file-level load from src root (?뺤꽍???곗꽑)
+    # 2) file-level load from src root (정석적 우선)
     src_root = _find_src_root(os.path.dirname(os.path.abspath(__file__)))
     for fp in file_candidates:
         try:
@@ -216,24 +216,24 @@ def _try_import_candidates(
 
 def create_data_manager(static: Any) -> Optional[Any]:
     """
-    datamanager_loader.create_data_manager 瑜?吏??濡쒕뱶?섏뿬 ?몄텧.
-    - ?깃났: DataManager ?몄뒪?댁뒪 諛섑솚
-    - ?ㅽ뙣: RuntimeError 諛쒖깮 (?몄텧?먯뿉??catch ?섏뿬 泥섎━)
+    datamanager_loader.create_data_manager 를 지연 로드하여 호출.
+    - 성공: DataManager 인스턴스 반환
+    - 실패: RuntimeError 발생 (호출자에서 catch 하여 처리)
     """
     desc = "datamanager_loader"
-    # ?ㅼ엫?ㅽ럹?댁뒪 ?꾨낫??
+    # 네임스페이스 후보들
     ns_candidates = [
         "app.loaders.datamanager_loader",
         "app.loaders.datamanager_loader",  # duplicate safe
-        "data_01.core.data_manager",
+        "02_data.core.data_manager",
         "src.app.loaders.datamanager_loader",
         "app.datamanager_loader",
     ]
-    # ?뚯씪 ?꾨낫 (src 猷⑦듃 湲곗? ?곷? 寃쎈줈)
+    # 파일 후보 (src 루트 기준 상대 경로)
     file_candidates = [
         os.path.join("app", "loaders", "datamanager_loader.py"),
         os.path.join("app", "core", "datamanager_loader.py"),
-        os.path.join("data_01", "core", "data_manager.py"),
+        os.path.join("02_data", "core", "data_manager.py"),
     ]
 
     mod, attempts = _try_import_candidates(ns_candidates, file_candidates, static, desc)
@@ -256,9 +256,9 @@ def create_data_manager(static: Any) -> Optional[Any]:
 
 def setup_pipeline(static: Any) -> None:
     """
-    pipeline_loader.setup_pipeline 瑜?吏??濡쒕뱶?섏뿬 ?몄텧.
-    - ?ㅼ엫?ㅽ럹?댁뒪 import ?ㅽ뙣 ??src ?섏쐞???뚯씪??吏곸젒 濡쒕뱶?섎뒗 ?대갚???쒕룄?⑸땲??
-    - ?ㅽ뙣 ??RuntimeError 諛쒖깮.
+    pipeline_loader.setup_pipeline 를 지연 로드하여 호출.
+    - 네임스페이스 import 실패 시 src 하위의 파일을 직접 로드하는 폴백을 시도합니다.
+    - 실패 시 RuntimeError 발생.
     """
     desc = "pipeline_loader"
     ns_candidates = [
@@ -268,8 +268,8 @@ def setup_pipeline(static: Any) -> None:
     ]
     file_candidates = [
         os.path.join("app", "loaders", "pipeline_loader.py"),
-        os.path.join("data_01", "pipeline", "processor.py"),
-        os.path.join("data_01", "timescale", "operations", "candle_writer.py"),
+        os.path.join("02_data", "pipeline", "processor.py"),
+        os.path.join("02_data", "timescale", "operations", "candle_writer.py"),
         os.path.join("app", "pipeline_loader.py"),
     ]
 

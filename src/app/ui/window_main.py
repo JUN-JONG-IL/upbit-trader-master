@@ -1,11 +1,11 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""MainWindow 吏꾩엯??(v11.4 - pymongo ?숆린 ?대씪?댁뼵??
+"""MainWindow 진입점 (v11.4 - pymongo 동기 클라이언트)
 
-蹂寃?
-- open_monitoring_dashboard()?먯꽌 pymongo.MongoClient ?ъ슜 (motor ?쒓굅)
-- MongoDB ?대씪?댁뼵?몃? ?숆린 諛⑹떇?쇰줈 ?앹꽦?섏뿬 StatusWidget???꾨떖
-- "Event loop is closed" ?먮윭 ?꾨꼍 ?닿껐
+변경:
+- open_monitoring_dashboard()에서 pymongo.MongoClient 사용 (motor 제거)
+- MongoDB 클라이언트를 동기 방식으로 생성하여 StatusWidget에 전달
+- "Event loop is closed" 에러 완벽 해결
 """
 
 from __future__ import annotations
@@ -59,7 +59,7 @@ if not _HAS_UI_STATE_MANAGER:
 
 
 class MainWindow(QMainWindow):
-    """硫붿씤 ?덈룄???대옒??(v11.4)"""
+    """메인 윈도우 클래스 (v11.4)"""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -85,7 +85,7 @@ class MainWindow(QMainWindow):
         self._init_managers()
 
     def _init_managers(self) -> None:
-        """留ㅻ땲? 珥덇린??""
+        """매니저 초기화"""
         try:
             from .managers import DBDialogManager, MenuHandler, SymbolLoader, WidgetLoader
             self.widget_loader = WidgetLoader(self)
@@ -115,7 +115,7 @@ class MainWindow(QMainWindow):
     def _setup_ui(self) -> None:
         ui_path = self._ui_path()
         if not ui_path:
-            logger.error("[MainWindow] main.ui ?뚯씪??李얠쓣 ???놁뒿?덈떎.")
+            logger.error("[MainWindow] main.ui 파일을 찾을 수 없습니다.")
             self._create_minimal_ui()
             return
         try:
@@ -123,16 +123,16 @@ class MainWindow(QMainWindow):
             self.ui_loaded = True
             logger.info("[MainWindow] UI loaded from %s", ui_path)
         except Exception as e:
-            logger.exception("[MainWindow] uic.loadUi ?ㅽ뙣", exc_info=e)
+            logger.exception("[MainWindow] uic.loadUi 실패", exc_info=e)
             self._create_minimal_ui()
 
     def _create_minimal_ui(self) -> None:
         from PyQt5.QtWidgets import QWidget
-        self.setWindowTitle("Upbit Trader (UI 濡쒕뱶 ?ㅽ뙣)")
+        self.setWindowTitle("Upbit Trader (UI 로드 실패)")
         central = QWidget(self)
         layout = QVBoxLayout()
         label = QLabel(
-            "?좑툘 main.ui ?뚯씪??李얠쓣 ???놁뒿?덈떎.\n?꾩옱??理쒖냼 UI濡??숈옉 以묒엯?덈떎.",
+            "⚠️ main.ui 파일을 찾을 수 없습니다.\n현재는 최소 UI로 동작 중입니다.",
             central,
         )
         label.setAlignment(Qt.AlignCenter)
@@ -142,25 +142,25 @@ class MainWindow(QMainWindow):
         self.ui_loaded = False
 
     def init_data(self) -> None:
-        """濡쒓렇???깃났 ???곗씠??珥덇린??""
+        """로그인 성공 후 데이터 초기화"""
         if not self.ui_loaded:
-            logger.warning("[MainWindow] init_data 嫄대꼫? (ui_loaded=False)")
+            logger.warning("[MainWindow] init_data 건너뜀 (ui_loaded=False)")
             return
 
-        logger.info("[MainWindow] ?곗씠??珥덇린???쒖옉")
+        logger.info("[MainWindow] 데이터 초기화 시작")
 
         if _HAS_UI_STATE_MANAGER and UIStateManager is not None:
             try:
                 self.ui_state_manager = UIStateManager()
             except Exception as e:
-                logger.warning("[MainWindow] UIStateManager ?앹꽦 ?ㅽ뙣: %s", e)
+                logger.warning("[MainWindow] UIStateManager 생성 실패: %s", e)
                 self.ui_state_manager = None
 
         try:
             from .managers.widget_factory import WidgetFactory
             from .managers.worker_manager import WorkerManager
         except ImportError as e:
-            logger.error("[MainWindow] 留ㅻ땲? 濡쒕뱶 ?ㅽ뙣: %s", e)
+            logger.error("[MainWindow] 매니저 로드 실패: %s", e)
             return
 
         widgets = WidgetFactory.create_all_widgets(self.ui_state_manager)
@@ -183,7 +183,7 @@ class MainWindow(QMainWindow):
 
         QTimer.singleShot(100, self._restore_splitter_state)
 
-        logger.info("[MainWindow] ?곗씠??珥덇린???꾨즺")
+        logger.info("[MainWindow] 데이터 초기화 완료")
 
     def _connect_ui_state(self) -> None:
         try:
@@ -193,19 +193,19 @@ class MainWindow(QMainWindow):
             from app.ui.ui_state_manager import ui_state_manager
             ui_state_manager.symbol_changed.connect(self._on_symbol_changed)
         except Exception as e:
-            logger.warning("[MainWindow] UIStateManager ?곌껐 ?ㅽ뙣: %s", e)
+            logger.warning("[MainWindow] UIStateManager 연결 실패: %s", e)
 
     def _on_symbol_changed(self, source: str, symbol: str) -> None:
         for widget_attr, name in [
-            ("_chart_widget_inst", "李⑦듃"),
-            ("_orderbook_widget_inst", "?멸?李?),
+            ("_chart_widget_inst", "차트"),
+            ("_orderbook_widget_inst", "호가창"),
         ]:
             widget = getattr(self, widget_attr, None)
             if widget is not None and hasattr(widget, "update_symbol"):
                 try:
                     widget.update_symbol(source, symbol)
                 except Exception as e:
-                    logger.debug("[MainWindow] %s ?낅뜲?댄듃 ?ㅽ뙣: %s", name, e)
+                    logger.debug("[MainWindow] %s 업데이트 실패: %s", name, e)
 
     def _on_symbol_item_clicked(self, item) -> None:
         try:
@@ -219,10 +219,10 @@ class MainWindow(QMainWindow):
                 from app.ui.ui_state_manager import ui_state_manager
                 ui_state_manager.set_symbol("upbit", symbol)
         except Exception as e:
-            logger.warning("[MainWindow] ?щ낵 ?대┃ 泥섎━ ?ㅽ뙣: %s", e)
+            logger.warning("[MainWindow] 심볼 클릭 처리 실패: %s", e)
 
     def _setup_db_status_bar(self) -> None:
-        """DB ?곹깭 ?쒖떆??珥덇린??""
+        """DB 상태 표시등 초기화"""
         try:
             DBStatusLED = None
 
@@ -275,7 +275,7 @@ class MainWindow(QMainWindow):
                     logger.debug("[MainWindow] File-level DBStatusLED discovery failed: %s", e)
 
             if DBStatusLED is None:
-                logger.warning("[MainWindow] DB ?곹깭 ?쒖떆??珥덇린???ㅽ뙣: DBStatusLED 紐⑤뱢??李얠쓣 ???놁쓬")
+                logger.warning("[MainWindow] DB 상태 표시등 초기화 실패: DBStatusLED 모듈을 찾을 수 없음")
                 return
 
             status_bar = self.statusBar()
@@ -291,7 +291,7 @@ class MainWindow(QMainWindow):
                 except Exception as e:
                     logger.debug("[MainWindow] DB LED widget creation failed for %s: %s", display_name, e)
         except Exception as e:
-            logger.warning("[MainWindow] DB ?곹깭 ?쒖떆??珥덇린???ㅽ뙣: %s", e)
+            logger.warning("[MainWindow] DB 상태 표시등 초기화 실패: %s", e)
 
     def _restore_splitter_state(self) -> None:
         if not hasattr(self, "settings") or not getattr(self, "vertical_splitter", None):
@@ -310,10 +310,10 @@ class MainWindow(QMainWindow):
                 if saved is not None:
                     self.vertical_splitter.setSizes([int(s) for s in saved])
         except Exception as e:
-            logger.warning("[MainWindow] QSplitter ?곹깭 蹂듭썝 ?ㅽ뙣: %s", e)
+            logger.warning("[MainWindow] QSplitter 상태 복원 실패: %s", e)
 
     def _switch_page(self, page_index: int) -> None:
-        """?섏씠吏 ?꾪솚"""
+        """페이지 전환"""
         _PAGES = {
             0: ("Home",   self.home_worker,   [self.user_worker, self.signal_worker]),
             1: ("User",   self.user_worker,   [self.home_worker, self.signal_worker]),
@@ -323,7 +323,7 @@ class MainWindow(QMainWindow):
         if not qsw or qsw.currentIndex() == page_index:
             return
         name, start, stop_lists = _PAGES[page_index]
-        logger.info("[MainWindow] %s ?섏씠吏 ?꾪솚", name)
+        logger.info("[MainWindow] %s 페이지 전환", name)
         try:
             from .managers.worker_manager import WorkerManager
             WorkerManager.start_workers([w for w in start if w])
@@ -357,7 +357,7 @@ class MainWindow(QMainWindow):
         self._switch_page(2)
 
     def settings_btn_click(self) -> None:
-        """?ㅼ젙 李??닿린"""
+        """설정 창 열기"""
         cls = getattr(self, "_settings_widget_class", None)
         if cls is None:
             try:
@@ -371,8 +371,8 @@ class MainWindow(QMainWindow):
             except Exception:
                 cls = None
         if cls is None:
-            logger.warning("[MainWindow] SettingsWidget ?ъ슜 遺덇?")
-            QMessageBox.information(self, "?ㅼ젙", "?ㅼ젙 ?꾩젽??遺덈윭?????놁뒿?덈떎.")
+            logger.warning("[MainWindow] SettingsWidget 사용 불가")
+            QMessageBox.information(self, "설정", "설정 위젯을 불러올 수 없습니다.")
             return
         try:
             try:
@@ -387,7 +387,7 @@ class MainWindow(QMainWindow):
                 pass
             self.settings_widget.show()
         except Exception as e:
-            logger.error("[MainWindow] settings ?닿린 ?ㅽ뙣: %s", e)
+            logger.error("[MainWindow] settings 열기 실패: %s", e)
 
     def _embed_widgets(self) -> None:
         if not _HAS_QT:
@@ -442,12 +442,12 @@ class MainWindow(QMainWindow):
 
     def open_monitoring_dashboard(self) -> None:
         """
-        ?ㅼ떆媛?紐⑤땲?곕쭅 ??쒕낫??StatusWidget)瑜??닿굅???욎쑝濡?媛?몄샃?덈떎.
+        실시간 모니터링 대시보드(StatusWidget)를 열거나 앞으로 가져옵니다.
         
-        ??pymongo.MongoClient (?숆린) ?ъ슜 - Event loop is closed ?먮윭 ?닿껐
+        ✅ pymongo.MongoClient (동기) 사용 - Event loop is closed 에러 해결
         """
         try:
-            # ??MongoDB ?숆린 ?대씪?댁뼵???앹꽦 (pymongo)
+            # ✅ MongoDB 동기 클라이언트 생성 (pymongo)
             mongo_client = None
             try:
                 import pymongo
@@ -457,21 +457,21 @@ class MainWindow(QMainWindow):
                 port = int(os.getenv("MONGO_PORT", "27017"))
                 uri = os.getenv("MONGO_URI") or f"mongodb://{host}:{port}"
                 
-                # pymongo.MongoClient ?앹꽦 (?숆린)
+                # pymongo.MongoClient 생성 (동기)
                 mongo_client = pymongo.MongoClient(
                     uri,
                     serverSelectionTimeoutMS=2000,
                     directConnection=True,
                 )
-                # ?곌껐 ?뚯뒪??
+                # 연결 테스트
                 mongo_client.admin.command("ping")
-                logger.info("[MainWindow] ??MongoDB ?숆린 ?대씪?댁뼵???앹꽦 ?깃났 (pymongo)")
+                logger.info("[MainWindow] ✅ MongoDB 동기 클라이언트 생성 성공 (pymongo)")
                 
             except Exception as exc:
-                logger.warning("[MainWindow] MongoDB ?대씪?댁뼵???앹꽦 ?ㅽ뙣: %s ???ㅼ젙 ???遺덇?", exc)
+                logger.warning("[MainWindow] MongoDB 클라이언트 생성 실패: %s — 설정 저장 불가", exc)
                 mongo_client = None
 
-            # ?대? 罹먯떆???몄뒪?댁뒪媛 ?덉쑝硫??ъ궗??
+            # 이미 캐시된 인스턴스가 있으면 재사용
             if self._monitoring_dashboard is not None:
                 try:
                     if self._monitoring_dashboard.isVisible():
@@ -482,16 +482,16 @@ class MainWindow(QMainWindow):
                         self._monitoring_dashboard.show()
                         self._monitoring_dashboard.raise_()
                         self._monitoring_dashboard.activateWindow()
-                        logger.info("[MainWindow] ?쒖뒪??紐⑤땲???ъ뿴湲?)
+                        logger.info("[MainWindow] 시스템 모니터 재열기")
                         return
                 except Exception:
                     self._monitoring_dashboard = None
 
-            # StatusWidget ?꾪룷??
+            # StatusWidget 임포트
             StatusWidget = None
             for mod_path in (
-                "_data_01.ui.status_widget",
-                "data_01.ui.status_widget",
+                "_02_data.ui.status_widget",
+                "02_data.ui.status_widget",
             ):
                 try:
                     mod = importlib.import_module(mod_path)
@@ -504,7 +504,7 @@ class MainWindow(QMainWindow):
             if StatusWidget is None:
                 here = os.path.dirname(os.path.abspath(__file__))
                 repo_root = Path(here).parents[1] if len(Path(here).parents) > 1 else Path(here).parent
-                candidate = os.path.join(repo_root, "src", "data_01", "ui", "status_widget.py")
+                candidate = os.path.join(repo_root, "src", "02_data", "ui", "status_widget.py")
                 if os.path.isfile(candidate):
                     spec = importlib.util.spec_from_file_location("_status_widget", candidate)
                     if spec and spec.loader:
@@ -514,20 +514,20 @@ class MainWindow(QMainWindow):
 
             if StatusWidget is None:
                 from PyQt5.QtWidgets import QMessageBox
-                QMessageBox.warning(self, "紐⑤땲?곕쭅", "?쒖뒪??紐⑤땲?곕? 遺덈윭?????놁뒿?덈떎.")
+                QMessageBox.warning(self, "모니터링", "시스템 모니터를 불러올 수 없습니다.")
                 return
 
-            # ??pymongo ?숆린 ?대씪?댁뼵???꾨떖
+            # ✅ pymongo 동기 클라이언트 전달
             self._monitoring_dashboard = StatusWidget(parent=None, mongo_client=mongo_client)
             self._monitoring_dashboard.show()
             self._monitoring_dashboard.raise_()
             self._monitoring_dashboard.activateWindow()
-            logger.info("[MainWindow] ?쒖뒪??紐⑤땲??StatusWidget) ?대┝")
+            logger.info("[MainWindow] 시스템 모니터(StatusWidget) 열림")
         except Exception as e:
-            logger.error("[MainWindow] ?쒖뒪??紐⑤땲???닿린 ?ㅽ뙣: %s", e)
+            logger.error("[MainWindow] 시스템 모니터 열기 실패: %s", e)
 
     def _setup_monitoring_menu(self) -> None:
-        """硫붾돱諛붿뿉 '紐⑤땲?곕쭅' 硫붾돱? '?쒖뒪??紐⑤땲?곕쭅' ?≪뀡??異붽??⑸땲??"""
+        """메뉴바에 '모니터링' 메뉴와 '시스템 모니터링' 액션을 추가합니다."""
         try:
             from PyQt5.QtWidgets import QAction, QMenuBar
             menu_bar: Optional[Any] = self.menuBar()
@@ -535,17 +535,17 @@ class MainWindow(QMainWindow):
                 return
 
             for action in menu_bar.actions():
-                if "紐⑤땲?곕쭅" in action.text():
+                if "모니터링" in action.text():
                     return
 
-            monitoring_menu = menu_bar.addMenu("?뱤 紐⑤땲?곕쭅")
-            dashboard_action = QAction("?쒖뒪??紐⑤땲?곕쭅", self)
+            monitoring_menu = menu_bar.addMenu("📊 모니터링")
+            dashboard_action = QAction("시스템 모니터링", self)
             dashboard_action.setShortcut("Ctrl+Shift+M")
             dashboard_action.triggered.connect(self.open_monitoring_dashboard)
             monitoring_menu.addAction(dashboard_action)
-            logger.info("[MainWindow] 紐⑤땲?곕쭅 硫붾돱 異붽? ?꾨즺")
+            logger.info("[MainWindow] 모니터링 메뉴 추가 완료")
         except Exception as e:
-            logger.warning("[MainWindow] 紐⑤땲?곕쭅 硫붾돱 異붽? ?ㅽ뙣: %s", e)
+            logger.warning("[MainWindow] 모니터링 메뉴 추가 실패: %s", e)
 
     def debug_info(self) -> dict:
         return {
@@ -556,10 +556,10 @@ class MainWindow(QMainWindow):
         }
 
     def start(self) -> None:
-        logger.info("[MainWindow] ???쒖옉")
+        logger.info("[MainWindow] 앱 시작")
 
     def stop(self) -> None:
-        logger.info("[MainWindow] ??醫낅즺")
+        logger.info("[MainWindow] 앱 종료")
         try:
             for led in getattr(self, "_db_leds", []) or []:
                 try:

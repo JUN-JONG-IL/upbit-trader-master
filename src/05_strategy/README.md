@@ -1,96 +1,95 @@
-﻿# CHANGELOG
-# 2026-03-16 | Copilot | ?낃렇?덉씠?? 05_strategy README v4.0. 踰꾩쟾 ?듭씪.
-# 2026-03-13 | Copilot | ?낃렇?덉씠?? 05_strategy README v2.0. ?꾩껜 ?쒗뵆由?媛쒖슂/援ъ“/湲곕뒫/?덉떆/?섏〈??李멸퀬) 異붽?.
-# 2026-03-06 | Copilot | ?앹꽦: 05_strategy README 珥덉븞
+# CHANGELOG
+# 2026-03-16 | Copilot | 업그레이드: 05_strategy README v4.0. 버전 통일.
+# 2026-03-13 | Copilot | 업그레이드: 05_strategy README v2.0. 전체 템플릿(개요/구조/기능/예시/의존성/참고) 추가.
+# 2026-03-06 | Copilot | 생성: 05_strategy README 초안
 
 Version: v4.0
 Last Modified: 2026-03-16
 References:
-  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
-  - work_order/DB?ㅺ퀎.md
+  - work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md
+  - work_order/DB설계.md
 
-# src/05_strategy ???몃젅?대뵫 ?꾨왂 ?쒖뒪??
+# src/05_strategy — 트레이딩 전략 시스템
 
-## 媛쒖슂
+## 개요
 
-湲곌? ?먯씠?꾪듃湲??먮룞留ㅻℓ瑜??꾪븳 **?꾨왂 ?꾨젅?꾩썙??* 紐⑤뱢?낅땲??
-?쒓렇??愿由? ?ㅼ뼇???꾨왂 援ы쁽(蹂?숈꽦?뚰뙆쨌異붿꽭異붿쥌쨌DCA쨌洹몃━?쑣룹감?듦굅??, 諛깊뀒?ㅽ똿, ?뚮씪誘명꽣 理쒖쟻?? 由ъ뒪??愿由щ? ?듯빀?섏뿬 PAPER/LIVE 紐⑤뱶?먯꽌 ?댁쁺?⑸땲??
+기관 에이전트급 자동매매를 위한 **전략 프레임워크** 모듈입니다.
+시그널 관리, 다양한 전략 구현(변동성돌파·추세추종·DCA·그리드·차익거래), 백테스팅, 파라미터 최적화, 리스크 관리를 통합하여 PAPER/LIVE 모드에서 운영합니다.
 
-## ?붾젆?좊━ 援ъ“
+## 디렉토리 구조
 
 ```
 src/05_strategy/
-?쒋?? __init__.py                    # 紐⑤뱢 吏꾩엯??(二쇱슂 ?대옒???щ끂異?
-?쒋?? README.md                      # ???뚯씪
-?쒋?? core/                          # ?꾨왂 ?명봽??
-??  ?쒋?? __init__.py
-??  ?쒋?? signal_manager.py          # ?쒓렇???섏쭛쨌諛곕텇쨌?대깽??諛쒗뻾
-??  ?쒋?? base_strategy.py           # 異붿긽 湲곕낯 ?꾨왂 ?대옒??
-??  ?붴?? strategy_registry.py      # ?꾨왂 ?깅줉/議고쉶 ?덉??ㅽ듃由?
-?쒋?? strategies/                    # ?ㅼ젣 ?꾨왂 援ы쁽泥?
-??  ?쒋?? __init__.py
-??  ?쒋?? volatility_breakout.py     # 蹂?숈꽦 ?뚰뙆 ?꾨왂
-??  ?쒋?? trend_following.py         # 異붿꽭 異붿쥌 ?꾨왂
-??  ?쒋?? mean_reversion.py          # ?됯퇏 ?뚭? ?꾨왂
-??  ?쒋?? dca_strategy.py            # DCA (Dollar Cost Averaging)
-??  ?쒋?? grid_strategy.py           # 洹몃━???꾨왂
-??  ?붴?? arbitrage_strategy.py     # 李⑥씡嫄곕옒 ?꾨왂
-?쒋?? widgets/                       # ?꾨왂 愿由?UI
-??  ?쒋?? __init__.py
-??  ?쒋?? backtest/                  # 諛깊뀒?ㅽ똿 UI
-??  ??  ?쒋?? __init__.py
-??  ??  ?붴?? ui/
-??  ?붴?? parameter_optimizer/       # ?뚮씪誘명꽣 理쒖쟻??UI
-??      ?쒋?? __init__.py
-??      ?붴?? ui/
-?쒋?? risk/                          # 由ъ뒪??愿由?
-??  ?쒋?? __init__.py
-??  ?쒋?? position_sizer.py          # ?ъ????ш린 寃곗젙
-??  ?쒋?? stop_loss.py               # ?먯젅留?愿由?
-??  ?붴?? portfolio_risk.py         # ?ы듃?대━??由ъ뒪??
-?붴?? utils/                         # 怨듯넻 ?좏떥由ы떚
-    ?쒋?? __init__.py
-    ?쒋?? technical_indicators.py    # 湲곗닠 吏???ы띁
-    ?붴?? strategy_validator.py     # ?꾨왂 ?좏슚??寃利?
+├── __init__.py                    # 모듈 진입점 (주요 클래스 재노출)
+├── README.md                      # 이 파일
+├── core/                          # 전략 인프라
+│   ├── __init__.py
+│   ├── signal_manager.py          # 시그널 수집·배분·이벤트 발행
+│   ├── base_strategy.py           # 추상 기본 전략 클래스
+│   └── strategy_registry.py      # 전략 등록/조회 레지스트리
+├── strategies/                    # 실제 전략 구현체
+│   ├── __init__.py
+│   ├── volatility_breakout.py     # 변동성 돌파 전략
+│   ├── trend_following.py         # 추세 추종 전략
+│   ├── mean_reversion.py          # 평균 회귀 전략
+│   ├── dca_strategy.py            # DCA (Dollar Cost Averaging)
+│   ├── grid_strategy.py           # 그리드 전략
+│   └── arbitrage_strategy.py     # 차익거래 전략
+├── widgets/                       # 전략 관리 UI
+│   ├── __init__.py
+│   ├── backtest/                  # 백테스팅 UI
+│   │   ├── __init__.py
+│   │   └── ui/
+│   └── parameter_optimizer/       # 파라미터 최적화 UI
+│       ├── __init__.py
+│       └── ui/
+├── risk/                          # 리스크 관리
+│   ├── __init__.py
+│   ├── position_sizer.py          # 포지션 크기 결정
+│   ├── stop_loss.py               # 손절매 관리
+│   └── portfolio_risk.py         # 포트폴리오 리스크
+└── utils/                         # 공통 유틸리티
+    ├── __init__.py
+    ├── technical_indicators.py    # 기술 지표 헬퍼
+    └── strategy_validator.py     # 전략 유효성 검증
 ```
 
-## 二쇱슂 湲곕뒫
+## 주요 기능
 
-- **?꾨왂 ?덉??ㅽ듃由?*: `StrategyRegistry`濡??꾨왂???숈쟻?쇰줈 ?깅줉쨌議고쉶쨌?ㅽ뻾
-- **?쒓렇??愿由?*: `SignalManager`濡??ㅼ쨷 ?꾨왂???쒓렇?먯쓣 ?섏쭛?섍퀬 ?대깽??踰꾩뒪??諛쒗뻾
-- **諛깊뀒?ㅽ똿 ?붿쭊**: 怨쇨굅 ?곗씠?곕줈 ?꾨왂 ?깅뒫 ?됯? (?섏씡瑜? MDD, ?ㅽ봽 吏??
-- **?뚮씪誘명꽣 理쒖쟻??*: Grid Search / Bayesian Optimization 湲곕컲 ?뚮씪誘명꽣 ?쒕떇
-- **由ъ뒪??愿由?*: ?ъ????ш린 議곗젙, ?먯젅留? ?ы듃?대━???섏? 由ъ뒪???쒖뼱
-- **?꾨왂 援ы쁽泥?*: 蹂?숈꽦?뚰뙆, 異붿꽭異붿쥌, ?됯퇏?뚭?, DCA, 洹몃━?? 李⑥씡嫄곕옒
+- **전략 레지스트리**: `StrategyRegistry`로 전략을 동적으로 등록·조회·실행
+- **시그널 관리**: `SignalManager`로 다중 전략의 시그널을 수집하고 이벤트 버스에 발행
+- **백테스팅 엔진**: 과거 데이터로 전략 성능 평가 (수익률, MDD, 샤프 지수)
+- **파라미터 최적화**: Grid Search / Bayesian Optimization 기반 파라미터 튜닝
+- **리스크 관리**: 포지션 크기 조정, 손절매, 포트폴리오 수준 리스크 제어
+- **전략 구현체**: 변동성돌파, 추세추종, 평균회귀, DCA, 그리드, 차익거래
 
-## ?ъ슜 ?덉떆
+## 사용 예시
 
 ```python
 from src._05_strategy import SignalManager, VolatilityBreakoutStrategy
 
-# ?쒓렇??留ㅻ땲? 珥덇린??
+# 시그널 매니저 초기화
 manager = SignalManager(config, db_ip, db_port, db_id, db_password, queue)
 manager.register("volatility_breakout", VolatilityBreakoutStrategy(queue))
 manager.start()
 
-# ?꾨왂 吏곸젒 ?ㅽ뻾
+# 전략 직접 실행
 strategy = VolatilityBreakoutStrategy(queue)
 signal = strategy.generate_signal("KRW-BTC", candle_data)
 print(signal)  # Signal(action='BUY', price=50000000, confidence=0.85)
 ```
 
-## ?섏〈??
+## 의존성
 
-- `src/01_core/` : ?ㅼ젙 愿由? ?대깽??踰꾩뒪, 湲곕낯 ?명봽??
-- `src/data_01/` : TimescaleDB (OHLCV ?곗씠??, Redis (?쒓렇??罹먯떆)
-- `src/04_chart/indicators/` : 湲곗닠 吏??(MA, RSI, MACD ??
-- `src/13_compute/` : 吏??怨꾩궛 ?붿쭊 (O(1) 利앸텇 怨꾩궛)
-- PyQt5 : UI ?꾩젽
-- pandas, numpy : ?곗씠??泥섎━
+- `src/01_core/` : 설정 관리, 이벤트 버스, 기본 인프라
+- `src/02_data/` : TimescaleDB (OHLCV 데이터), Redis (시그널 캐시)
+- `src/04_chart/indicators/` : 기술 지표 (MA, RSI, MACD 등)
+- `src/13_compute/` : 지표 계산 엔진 (O(1) 증분 계산)
+- PyQt5 : UI 위젯
+- pandas, numpy : 데이터 처리
 
-## 李멸퀬 臾몄꽌
+## 참고 문서
 
-- [`work_order/6_?④퀎_PAPER_紐⑤뱶_援ы쁽.md`](../../work_order/6_?④퀎_PAPER_紐⑤뱶_援ы쁽.md)
-- [`work_order/7_?④퀎_LIVE_紐⑤뱶_援ы쁽.md`](../../work_order/7_?④퀎_LIVE_紐⑤뱶_援ы쁽.md)
-- [`work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md`](../../work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md)
-
+- [`work_order/6_단계_PAPER_모드_구현.md`](../../work_order/6_단계_PAPER_모드_구현.md)
+- [`work_order/7_단계_LIVE_모드_구현.md`](../../work_order/7_단계_LIVE_모드_구현.md)
+- [`work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md`](../../work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md)
