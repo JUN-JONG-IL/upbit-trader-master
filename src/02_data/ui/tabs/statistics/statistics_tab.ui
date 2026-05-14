@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+  <class>StatisticsTab</class>
+  <widget class="QWidget" name="StatisticsTab">
+    <property name="geometry">
+      <rect>
+        <x>0</x><y>0</y><width>1600</width><height>900</height>
+      </rect>
+    </property>
+
+    <!-- 전역 스타일시트: 버튼 강조 (흰색/투명 배경 사용 안함) -->
+    <property name="styleSheet">
+      <string notr="true"><![CDATA[
+/* Top toolbar primary */
+QPushButton#btn_pause, QPushButton#btn_refresh, QPushButton#btn_settings {
+  background-color: #0ea5a4; color: #ffffff; border: 1px solid #0b7280;
+  border-radius: 6px; padding: 4px 8px;
+}
+QPushButton#btn_export_selected, QPushButton#btn_export_all, QPushButton#btn_load_history {
+  background-color: #2563eb; color: #ffffff; border: 1px solid #1e40af;
+  border-radius: 6px; padding: 4px 8px;
+}
+QPushButton#btn_clear_selected, QPushButton#btn_clear_all {
+  background-color: #ef4444; color: #ffffff; border: 1px solid #b91c1c;
+  border-radius: 6px; padding: 4px 8px;
+}
+/* Default for other buttons (neutral) */
+QPushButton {
+  background-color: #111827; color: #ffffff; border: 1px solid #374151;
+  border-radius: 6px; padding: 4px 6px;
+}
+QPushButton:hover { background-color: #0f1724; }
+QPushButton:pressed { background-color: #0b1220; }
+]]></string>
+    </property>
+
+    <layout class="QVBoxLayout" name="verticalLayout_main">
+      <property name="spacing"><number>6</number></property>
+
+      <!-- TOP TOOLBAR -->
+      <item>
+        <widget class="QFrame" name="frame_top_toolbar">
+          <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+          <layout class="QHBoxLayout" name="hbox_top_toolbar">
+            <property name="spacing"><number>8</number></property>
+
+            <item>
+              <widget class="QPushButton" name="btn_pause">
+                <property name="text"><string>일시정지</string></property>
+              </widget>
+            </item>
+
+            <item>
+              <widget class="QPushButton" name="btn_refresh">
+                <property name="text"><string>새로고침</string></property>
+              </widget>
+            </item>
+
+            <item>
+              <widget class="QPushButton" name="btn_export_selected">
+                <property name="text"><string>선택 내보내기</string></property>
+              </widget>
+            </item>
+
+            <item>
+              <widget class="QPushButton" name="btn_export_all">
+                <property name="text"><string>전체 내보내기</string></property>
+              </widget>
+            </item>
+
+            <item>
+              <widget class="QPushButton" name="btn_clear_selected">
+                <property name="text"><string>선택 지우기</string></property>
+              </widget>
+            </item>
+
+            <item>
+              <widget class="QPushButton" name="btn_clear_all">
+                <property name="text"><string>전체 지우기</string></property>
+              </widget>
+            </item>
+
+            <!-- Load history 버튼 (툴팁 포함) -->
+            <item>
+              <widget class="QPushButton" name="btn_load_history">
+                <property name="text"><string>Load history</string></property>
+                <property name="toolTip"><string>로그 파일(upbit-trader.log)을 불러옵니다</string></property>
+              </widget>
+            </item>
+
+            <item>
+              <widget class="QPushButton" name="btn_settings">
+                <property name="text"><string>설정</string></property>
+              </widget>
+            </item>
+
+            <item>
+              <spacer name="spacer_toolbar_right">
+                <property name="orientation"><enum>Qt::Horizontal</enum></property>
+              </spacer>
+            </item>
+
+            <item>
+              <widget class="QLabel" name="lbl_toolbar_status">
+                <property name="text"><string>상태: 대기</string></property>
+              </widget>
+            </item>
+
+          </layout>
+        </widget>
+      </item>
+
+      <!-- Main TabWidget: tabs 1..7 -->
+      <item>
+        <widget class="QTabWidget" name="tabWidget_main_tabs">
+          <property name="tabPosition"><enum>QTabWidget::North</enum></property>
+
+          <!-- TAB 1 -->
+          <widget class="QWidget" name="tab_1">
+            <attribute name="title"><string>1</string></attribute>
+            <layout class="QVBoxLayout" name="vbox_tab1_main">
+              <property name="spacing"><number>6</number></property>
+
+              <!-- filters frame omitted for brevity but kept in structure -->
+              <item>
+                <widget class="QFrame" name="frame_tab1_filters">
+                  <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+                  <layout class="QHBoxLayout" name="hbox_tab1_filters">
+                    <property name="spacing"><number>6</number></property>
+                    <!-- checkboxes, spinbox, search, buttons -->
+                    <item><widget class="QCheckBox" name="chk_tab1_all"><property name="text"><string>All</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab1_ws"><property name="text"><string>WebSocket</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab1_exchange_api"><property name="text"><string>EXCHANGE API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab1_quotation_api"><property name="text"><string>QUOTATION API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab1_info"><property name="text"><string>Info</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab1_warning"><property name="text"><string>Warning</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab1_error"><property name="text"><string>Error</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab1_debug"><property name="text"><string>Debug</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab1_autoscroll"><property name="text"><string>자동 스크롤</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QSpinBox" name="sb_tab1_max_rows"><property name="minimum"><number>100</number></property><property name="maximum"><number>50000</number></property><property name="value"><number>500</number></property><property name="singleStep"><number>100</number></property></widget></item>
+                    <item><widget class="QLineEdit" name="le_tab1_search"><property name="placeholderText"><string>검색어 (탭1 전용)</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab1_show_all"><property name="text"><string>전체 보기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab1_export"><property name="text"><string>내보내기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab1_clear"><property name="text"><string>지우기</string></property></widget></item>
+                    <item><spacer name="spacer_tab1_end"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+                  </layout>
+                </widget>
+              </item>
+
+              <item>
+                <widget class="QTabWidget" name="tabWidget_tab1_inner">
+                  <property name="tabPosition"><enum>QTabWidget::North</enum></property>
+
+                  <widget class="QWidget" name="tab1_inner_table">
+                    <attribute name="title"><string>Table</string></attribute>
+                    <layout class="QVBoxLayout" name="vbox_tab1_table_inner">
+                      <item>
+                        <widget class="QTableWidget" name="table_tab_1">
+                          <property name="alternatingRowColors"><bool>true</bool></property>
+                          <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+                          <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+                          <property name="columnCount"><number>5</number></property>
+                          <column><property name="text"><string>시간</string></property></column>
+                          <column><property name="text"><string>레벨</string></property></column>
+                          <column><property name="text"><string>카테고리</string></property></column>
+                          <column><property name="text"><string>모듈</string></property></column>
+                          <column><property name="text"><string>메시지</string></property></column>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                  <widget class="QWidget" name="tab1_inner_raw">
+                    <attribute name="title"><string>Raw</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTextEdit" name="text_log_tab_1">
+                          <property name="readOnly"><bool>true</bool></property>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                </widget>
+              </item>
+            </layout>
+          </widget>
+
+          <!-- TAB 2 -->
+          <widget class="QWidget" name="tab_2">
+            <attribute name="title"><string>2</string></attribute>
+            <layout class="QVBoxLayout" name="vbox_tab2_main">
+              <property name="spacing"><number>6</number></property>
+              <item>
+                <widget class="QFrame" name="frame_tab2_filters">
+                  <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+                  <layout class="QHBoxLayout" name="hbox_tab2_filters">
+                    <property name="spacing"><number>6</number></property>
+                    <!-- same filter controls as tab1 (objectNames unique) -->
+                    <item><widget class="QCheckBox" name="chk_tab2_all"><property name="text"><string>All</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab2_ws"><property name="text"><string>WebSocket</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab2_exchange_api"><property name="text"><string>EXCHANGE API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab2_quotation_api"><property name="text"><string>QUOTATION API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab2_info"><property name="text"><string>Info</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab2_warning"><property name="text"><string>Warning</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab2_error"><property name="text"><string>Error</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab2_debug"><property name="text"><string>Debug</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab2_autoscroll"><property name="text"><string>자동 스크롤</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QSpinBox" name="sb_tab2_max_rows"><property name="minimum"><number>100</number></property><property name="maximum"><number>50000</number></property><property name="value"><number>500</number></property><property name="singleStep"><number>100</number></property></widget></item>
+                    <item><widget class="QLineEdit" name="le_tab2_search"><property name="placeholderText"><string>검색어 (탭2 전용)</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab2_show_all"><property name="text"><string>전체 보기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab2_export"><property name="text"><string>내보내기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab2_clear"><property name="text"><string>지우기</string></property></widget></item>
+                    <item><spacer name="spacer_tab2_end"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+                  </layout>
+                </widget>
+              </item>
+
+              <item>
+                <widget class="QTabWidget" name="tabWidget_tab2_inner">
+                  <property name="tabPosition"><enum>QTabWidget::North</enum></property>
+
+                  <widget class="QWidget" name="tab2_inner_table">
+                    <attribute name="title"><string>Table</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTableWidget" name="table_tab_2">
+                          <property name="alternatingRowColors"><bool>true</bool></property>
+                          <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+                          <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+                          <property name="columnCount"><number>5</number></property>
+                          <column><property name="text"><string>시간</string></property></column>
+                          <column><property name="text"><string>레벨</string></property></column>
+                          <column><property name="text"><string>카테고리</string></property></column>
+                          <column><property name="text"><string>모듈</string></property></column>
+                          <column><property name="text"><string>메시지</string></property></column>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                  <widget class="QWidget" name="tab2_inner_raw">
+                    <attribute name="title"><string>Raw</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTextEdit" name="text_log_tab_2">
+                          <property name="readOnly"><bool>true</bool></property>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                </widget>
+              </item>
+            </layout>
+          </widget>
+
+          <!-- TAB 3 -->
+          <widget class="QWidget" name="tab_3">
+            <attribute name="title"><string>3</string></attribute>
+            <layout class="QVBoxLayout" name="vbox_tab3_main">
+              <property name="spacing"><number>6</number></property>
+              <!-- filters and inner tab like above -->
+              <item>
+                <widget class="QFrame" name="frame_tab3_filters">
+                  <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+                  <layout class="QHBoxLayout" name="hbox_tab3_filters">
+                    <property name="spacing"><number>6</number></property>
+                    <item><widget class="QCheckBox" name="chk_tab3_all"><property name="text"><string>All</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab3_ws"><property name="text"><string>WebSocket</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab3_exchange_api"><property name="text"><string>EXCHANGE API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab3_quotation_api"><property name="text"><string>QUOTATION API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab3_info"><property name="text"><string>Info</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab3_warning"><property name="text"><string>Warning</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab3_error"><property name="text"><string>Error</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab3_debug"><property name="text"><string>Debug</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab3_autoscroll"><property name="text"><string>자동 스크롤</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QSpinBox" name="sb_tab3_max_rows"><property name="minimum"><number>100</number></property><property name="maximum"><number>50000</number></property><property name="value"><number>500</number></property><property name="singleStep"><number>100</number></property></widget></item>
+                    <item><widget class="QLineEdit" name="le_tab3_search"><property name="placeholderText"><string>검색어 (탭3 전용)</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab3_show_all"><property name="text"><string>전체 보기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab3_export"><property name="text"><string>내보내기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab3_clear"><property name="text"><string>지우기</string></property></widget></item>
+                    <item><spacer name="spacer_tab3_end"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+                  </layout>
+                </widget>
+              </item>
+
+              <item>
+                <widget class="QTabWidget" name="tabWidget_tab3_inner">
+                  <property name="tabPosition"><enum>QTabWidget::North</enum></property>
+                  <widget class="QWidget" name="tab3_inner_table">
+                    <attribute name="title"><string>Table</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTableWidget" name="table_tab_3">
+                          <property name="alternatingRowColors"><bool>true</bool></property>
+                          <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+                          <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+                          <property name="columnCount"><number>5</number></property>
+                          <column><property name="text"><string>시간</string></property></column>
+                          <column><property name="text"><string>레벨</string></property></column>
+                          <column><property name="text"><string>카테고리</string></property></column>
+                          <column><property name="text"><string>모듈</string></property></column>
+                          <column><property name="text"><string>메시지</string></property></column>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                  <widget class="QWidget" name="tab3_inner_raw">
+                    <attribute name="title"><string>Raw</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTextEdit" name="text_log_tab_3">
+                          <property name="readOnly"><bool>true</bool></property>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                </widget>
+              </item>
+            </layout>
+          </widget>
+
+          <!-- TAB 4 -->
+          <widget class="QWidget" name="tab_4">
+            <attribute name="title"><string>4</string></attribute>
+            <layout class="QVBoxLayout" name="vbox_tab4_main">
+              <property name="spacing"><number>6</number></property>
+              <!-- filters and inner tab like previous tabs -->
+              <item>
+                <widget class="QFrame" name="frame_tab4_filters">
+                  <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+                  <layout class="QHBoxLayout" name="hbox_tab4_filters">
+                    <property name="spacing"><number>6</number></property>
+                    <item><widget class="QCheckBox" name="chk_tab4_all"><property name="text"><string>All</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab4_ws"><property name="text"><string>WebSocket</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab4_exchange_api"><property name="text"><string>EXCHANGE API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab4_quotation_api"><property name="text"><string>QUOTATION API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab4_info"><property name="text"><string>Info</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab4_warning"><property name="text"><string>Warning</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab4_error"><property name="text"><string>Error</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab4_debug"><property name="text"><string>Debug</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab4_autoscroll"><property name="text"><string>자동 스크롤</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QSpinBox" name="sb_tab4_max_rows"><property name="minimum"><number>100</number></property><property name="maximum"><number>50000</number></property><property name="value"><number>500</number></property><property name="singleStep"><number>100</number></property></widget></item>
+                    <item><widget class="QLineEdit" name="le_tab4_search"><property name="placeholderText"><string>검색어 (탭4 전용)</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab4_show_all"><property name="text"><string>전체 보기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab4_export"><property name="text"><string>내보내기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab4_clear"><property name="text"><string>지우기</string></property></widget></item>
+                    <item><spacer name="spacer_tab4_end"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+                  </layout>
+                </widget>
+              </item>
+
+              <item>
+                <widget class="QTabWidget" name="tabWidget_tab4_inner">
+                  <property name="tabPosition"><enum>QTabWidget::North</enum></property>
+                  <widget class="QWidget" name="tab4_inner_table">
+                    <attribute name="title"><string>Table</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTableWidget" name="table_tab_4">
+                          <property name="alternatingRowColors"><bool>true</bool></property>
+                          <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+                          <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+                          <property name="columnCount"><number>5</number></property>
+                          <column><property name="text"><string>시간</string></property></column>
+                          <column><property name="text"><string>레벨</string></property></column>
+                          <column><property name="text"><string>카테고리</string></property></column>
+                          <column><property name="text"><string>모듈</string></property></column>
+                          <column><property name="text"><string>메시지</string></property></column>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                  <widget class="QWidget" name="tab4_inner_raw">
+                    <attribute name="title"><string>Raw</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTextEdit" name="text_log_tab_4">
+                          <property name="readOnly"><bool>true</bool></property>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                </widget>
+              </item>
+            </layout>
+          </widget>
+
+          <!-- TAB 5 -->
+          <widget class="QWidget" name="tab_5">
+            <attribute name="title"><string>5</string></attribute>
+            <layout class="QVBoxLayout" name="vbox_tab5_main">
+              <property name="spacing"><number>6</number></property>
+              <!-- filters + inner tab same pattern -->
+              <item>
+                <widget class="QFrame" name="frame_tab5_filters">
+                  <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+                  <layout class="QHBoxLayout" name="hbox_tab5_filters">
+                    <property name="spacing"><number>6</number></property>
+                    <item><widget class="QCheckBox" name="chk_tab5_all"><property name="text"><string>All</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab5_ws"><property name="text"><string>WebSocket</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab5_exchange_api"><property name="text"><string>EXCHANGE API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab5_quotation_api"><property name="text"><string>QUOTATION API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab5_info"><property name="text"><string>Info</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab5_warning"><property name="text"><string>Warning</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab5_error"><property name="text"><string>Error</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab5_debug"><property name="text"><string>Debug</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab5_autoscroll"><property name="text"><string>자동 스크롤</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QSpinBox" name="sb_tab5_max_rows"><property name="minimum"><number>100</number></property><property name="maximum"><number>50000</number></property><property name="value"><number>500</number></property><property name="singleStep"><number>100</number></property></widget></item>
+                    <item><widget class="QLineEdit" name="le_tab5_search"><property name="placeholderText"><string>검색어 (탭5 전용)</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab5_show_all"><property name="text"><string>전체 보기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab5_export"><property name="text"><string>내보내기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab5_clear"><property name="text"><string>지우기</string></property></widget></item>
+                    <item><spacer name="spacer_tab5_end"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+                  </layout>
+                </widget>
+              </item>
+
+              <item>
+                <widget class="QTabWidget" name="tabWidget_tab5_inner">
+                  <property name="tabPosition"><enum>QTabWidget::North</enum></property>
+                  <widget class="QWidget" name="tab5_inner_table">
+                    <attribute name="title"><string>Table</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTableWidget" name="table_tab_5">
+                          <property name="alternatingRowColors"><bool>true</bool></property>
+                          <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+                          <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+                          <property name="columnCount"><number>5</number></property>
+                          <column><property name="text"><string>시간</string></property></column>
+                          <column><property name="text"><string>레벨</string></property></column>
+                          <column><property name="text"><string>카테고리</string></property></column>
+                          <column><property name="text"><string>모듈</string></property></column>
+                          <column><property name="text"><string>메시지</string></property></column>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                  <widget class="QWidget" name="tab5_inner_raw">
+                    <attribute name="title"><string>Raw</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTextEdit" name="text_log_tab_5">
+                          <property name="readOnly"><bool>true</bool></property>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                </widget>
+              </item>
+            </layout>
+          </widget>
+
+          <!-- TAB 6 -->
+          <widget class="QWidget" name="tab_6">
+            <attribute name="title"><string>6</string></attribute>
+            <layout class="QVBoxLayout" name="vbox_tab6_main">
+              <property name="spacing"><number>6</number></property>
+              <item>
+                <widget class="QFrame" name="frame_tab6_filters">
+                  <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+                  <layout class="QHBoxLayout" name="hbox_tab6_filters">
+                    <property name="spacing"><number>6</number></property>
+                    <item><widget class="QCheckBox" name="chk_tab6_all"><property name="text"><string>All</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab6_ws"><property name="text"><string>WebSocket</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab6_exchange_api"><property name="text"><string>EXCHANGE API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab6_quotation_api"><property name="text"><string>QUOTATION API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab6_info"><property name="text"><string>Info</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab6_warning"><property name="text"><string>Warning</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab6_error"><property name="text"><string>Error</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab6_debug"><property name="text"><string>Debug</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab6_autoscroll"><property name="text"><string>자동 스크롤</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QSpinBox" name="sb_tab6_max_rows"><property name="minimum"><number>100</number></property><property name="maximum"><number>50000</number></property><property name="value"><number>500</number></property><property name="singleStep"><number>100</number></property></widget></item>
+                    <item><widget class="QLineEdit" name="le_tab6_search"><property name="placeholderText"><string>검색어 (탭6 전용)</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab6_show_all"><property name="text"><string>전체 보기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab6_export"><property name="text"><string>내보내기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab6_clear"><property name="text"><string>지우기</string></property></widget></item>
+                    <item><spacer name="spacer_tab6_end"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+                  </layout>
+                </widget>
+              </item>
+
+              <item>
+                <widget class="QTabWidget" name="tabWidget_tab6_inner">
+                  <property name="tabPosition"><enum>QTabWidget::North</enum></property>
+                  <widget class="QWidget" name="tab6_inner_table">
+                    <attribute name="title"><string>Table</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTableWidget" name="table_tab_6">
+                          <property name="alternatingRowColors"><bool>true</bool></property>
+                          <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+                          <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+                          <property name="columnCount"><number>5</number></property>
+                          <column><property name="text"><string>시간</string></property></column>
+                          <column><property name="text"><string>레벨</string></property></column>
+                          <column><property name="text"><string>카테고리</string></property></column>
+                          <column><property name="text"><string>모듈</string></property></column>
+                          <column><property name="text"><string>메시지</string></property></column>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                  <widget class="QWidget" name="tab6_inner_raw">
+                    <attribute name="title"><string>Raw</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTextEdit" name="text_log_tab_6">
+                          <property name="readOnly"><bool>true</bool></property>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                </widget>
+              </item>
+            </layout>
+          </widget>
+
+          <!-- TAB 7 -->
+          <widget class="QWidget" name="tab_7">
+            <attribute name="title"><string>7</string></attribute>
+            <layout class="QVBoxLayout" name="vbox_tab7_main">
+              <property name="spacing"><number>6</number></property>
+              <item>
+                <widget class="QFrame" name="frame_tab7_filters">
+                  <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+                  <layout class="QHBoxLayout" name="hbox_tab7_filters">
+                    <property name="spacing"><number>6</number></property>
+                    <item><widget class="QCheckBox" name="chk_tab7_all"><property name="text"><string>All</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab7_ws"><property name="text"><string>WebSocket</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab7_exchange_api"><property name="text"><string>EXCHANGE API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab7_quotation_api"><property name="text"><string>QUOTATION API</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab7_info"><property name="text"><string>Info</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab7_warning"><property name="text"><string>Warning</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab7_error"><property name="text"><string>Error</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab7_debug"><property name="text"><string>Debug</string></property></widget></item>
+                    <item><widget class="QCheckBox" name="chk_tab7_autoscroll"><property name="text"><string>자동 스크롤</string></property><property name="checked"><bool>true</bool></property></widget></item>
+                    <item><widget class="QSpinBox" name="sb_tab7_max_rows"><property name="minimum"><number>100</number></property><property name="maximum"><number>50000</number></property><property name="value"><number>500</number></property><property name="singleStep"><number>100</number></property></widget></item>
+                    <item><widget class="QLineEdit" name="le_tab7_search"><property name="placeholderText"><string>검색어 (탭7 전용)</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab7_show_all"><property name="text"><string>전체 보기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab7_export"><property name="text"><string>내보내기</string></property></widget></item>
+                    <item><widget class="QPushButton" name="btn_tab7_clear"><property name="text"><string>지우기</string></property></widget></item>
+                    <item><spacer name="spacer_tab7_end"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+                  </layout>
+                </widget>
+              </item>
+
+              <item>
+                <widget class="QTabWidget" name="tabWidget_tab7_inner">
+                  <property name="tabPosition"><enum>QTabWidget::North</enum></property>
+                  <widget class="QWidget" name="tab7_inner_table">
+                    <attribute name="title"><string>Table</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTableWidget" name="table_tab_7">
+                          <property name="alternatingRowColors"><bool>true</bool></property>
+                          <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+                          <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+                          <property name="columnCount"><number>5</number></property>
+                          <column><property name="text"><string>시간</string></property></column>
+                          <column><property name="text"><string>레벨</string></property></column>
+                          <column><property name="text"><string>카테고리</string></property></column>
+                          <column><property name="text"><string>모듈</string></property></column>
+                          <column><property name="text"><string>메시지</string></property></column>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                  <widget class="QWidget" name="tab7_inner_raw">
+                    <attribute name="title"><string>Raw</string></attribute>
+                    <layout class="QVBoxLayout">
+                      <item>
+                        <widget class="QTextEdit" name="text_log_tab_7">
+                          <property name="readOnly"><bool>true</bool></property>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+
+                </widget>
+              </item>
+            </layout>
+          </widget>
+
+        </widget>
+      </item>
+
+    </layout>
+  </widget>
+
+  <resources/>
+  <connections/>
+</ui>

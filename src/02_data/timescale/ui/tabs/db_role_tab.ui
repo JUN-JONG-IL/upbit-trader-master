@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DbRoleTab</class>
+ <widget class="QWidget" name="DbRoleTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1100</width>
+    <height>760</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DB 역할 안내</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #FFFFFF;
+    color: #1E293B;
+    font-family: &quot;맑은 고딕&quot;, &quot;Segoe UI&quot;;
+    font-size: 9pt;
+}
+QScrollArea {
+    border: none;
+    background-color: #F8F9FA;
+}
+QScrollBar:vertical {
+    border: none;
+    background: #F1F5F9;
+    width: 8px;
+    margin: 0;
+    border-radius: 4px;
+}
+QScrollBar::handle:vertical {
+    background: #CBD5E1;
+    border-radius: 4px;
+    min-height: 20px;
+}
+QScrollBar::handle:vertical:hover {
+    background: #94A3B8;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+}
+QFrame#frame_header {
+    background-color: #2563EB;
+    border-radius: 6px;
+}
+QLabel#label_title {
+    color: #FFFFFF;
+    font-size: 14pt;
+    font-weight: bold;
+}
+QLabel#label_subtitle {
+    color: #BFDBFE;
+    font-size: 9pt;
+}
+QFrame#frame_section1, QFrame#frame_section2, QFrame#frame_section3, QFrame#frame_section4 {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+}
+QLabel#label_sec1_title, QLabel#label_sec2_title, QLabel#label_sec3_title, QLabel#label_sec4_title {
+    color: #1E293B;
+    font-size: 11pt;
+    font-weight: bold;
+    border-bottom: 2px solid #E2E8F0;
+    padding-bottom: 4px;
+}
+QLabel.body_text {
+    color: #334155;
+    font-size: 9pt;
+    line-height: 1.5;
+}
+QFrame#frame_badge_warm {
+    background-color: #DBEAFE;
+    border: 1px solid #93C5FD;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+QLabel#label_badge_warm {
+    color: #1D4ED8;
+    font-weight: bold;
+    font-size: 8pt;
+}
+QFrame#frame_perf {
+    background-color: #F0FDF4;
+    border-left: 4px solid #16A34A;
+    border-radius: 4px;
+}
+QLabel#label_perf_text {
+    color: #166534;
+    font-size: 8pt;
+}
+</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_main">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <widget class="QWidget" name="scrollContents">
+      <layout class="QVBoxLayout" name="vl_scroll">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <property name="leftMargin">
+        <number>16</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>16</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <!-- 헤더 배너 -->
+       <item>
+        <widget class="QFrame" name="frame_header">
+         <layout class="QVBoxLayout" name="vl_header">
+          <property name="leftMargin">
+           <number>20</number>
+          </property>
+          <property name="topMargin">
+           <number>16</number>
+          </property>
+          <property name="rightMargin">
+           <number>20</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_title">
+            <property name="text">
+             <string>🗄️ TimescaleDB — Warm Tier 중간 저장소</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_subtitle">
+            <property name="text">
+             <string>ALL-IN-ONE 통합 트레이딩 플랫폼의 시계열 데이터 영구 저장 및 집계 엔진</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 섹션 1: TimescaleDB란? -->
+       <item>
+        <widget class="QFrame" name="frame_section1">
+         <layout class="QVBoxLayout" name="vl_sec1">
+          <property name="leftMargin">
+           <number>16</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>16</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_sec1_title">
+            <property name="text">
+             <string>📌 TimescaleDB란?</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_sec1_body">
+            <property name="text">
+             <string>TimescaleDB는 PostgreSQL을 기반으로 시계열(Time-Series) 데이터를 고성능으로 저장·조회·분석하기 위해 설계된 오픈소스 데이터베이스 확장입니다.
+본 플랫폼에서는 Warm Tier(중간 저장소) 역할로, Kafka 소비 후 영구 보관이 필요한 모든 시계열 데이터를 수용합니다.
+
+포트: 58529  |  DB: upbit_trades  |  데이터 보존: 3개월(Hot) / 1년(Warm)  |  압축률 목표: 90%
+대상 자산: 암호화폐(업비트·빗썸·바이낸스) / 국내주식(KRX) / 해외주식(NYSE·NASDAQ) / 파생상품(CME·CBOE)</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #334155; font-size: 9pt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 섹션 2: 저장 데이터 -->
+       <item>
+        <widget class="QFrame" name="frame_section2">
+         <layout class="QVBoxLayout" name="vl_sec2">
+          <property name="leftMargin">
+           <number>16</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>16</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_sec2_title">
+            <property name="text">
+             <string>💾 저장 데이터 목록 (테이블별)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_sec2_body">
+            <property name="text">
+             <string>• candles_1m / candles_5m / candles_1h
+   암호화폐·주식 OHLCV 캔들 데이터 (1분/5분/1시간) — Hypertable, 자동 파티셔닝
+
+• market_ticks
+   실시간 체결 데이터 (Kafka 소비 후 영구 보관) — 고빈도 삽입 최적화
+
+• orderbook_snapshots
+   호가 스냅샷 (10단계 호가창) — 매 틱 저장, 압축 정책 적용
+
+• gap_queue
+   누락 데이터(Gap) 백필 작업 큐 — 자동 감지 후 재수집 트리거
+
+• technical_indicators
+   기술적 지표 (RSI / MACD / Bollinger Band 등) 영구 저장소 — AI/ML 피처 공급</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #334155; font-size: 9pt; line-height: 1.6;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 섹션 3: TimescaleDB 특화 기능 -->
+       <item>
+        <widget class="QFrame" name="frame_section3">
+         <layout class="QVBoxLayout" name="vl_sec3">
+          <property name="leftMargin">
+           <number>16</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>16</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_sec3_title">
+            <property name="text">
+             <string>⚙️ TimescaleDB 특화 기능</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_sec3_body">
+            <property name="text">
+             <string>• Hypertable (시간 파티셔닝)
+   시계열 데이터를 청크(Chunk) 단위로 자동 분할 → 대용량 데이터에서도 빠른 범위 쿼리
+
+• 압축 (Compression)
+   오래된 청크 자동 압축 (목표 압축률 90%) → 스토리지 비용 최소화
+
+• 연속 집계 (Continuous Aggregates, CAGG)
+   캔들 데이터 자동 집계 파이프라인: 1m → 5m → 1h → 1d
+   쿼리 시 사전 집계 결과 즉시 반환 → P95 &lt; 15ms 목표
+
+• 보존 정책 (Retention Policy)
+   핫(Hot) 3개월 / 웜(Warm) 1년 / 콜드(Cold) S3 아카이브 계층별 자동 관리</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #334155; font-size: 9pt; line-height: 1.6;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 섹션 4: 활용 방안 -->
+       <item>
+        <widget class="QFrame" name="frame_section4">
+         <layout class="QVBoxLayout" name="vl_sec4">
+          <property name="leftMargin">
+           <number>16</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>16</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_sec4_title">
+            <property name="text">
+             <string>🚀 활용 방안</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_sec4_body">
+            <property name="text">
+             <string>• 차트 렌더링
+   과거 OHLCV 데이터 조회 → 실시간 차트 업데이트 (P95 &lt; 15ms 목표)
+
+• 기술적 분석 / AI·ML 피처
+   RSI·MACD·BB 등 기술지표 데이터 → ML 모델 학습·추론 피처 공급원
+
+• Gap Detection &amp; 백필 자동화
+   누락 데이터 자동 감지 → gap_queue 삽입 → 백필 워커가 재수집
+
+• 백테스팅 (Backtesting)
+   전략 검증을 위한 정밀 과거 데이터 소스 (틱 단위까지 지원)
+
+• 다양한 자산 지원
+   암호화폐(업비트·빗썸·바이낸스), 국내주식(KRX·코스피·코스닥),
+   해외주식(NYSE·NASDAQ·S&amp;P500), 파생상품·해외선물(CME·CBOE)</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #334155; font-size: 9pt; line-height: 1.6;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 성능 목표 배너 -->
+       <item>
+        <widget class="QFrame" name="frame_perf">
+         <layout class="QHBoxLayout" name="hl_perf">
+          <property name="leftMargin">
+           <number>16</number>
+          </property>
+          <property name="topMargin">
+           <number>10</number>
+          </property>
+          <property name="rightMargin">
+           <number>16</number>
+          </property>
+          <property name="bottomMargin">
+           <number>10</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_perf_text">
+            <property name="text">
+             <string>🎯 성능 목표:  DB 쿼리 P95 &lt; 15ms (hot data)  |  시스템 Uptime &gt; 99.9%  |  압축률 목표 90%  |  CAGG 집계 지연 &lt; 1분</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 하단 여백 스페이서 -->
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

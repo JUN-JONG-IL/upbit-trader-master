@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DeleteTab</class>
+ <widget class="QWidget" name="DeleteTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>860</width>
+    <height>620</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>데이터 삭제</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget { background-color: #FFFFFF; font-family: &quot;맑은 고딕&quot;, &quot;Segoe UI&quot;; font-size: 9pt; }
+QGroupBox { border: 1px solid #D0D0D0; border-radius: 6px; margin-top: 8px; font-weight: bold; }
+QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; padding: 0 6px; }
+QPushButton { border-radius: 4px; padding: 5px 14px; font-weight: bold; }
+QComboBox, QLineEdit { border: 1px solid #C0C0C0; border-radius: 4px; padding: 3px 6px; background: #FAFAFA; }
+QProgressBar { border: 1px solid #C0C0C0; border-radius: 4px; text-align: center; }
+QProgressBar::chunk { background-color: #DC2626; border-radius: 3px; }</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>10</number>
+   </property>
+   <property name="leftMargin">
+    <number>12</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>12</number>
+   </property>
+   <property name="bottomMargin">
+    <number>12</number>
+   </property>
+   <!-- 상단 배너 -->
+   <item>
+    <widget class="QFrame" name="frameBanner">
+     <property name="styleSheet">
+      <string notr="true">QFrame#frameBanner { background-color: #FFF1F2; border-left: 4px solid #DC2626; border-radius: 4px; }</string>
+     </property>
+     <layout class="QVBoxLayout" name="layoutBanner">
+      <property name="leftMargin">
+       <number>12</number>
+      </property>
+      <property name="topMargin">
+       <number>8</number>
+      </property>
+      <property name="rightMargin">
+       <number>8</number>
+      </property>
+      <property name="bottomMargin">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="labelBannerTitle">
+        <property name="text">
+         <string>🗑️ 데이터 삭제 — Redis 캐시/큐 키 관리</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font-size: 11pt; font-weight: bold; color: #7F1D1D;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelBannerDesc">
+        <property name="text">
+         <string>Redis 캐시 키(candles:*, ticker:*, feature:* 등)를 패턴별로 삭제하거나 전체 DB를 초기화합니다. FLUSHDB는 2단계 확인 후 실행됩니다.</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: #7F1D1D;</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <!-- 전체 키 수 현황 -->
+   <item>
+    <widget class="QGroupBox" name="groupStatus">
+     <property name="title">
+      <string>현황</string>
+     </property>
+     <layout class="QHBoxLayout" name="layoutStatusGroup">
+      <item>
+       <widget class="QLabel" name="labelKeyCount">
+        <property name="text">
+         <string>전체 키 수: -</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font-weight: bold; color: #7F1D1D;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnRefreshCount">
+        <property name="text">
+         <string>🔄 키 수 새로고침</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #DC2626; color: white;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <!-- 패턴별 삭제 그룹 -->
+   <item>
+    <widget class="QGroupBox" name="groupPatternDelete">
+     <property name="title">
+      <string>패턴별 키 삭제 (SCAN + DEL)</string>
+     </property>
+     <layout class="QVBoxLayout" name="layoutPatternGroup">
+      <item>
+       <layout class="QHBoxLayout" name="layoutPatternRow1">
+        <item>
+         <widget class="QPushButton" name="btnDeleteCandles">
+          <property name="text">
+           <string>🗑️ candles:* 삭제</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #F97316; color: white; padding: 6px 14px;</string>
+          </property>
+          <property name="toolTip">
+           <string>캔들 캐시 키(candles:*) 전체 삭제</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnDeleteTicker">
+          <property name="text">
+           <string>🗑️ ticker:* 삭제</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #F97316; color: white; padding: 6px 14px;</string>
+          </property>
+          <property name="toolTip">
+           <string>티커 캐시 키(ticker:*) 전체 삭제</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnDeleteFeature">
+          <property name="text">
+           <string>🗑️ feature:* 삭제</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #F97316; color: white; padding: 6px 14px;</string>
+          </property>
+          <property name="toolTip">
+           <string>피처 캐시 키(feature:*) 전체 삭제</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnDeleteGapQueue">
+          <property name="text">
+           <string>🗑️ gap_fill_queue 삭제</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #F97316; color: white; padding: 6px 14px;</string>
+          </property>
+          <property name="toolTip">
+           <string>Gap Fill 큐 키 삭제</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <!-- 사용자 정의 패턴 -->
+      <item>
+       <layout class="QHBoxLayout" name="layoutCustomPattern">
+        <item>
+         <widget class="QLabel">
+          <property name="text">
+           <string>패턴 직접 입력:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="editCustomPattern">
+          <property name="placeholderText">
+           <string>예: orderbook:* 또는 session:*</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnDeleteCustomPattern">
+          <property name="text">
+           <string>🗑️ 패턴 삭제</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #F97316; color: white; padding: 6px 14px;</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <!-- FLUSHDB 그룹 -->
+   <item>
+    <widget class="QGroupBox" name="groupFlushDb">
+     <property name="title">
+      <string>전체 초기화 (FLUSHDB) — 2단계 확인 필수</string>
+     </property>
+     <layout class="QHBoxLayout" name="layoutFlushGroup">
+      <item>
+       <widget class="QLabel" name="labelFlushWarning">
+        <property name="text">
+         <string>⚠️ Redis DB의 모든 키를 삭제합니다. 복구 불가!</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: #DC2626; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnFlushDb">
+        <property name="text">
+         <string>🔥 FLUSHDB 실행</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #DC2626; color: white; font-size: 10pt; padding: 8px 20px;</string>
+        </property>
+        <property name="toolTip">
+         <string>Redis DB 전체 삭제 (FLUSHDB). 2단계 확인 후 실행</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <!-- 진행 표시 -->
+   <item>
+    <widget class="QProgressBar" name="progressDelete">
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="maximum">
+      <number>0</number>
+     </property>
+     <property name="visible">
+      <bool>false</bool>
+     </property>
+     <property name="textVisible">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <!-- 결과 레이블 -->
+   <item>
+    <widget class="QLabel" name="labelResult">
+     <property name="text">
+      <string></string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <!-- 하단 여백 -->
+   <item>
+    <spacer>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

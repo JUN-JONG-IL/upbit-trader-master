@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DataMgmtTab</class>
+ <widget class="QWidget" name="DataMgmtTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1600</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="vLayout_data_mgmt">
+   <item>
+    <widget class="QGroupBox" name="groupBox_data_stats">
+     <property name="title">
+      <string>저장된 데이터 통계</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_data_stats">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_dm_candles_count">
+        <property name="text">
+         <string>Candles: -- 건</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_dm_staging_count">
+        <property name="text">
+         <string>Staging: -- 건</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_dm_isolated_count">
+        <property name="text">
+         <string>Isolated: -- 건</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_dm_gap_count">
+        <property name="text">
+         <string>Gap Fill Queue: -- 건</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_data_delete">
+     <property name="title">
+      <string>🗑️ 데이터 삭제</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_delete">
+      <item row="0" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>대상 테이블:</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="combo_delete_table">
+        <item><property name="text"><string>candles</string></property></item>
+        <item><property name="text"><string>staging_candles</string></property></item>
+        <item><property name="text"><string>isolated_candles</string></property></item>
+        <item><property name="text"><string>gap_fill_queue</string></property></item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>삭제 기간 (시작):</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QDateEdit" name="date_delete_start">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>삭제 기간 (종료):</string></property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDateEdit" name="date_delete_end">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>심볼 필터:</string></property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="edit_delete_symbol">
+        <property name="placeholderText">
+         <string>전체 삭제는 비워두세요 (예: KRW-BTC)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <layout class="QHBoxLayout">
+        <item>
+         <widget class="QPushButton" name="btn_delete_preview">
+          <property name="text"><string>🔍 미리보기</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_delete_execute">
+          <property name="text"><string>🗑️ 삭제 실행</string></property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #d32f2f; color: white;</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_delete_preview">
+     <property name="title">
+      <string>📋 삭제 예상 결과</string>
+     </property>
+     <layout class="QVBoxLayout">
+      <item>
+       <widget class="QLabel" name="label_delete_preview">
+        <property name="text">
+         <string>미리보기 버튼을 클릭하세요.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_manual_backfill">
+     <property name="title">
+      <string>🔄 수동 Gap 백필</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_backfill">
+      <item row="0" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>심볼:</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="edit_backfill_symbol">
+        <property name="placeholderText">
+         <string>예: KRW-BTC</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>기간 (시작):</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QDateEdit" name="date_backfill_start">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>기간 (종료):</string></property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDateEdit" name="date_backfill_end">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>타임프레임:</string></property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="combo_backfill_tf">
+        <item><property name="text"><string>1m</string></property></item>
+        <item><property name="text"><string>5m</string></property></item>
+        <item><property name="text"><string>1h</string></property></item>
+        <item><property name="text"><string>1d</string></property></item>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QPushButton" name="btn_backfill_execute">
+        <property name="text"><string>▶️ 백필 실행</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_data_mgmt">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

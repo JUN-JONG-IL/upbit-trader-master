@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConnectionTab</class>
+ <widget class="QWidget" name="ConnectionTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1100</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>연결 상태</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #FFFFFF;
+    color: #2C3E50;
+    font-family: &quot;맑은 고딕&quot;, &quot;Segoe UI&quot;;
+    font-size: 9pt;
+}
+QTabBar::tab:selected {
+    background-color: #007AFF;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+QPushButton {
+    background-color: #007AFF;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #0055CC;
+}
+QPushButton:disabled {
+    background-color: #BDC3C7;
+    color: #7F8C8D;
+}
+QTableWidget {
+    gridline-color: #BDC3C7;
+    background-color: #FFFFFF;
+    alternate-background-color: #F8F9FA;
+    selection-background-color: #007AFF;
+    selection-color: #FFFFFF;
+}
+QHeaderView::section {
+    background-color: #ECF0F1;
+    color: #2C3E50;
+    padding: 6px;
+    border: 1px solid #BDC3C7;
+    font-weight: bold;
+}
+QGroupBox {
+    border: 2px solid #BDC3C7;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: #F8F9FA;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    color: #2C3E50;
+    font-weight: bold;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>8</number>
+   </property>
+   <property name="leftMargin">
+    <number>12</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>12</number>
+   </property>
+   <property name="bottomMargin">
+    <number>12</number>
+   </property>
+   <item>
+    <widget class="QGroupBox" name="groupConnection">
+     <property name="title">
+      <string>📡 연결 정보</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_conn">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelStatus">
+        <property name="text">
+         <string>⚪ 상태: 확인 중...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="labelHost">
+        <property name="text">
+         <string>호스트: -</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelDB">
+        <property name="text">
+         <string>데이터베이스: -</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="labelVersion">
+        <property name="text">
+         <string>버전: -</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelUptime">
+        <property name="text">
+         <string>업타임: -</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="labelConnections">
+        <property name="text">
+         <string>활성 연결수: -</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupErrors">
+     <property name="title">
+      <string>🔴 최근 에러 로그 (최대 10개)</string>
+     </property>
+     <layout class="QVBoxLayout" name="vl_errors">
+      <item>
+       <widget class="QTableWidget" name="tableErrors">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="columnCount">
+         <number>3</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>시간</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>레벨</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>메시지</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="hl_buttons">
+     <item>
+      <widget class="QPushButton" name="btnRefresh">
+       <property name="text">
+        <string>🔄 새로고침</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnReconnect">
+       <property name="text">
+        <string>🔌 재연결</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSettings">
+       <property name="text">
+        <string>⚙️ 연결 설정</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="spacer_btn">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

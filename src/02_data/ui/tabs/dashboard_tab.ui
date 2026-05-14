@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DashboardTab</class>
+ <widget class="QWidget" name="DashboardTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1600</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <layout class="QHBoxLayout" name="hLayout_dashboard">
+   <property name="spacing">
+    <number>12</number>
+   </property>
+   <item>
+    <widget class="QGroupBox" name="groupBox_services">
+     <property name="title">
+      <string>🔌 서비스 연결 상태</string>
+     </property>
+     <layout class="QVBoxLayout" name="vLayout_services">
+      <item>
+       <widget class="QTableWidget" name="table_services">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>500</height>
+         </size>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="columnCount">
+         <number>4</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>서비스</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>상태</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>연결 정보</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>구현</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_services_hint">
+        <property name="text">
+         <string>💡 상태: [정상] 정상 | [오류] 실패 | ⚪ 미설치/미설정</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="hLayout_service_buttons">
+        <item>
+         <spacer name="horizontalSpacer_service">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_test_all_connections">
+          <property name="text">
+           <string>전체 연결 테스트</string>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>36</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_settings">
+          <property name="text">
+           <string>⚙️ 설정</string>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>36</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_graph_container">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>200</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_metrics">
+     <property name="title">
+      <string>📈 핵심 지표</string>
+     </property>
+     <layout class="QVBoxLayout" name="vLayout_metrics">
+      <item>
+       <widget class="QFrame" name="frame_gap">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <layout class="QVBoxLayout" name="vLayout_gap_card">
+         <item>
+          <widget class="QLabel" name="label_gap_title">
+           <property name="text">
+            <string>Gap Fill Queue</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_gap_count">
+           <property name="text">
+            <string>대기 건수: --</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_gap_pending">
+           <property name="text">
+            <string>대기: 0 건</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_pipeline">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <layout class="QVBoxLayout" name="vLayout_pipeline_card">
+         <item>
+          <widget class="QLabel" name="label_pipeline_title">
+           <property name="text">
+            <string>🔄 파이프라인 상태</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_staging_count">
+           <property name="text">
+            <string>Staging: -- 건</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_candles_count">
+           <property name="text">
+            <string>Candles: -- 건</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_isolated_count">
+           <property name="text">
+            <string>[오류] Isolated: -- 건</string>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: red;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_cache">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <layout class="QVBoxLayout" name="vLayout_cache_card">
+         <item>
+          <widget class="QLabel" name="label_cache_title">
+           <property name="text">
+            <string>💾 캐시 상태</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_l1_cache">
+           <property name="text">
+            <string>L1 캐시: -- 항목</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_pubsub">
+           <property name="text">
+            <string>Pub/Sub 채널: --</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_last_update">
+        <property name="text">
+         <string>⏱️ 최종 갱신: --</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_metrics">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_realtime_stats">
+     <property name="title">
+      <string>실시간 통계</string>
+     </property>
+     <layout class="QVBoxLayout" name="vLayout_realtime_stats">
+      <item>
+       <widget class="QLabel" name="label_ws_qps">
+        <property name="text">
+         <string>WebSocket 수신: -- 건/초</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_pipeline_qps">
+        <property name="text">
+         <string>Pipeline 처리: -- 건/초</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_realtime_staging_count">
+        <property name="text">
+         <string>Staging → Candles: -- 건</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_last_recv">
+        <property name="text">
+         <string>마지막 수신: --</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_start_websocket">
+        <property name="text">
+         <string>🚀 WebSocket 시작 (20개 심볼)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_realtime_stats">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
+

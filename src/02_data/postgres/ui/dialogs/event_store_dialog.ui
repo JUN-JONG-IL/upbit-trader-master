@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EventStoreDialog</class>
+ <widget class="QDialog" name="EventStoreDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>이벤트 저장소 관리</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget { background-color: #FFFFFF; color: #000000; font-family: '맑은 고딕', 'Segoe UI', sans-serif; }
+QPushButton { background-color: #007AFF; color: #FFFFFF; border-radius: 4px; padding: 4px 12px; font-weight: bold; }
+QPushButton:hover { background-color: #0056CC; }
+QTableWidget { gridline-color: #CCCCCC; alternate-background-color: #F9F9F9; }
+QHeaderView::section { background-color: #F0F0F0; border: 1px solid #CCCCCC; padding: 4px; font-weight: bold; }</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>12</number>
+   </property>
+   <property name="contentsMargins">
+    <number>16</number>
+    <number>16</number>
+    <number>16</number>
+    <number>16</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="lbl_title">
+     <property name="text">
+      <string>📋 이벤트 저장소 관리</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 14pt; font-weight: bold;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableWidget" name="table_events">
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <column>
+      <property name="text">
+       <string>이벤트 ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>타입</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>집계 ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>발생 시각</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_buttons">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_refresh">
+       <property name="text">
+        <string>🔄 새로고침</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_close">
+       <property name="text">
+        <string>닫기</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
