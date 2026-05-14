@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-DB 연결 상태 LED 위젯 (캐시된 모듈 로드로 폴링 비용/로그 감소)
+DB ?�결 ?�태 LED ?�젯 (캐시??모듈 로드�??�링 비용/로그 감소)
 """
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ _LED_STYLE_TEMPLATE = """
 
 _POLL_INTERVAL_MS = 1000
 
-# 클래스/모듈 차원의 캐시: 한 번 발견한 health_check 모듈은 재사용
+# ?�래??모듈 차원??캐시: ??�?발견??health_check 모듈?� ?�사??
 _module_cache: Dict[str, Any] = {}
 
 def _call_maybe_async(func: Callable[..., Any], *args, **kwargs) -> Any:
@@ -73,8 +73,8 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
         self._checking = False
         self._first_check_done = False
         self._apply_style("gray")
-        self.setToolTip(f"{db_name}: 확인 중...")
-        # 캐시 키(예: "redis")로 health module을 찾음
+        self.setToolTip(f"{db_name}: ?�인 �?..")
+        # 캐시 ???? "redis")�?health module??찾음
         self._health_module = None
         self._ensure_data_dir_in_sys_path()
         try:
@@ -87,12 +87,12 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
             self._timer = None
 
     def _ensure_data_dir_in_sys_path(self) -> None:
-        """한 번만 실행: src/02_data 경로를 sys.path에 추가(중복 삽입 회피)."""
+        """??번만 ?�행: src/data_01 경로�?sys.path??추�?(중복 ?�입 ?�피)."""
         try:
             here = os.path.dirname(os.path.abspath(__file__))
             repo_root = os.path.abspath(os.path.join(here, "..", "..", ".."))
-            data_dir = os.path.join(repo_root, "src", "02_data")
-            # 기존 값들과 중복될 수 있으므로 한 번만 추가
+            data_dir = os.path.join(repo_root, "src", "data_01")
+            # 기존 값들�?중복?????�으므�???번만 추�?
             if os.path.isdir(data_dir) and data_dir not in sys.path:
                 sys.path.insert(0, data_dir)
         except Exception:
@@ -105,13 +105,13 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
         try:
             self.setStyleSheet(_LED_STYLE_TEMPLATE.format(color=color))
             status_text = {
-                "green": "연결됨",
-                "red": "연결 실패",
-                "gray": "확인 중..."
+                "green": "?�결??,
+                "red": "?�결 ?�패",
+                "gray": "?�인 �?.."
             }.get(status, status)
             self.setToolTip(f"{self.db_name}: {status_text}")
         except Exception as e:
-            logger.debug("[DBStatusLED] 스타일 적용 실패: %s", e)
+            logger.debug("[DBStatusLED] ?��????�용 ?�패: %s", e)
 
     def _trigger_check(self) -> None:
         if self._checking:
@@ -128,7 +128,7 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
         try:
             result = self._do_check()
         except Exception as e:
-            logger.debug("[DBStatusLED] %s 체크 예외: %s", self.db_name, e)
+            logger.debug("[DBStatusLED] %s 체크 ?�외: %s", self.db_name, e)
             result = "red"
         finally:
             self._checking = False
@@ -141,8 +141,8 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
 
     def _do_check(self) -> str:
         """
-        health_check 모듈을 캐시에서 찾고, 없다면 후보 네임스페이스/파일로 한 번만 로드.
-        이후에는 캐시된 모듈의 함수만 호출합��다.
+        health_check 모듈??캐시?�서 찾고, ?�다�??�보 ?�임?�페?�스/?�일�???번만 로드.
+        ?�후?�는 캐시??모듈???�수�??�출?���다.
         """
         name = self.db_name.lower()
 
@@ -162,9 +162,9 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
         if mod is None:
             # try package names first
             candidates = {
-                "timescale": ["src.02_data.timescale.health_check", "src.timescale.health_check", "timescale.health_check"],
-                "mongodb": ["src.02_data.mongodb.health_check", "src.mongodb.health_check", "mongodb.health_check"],
-                "redis": ["src.02_data.redis.health_check", "src.redis.health_check", "redis.health_check"],
+                "timescale": ["src.data_01.timescale.health_check", "src.timescale.health_check", "timescale.health_check"],
+                "mongodb": ["src.data_01.mongodb.health_check", "src.mongodb.health_check", "mongodb.health_check"],
+                "redis": ["src.data_01.redis.health_check", "src.redis.health_check", "redis.health_check"],
             }.get(key, [])
             for nm in candidates:
                 try:
@@ -182,14 +182,14 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
                     repo_root = os.path.abspath(os.path.join(here, "..", "..", ".."))
                     file_cands = {
                         "redis": [
-                            os.path.join(repo_root, "src", "02_data", "redis", "health_check.py"),
+                            os.path.join(repo_root, "src", "data_01", "redis", "health_check.py"),
                             os.path.join(repo_root, "redis", "health_check.py"),
                         ],
                         "mongodb": [
-                            os.path.join(repo_root, "src", "02_data", "mongodb", "health_check.py"),
+                            os.path.join(repo_root, "src", "data_01", "mongodb", "health_check.py"),
                         ],
                         "timescale": [
-                            os.path.join(repo_root, "src", "02_data", "timescale", "health_check.py"),
+                            os.path.join(repo_root, "src", "data_01", "timescale", "health_check.py"),
                         ],
                     }.get(key, [])
                     for f in file_cands:
@@ -207,7 +207,7 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
                     logger.debug("[DBStatusLED] file-level module fallback failed: %s", e)
 
         if mod is None:
-            logger.debug("[DBStatusLED] %s 체크 모듈을 찾을 수 없음 (key=%s)", self.db_name, key)
+            logger.debug("[DBStatusLED] %s 체크 모듈??찾을 ???�음 (key=%s)", self.db_name, key)
             return "red"
 
         # call health function
@@ -241,16 +241,16 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
                     if isinstance(res, str):
                         return res
         except Exception as e:
-            logger.debug("[DBStatusLED] %s 체크 실패 during call: %s", self.db_name, e)
+            logger.debug("[DBStatusLED] %s 체크 ?�패 during call: %s", self.db_name, e)
 
         return "red"
 
     def _update_status(self, status: str) -> None:
         if not self._first_check_done:
             status_text = {
-                "green": "연결 성공",
-                "red": "연결 실패",
-                "gray": "드라이버 미설치"
+                "green": "?�결 ?�공",
+                "red": "?�결 ?�패",
+                "gray": "?�라?�버 미설�?
             }.get(status, status)
             logger.info("[DBStatusLED] %s: %s", self.db_name, status_text)
             self._first_check_done = True

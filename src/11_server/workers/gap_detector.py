@@ -1,17 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-Backward-compat shim — canonical location: src/02_data/workers/gap_detector.py
+Backward-compat shim ??canonical location: src/data_01/workers/gap_detector.py
 
-이 파일은 src/02_data/workers/gap_detector.py 로 이동되었습니다.
-하위 호환성을 위해 유지됩니다.
+???�일?� src/data_01/workers/gap_detector.py �??�동?�었?�니??
+?�위 ?�환?�을 ?�해 ?��??�니??
 """
 import importlib.util as _ilu
 import os as _os
 
 _path = _os.path.normpath(_os.path.join(
     _os.path.dirname(_os.path.abspath(__file__)),
-    "..", "..", "02_data", "workers", "gap_detector.py"
+    "..", "..", "data_01", "workers", "gap_detector.py"
 ))
 _spec = _ilu.spec_from_file_location("_02data_workers_gap_detector", _path)
 _mod = _ilu.module_from_spec(_spec)
@@ -21,3 +21,4 @@ GapDetector = _mod.GapDetector
 detect_gaps = _mod.detect_gaps
 
 __all__ = ["GapDetector", "detect_gaps"]
+

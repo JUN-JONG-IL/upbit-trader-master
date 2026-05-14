@@ -135,7 +135,7 @@ def ensure_auto_backfill_scheduled_async(scheduler, static: SimpleNamespace, log
                 if mgr is not None:
                     interval_sec = 30
                     try:
-                        ts_mod = importlib.import_module("02_data.timescale.timescale_settings")
+                        ts_mod = importlib.import_module("data_01.timescale.timescale_settings")
                         TimescaleSettings = getattr(ts_mod, "TimescaleSettings", None)
                         if TimescaleSettings:
                             ts = TimescaleSettings()
@@ -224,7 +224,7 @@ def start_scheduler(static: SimpleNamespace, log: SafeLogger):
             
             interval_sec = 30
             try:
-                ts_mod = importlib.import_module("02_data.timescale.timescale_settings")
+                ts_mod = importlib.import_module("data_01.timescale.timescale_settings")
                 TimescaleSettings = getattr(ts_mod, "TimescaleSettings", None)
                 if TimescaleSettings:
                     ts = TimescaleSettings()

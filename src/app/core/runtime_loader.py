@@ -67,8 +67,8 @@ def load_runtime_modules(static: SimpleNamespace, log: SafeLogger) -> None:
         "11_server.utils.helpers",
         "src.11_server.utils.helpers",
         "utils.helpers",
-        "02_data.timescale.utils.helpers",
-        "02_data.utils.helpers",
+        "data_01.timescale.utils.helpers",
+        "data_01.utils.helpers",
     )
     helper_mod, h_attempts = try_import_names(helper_candidates)
     if helper_mod:
