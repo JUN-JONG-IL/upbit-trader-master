@@ -112,7 +112,8 @@ ipython_config.py
 #pdm.lock
 #   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
 #   in version control.
-#   https://pdm.fming.dev/latest/usage/project/#working-with-version-control
+#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
+#   in version control.
 .pdm.toml
 .pdm-python
 .pdm-build/
@@ -179,3 +180,21 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# ------------------------------------------------------------
+# Project-specific ignores
+# ------------------------------------------------------------
+
+# Ignore stager_isolated folder (local staged/failed chunks, large data)
+# The folder path on your machine:
+# C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\stager_isolated
+# In repository root, ignore the directory at top level:
+stager_isolated/
+# Also ignore any nested or hidden files inside it:
+stager_isolated/**
+
+# If there are OS-specific temporary files you also want to ignore:
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
