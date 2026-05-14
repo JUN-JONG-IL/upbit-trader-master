@@ -193,6 +193,11 @@ stager_isolated/
 # Also ignore any nested or hidden files inside it:
 stager_isolated/**
 
+
+/src/data/isolated_candles/
+/src/data/isolated_candles/*.jsonl
+
+
 # If there are OS-specific temporary files you also want to ignore:
 *.swp
 *.swo

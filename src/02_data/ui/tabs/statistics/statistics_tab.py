@@ -1,59 +1,68 @@
 # -*- coding: utf-8 -*-
 """
-StatisticsTab (View 전용, 경량)
-- UI(.ui) 로드 + pyqtSignal 발행 + 최소한의 UI 헬퍼만 포함.
-- 비즈니스 로직(타이머/버퍼/IO/DB)은 Controller에서 처리하세요.
+StatisticsTab (View 전용, 강화된 UI 로드/바인딩)
+- 핵심 목표: .ui가 로드되어도 위젯(objectName)이 없어서 화면이 비어 보이는 문제 방지.
+- 전략:
+  1) load_ui_with_tab_fix 우선 시도 (있으면 .ui enum/xml 보정)
+  2) PyQt uic.loadUi 폴백
+  3) uic.loadUiType 폴백 (코드 생성형)
+  4) 로드 후 핵심 위젯(tabWidget_main_tabs, table_tab_X 등)이 없으면 findChild 기반으로 자동 바인딩
+- 이 파일은 View·시그널·경량 헬퍼만 포함합니다. 비즈니스 로직은 Controller로 이동하세요.
 """
 from __future__ import annotations
 import os
 import logging
-from typing import Any, Optional, Sequence
+import importlib
+import importlib.util
+from typing import Any, Optional, Sequence, Dict
+
+logger = logging.getLogger(__name__)
+
+# PyQt import (가용성 검사)
 try:
     from PyQt5 import uic
     from PyQt5.QtCore import pyqtSignal
-    from PyQt5.QtWidgets import QWidget, QFileDialog, QTableWidget, QTableWidgetItem, QTextEdit
+    from PyQt5.QtWidgets import (
+        QWidget, QFileDialog, QTableWidget, QTableWidgetItem, QTextEdit, QTabWidget, QLabel, QVBoxLayout
+    )
     from PyQt5.QtGui import QColor
     _HAS_QT = True
 except Exception:
     _HAS_QT = False
 
-logger = logging.getLogger(__name__)
-
-# --- 간단한 안전한 load_ui_with_tab_fix 로더 시도 (절대 import or 파일 fallback) ---
-load_ui_with_tab_fix = None
-try:
-    # 프로젝트에서 src를 패키지 루트로 쓸 때
-    import importlib
+# 안전한 load_ui_with_tab_fix 시도 (절대 import 또는 파일 경로 fallback)
+def _load_ui_loader() -> Optional[callable]:
     try:
-        mod = importlib.import_module("src.02_data.ui_loader")
-        load_ui_with_tab_fix = getattr(mod, "load_ui_with_tab_fix", None)
+        # 우선 절대 모듈 시도 (workspace가 src를 패키지 루트로 인식할 때)
+        try:
+            mod = importlib.import_module("src.02_data.ui_loader")
+            return getattr(mod, "load_ui_with_tab_fix", None)
+        except Exception:
+            # 파일 경로 후보들
+            cand = [
+                os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "ui_loader.py")),
+                os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "ui_loader.py")),
+            ]
+            for p in cand:
+                try:
+                    if os.path.exists(p):
+                        spec = importlib.util.spec_from_file_location("ui_loader_local", p)
+                        if spec and spec.loader:
+                            mod = importlib.util.module_from_spec(spec)
+                            spec.loader.exec_module(mod)
+                            return getattr(mod, "load_ui_with_tab_fix", None)
+                except Exception:
+                    continue
     except Exception:
-        # 파일 경로 fallback: src/02_data/ui_loader.py 예상 위치 두 곳 시도
-        import importlib.util
-        candidates = [
-            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "ui_loader.py")),
-            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "ui_loader.py")),
-        ]
-        for p in candidates:
-            try:
-                if os.path.exists(p):
-                    spec = importlib.util.spec_from_file_location("ui_loader_local", p)
-                    if spec and spec.loader:
-                        mod = importlib.util.module_from_spec(spec)
-                        spec.loader.exec_module(mod)
-                        load_ui_with_tab_fix = getattr(mod, "load_ui_with_tab_fix", None)
-                        if load_ui_with_tab_fix:
-                            break
-            except Exception:
-                load_ui_with_tab_fix = None
-except Exception:
-    load_ui_with_tab_fix = None
-# -------------------------------------------------------------------------
+        pass
+    return None
+
+_load_ui_with_tab_fix = _load_ui_loader()
 
 if _HAS_QT:
     class StatisticsTab(QWidget):
-        # Signals (뷰는 이벤트만 방출)
-        load_history_requested = pyqtSignal(str)      # 경로 지정(빈 문자열이면 기본 후보)
+        # View-only signals
+        load_history_requested = pyqtSignal(str)
         pause_toggled = pyqtSignal()
         manual_refresh_requested = pyqtSignal()
         export_tab_requested = pyqtSignal(int)
@@ -65,94 +74,214 @@ if _HAS_QT:
 
         def __init__(self, parent=None, ui_filename: Optional[str] = None):
             super().__init__(parent)
+
+            # default ui path
             if ui_filename is None:
                 ui_filename = os.path.join(os.path.dirname(__file__), "statistics_tab.ui")
 
-            # UI 로드: 보정함수 우선 -> uic.loadUi 폴백
-            ui_loaded = False
-            if load_ui_with_tab_fix is not None:
-                try:
-                    load_ui_with_tab_fix(ui_filename, self)
-                    ui_loaded = True
-                    logger.debug("[StatisticsTab] UI loaded via load_ui_with_tab_fix")
-                except Exception as e:
-                    logger.debug("[StatisticsTab] load_ui_with_tab_fix failed: %s", e)
-            if not ui_loaded:
-                try:
-                    uic.loadUi(ui_filename, self)
-                    ui_loaded = True
-                    logger.debug("[StatisticsTab] UI loaded via uic.loadUi")
-                except Exception as e:
-                    logger.warning("[StatisticsTab] uic.loadUi failed: %s", e)
+            # Try loading UI robustly
+            loaded = self._robust_load_ui(ui_filename)
 
-            if not hasattr(self, "tabWidget_main_tabs"):
-                logger.warning("[StatisticsTab] 핵심 위젯(tabWidget_main_tabs) 누락 - .ui를 확인하세요")
+            # If load failed or critical widgets missing, place a visible warning widget so user sees UI
+            if not loaded or not self._has_core_widgets():
+                logger.warning("[StatisticsTab] UI 로드 또는 바인딩 불완전 — 자동 바인딩 시도 및 경고 라벨 표시")
+                self._attempt_find_widgets()
+                if not self._has_core_widgets():
+                    self._show_ui_warning(f"StatisticsTab UI 로드 실패 또는 핵심 위젯 누락: {os.path.basename(ui_filename)}")
 
-            # 위젯 참조 캐시 (간단)
-            self._tables = {i: getattr(self, f"table_tab_{i}", None) for i in range(1, 8)}
-            self._raw_texts = {i: getattr(self, f"text_log_tab_{i}", None) for i in range(1, 8)}
-            self._search_boxes = {i: getattr(self, f"le_tab{i}_search", None) for i in range(1, 8)}
+            # build caches
+            self._tables: Dict[int, Optional[QTableWidget]] = {}
+            self._raw_texts: Dict[int, Optional[QTextEdit]] = {}
+            self._search_boxes: Dict[int, Optional[object]] = {}
 
-            # 시그널 연결(뷰 레벨)
+            for i in range(1, 8):
+                # objectName expected: table_tab_1 .. text_log_tab_1 .. le_tab1_search
+                self._tables[i] = self._find_widget_by_name(QTableWidget, f"table_tab_{i}")
+                self._raw_texts[i] = self._find_widget_by_name(QTextEdit, f"text_log_tab_{i}") or self._find_widget_by_name(QTextEdit, f"plain_log_tab_{i}")
+                self._search_boxes[i] = self.findChild(type(getattr(self, f"le_tab{i}_search", None) or object), f"le_tab{i}_search") or self._find_widget_by_name(object, f"le_tab{i}_search")
+
+            # Connect simple view-level signals
             for i in range(1, 8):
                 le = self._search_boxes.get(i)
-                if le is not None:
+                if le is not None and hasattr(le, "textChanged"):
                     try:
                         le.textChanged.connect((lambda t: (lambda txt: self.search_text_changed.emit(t, (txt or "").strip().lower())))(i))
                     except Exception:
                         pass
-                # per-tab buttons (existence-checked)
+
+                # per-tab buttons
                 try:
-                    btn_show_all = getattr(self, f"btn_tab{i}_show_all", None)
-                    if btn_show_all:
+                    btn_show_all = self._find_widget_by_name(QWidget, f"btn_tab{i}_show_all") or getattr(self, f"btn_tab{i}_show_all", None)
+                    if btn_show_all and hasattr(btn_show_all, "clicked"):
                         btn_show_all.clicked.connect((lambda t: (lambda: self._on_show_all_clicked(t)))(i))
-                    btn_export = getattr(self, f"btn_tab{i}_export", None)
-                    if btn_export:
+                except Exception:
+                    pass
+                try:
+                    btn_export = self._find_widget_by_name(QWidget, f"btn_tab{i}_export") or getattr(self, f"btn_tab{i}_export", None)
+                    if btn_export and hasattr(btn_export, "clicked"):
                         btn_export.clicked.connect((lambda t: (lambda: self.export_tab_requested.emit(t)))(i))
-                    btn_clear = getattr(self, f"btn_tab{i}_clear", None)
-                    if btn_clear:
+                except Exception:
+                    pass
+                try:
+                    btn_clear = self._find_widget_by_name(QWidget, f"btn_tab{i}_clear") or getattr(self, f"btn_tab{i}_clear", None)
+                    if btn_clear and hasattr(btn_clear, "clicked"):
                         btn_clear.clicked.connect((lambda t: (lambda: self.clear_tab_requested.emit(t)))(i))
                 except Exception:
                     pass
 
-            # toolbar
+            # toolbar buttons
             try:
-                btn_pause = getattr(self, "btn_pause", None)
-                if btn_pause:
+                btn_pause = self._find_widget_by_name(QWidget, "btn_pause") or getattr(self, "btn_pause", None)
+                if btn_pause and hasattr(btn_pause, "clicked"):
                     btn_pause.clicked.connect(lambda: self.pause_toggled.emit())
-                btn_refresh = getattr(self, "btn_refresh", None)
-                if btn_refresh:
+            except Exception:
+                pass
+            try:
+                btn_refresh = self._find_widget_by_name(QWidget, "btn_refresh") or getattr(self, "btn_refresh", None)
+                if btn_refresh and hasattr(btn_refresh, "clicked"):
                     btn_refresh.clicked.connect(lambda: self.manual_refresh_requested.emit())
-                btn_export_all = getattr(self, "btn_export_all", None)
-                if btn_export_all:
-                    btn_export_all.clicked.connect(lambda: self.export_all_requested.emit())
-                btn_clear_all = getattr(self, "btn_clear_all", None)
-                if btn_clear_all:
-                    btn_clear_all.clicked.connect(lambda: self.clear_all_requested.emit())
-                btn_load_history = getattr(self, "btn_load_history", None)
-                if btn_load_history:
+            except Exception:
+                pass
+            try:
+                btn_load_history = self._find_widget_by_name(QWidget, "btn_load_history") or getattr(self, "btn_load_history", None)
+                if btn_load_history and hasattr(btn_load_history, "clicked"):
                     btn_load_history.clicked.connect(self._on_load_history_clicked)
             except Exception:
                 pass
 
-            # main tab change -> active_tab_changed
+            # main tab changed
             try:
-                main_tabs = getattr(self, "tabWidget_main_tabs", None)
-                if main_tabs:
+                main_tabs: Optional[QTabWidget] = self._find_widget_by_name(QTabWidget, "tabWidget_main_tabs") or self._find_first_child(QTabWidget)
+                if main_tabs is not None:
                     main_tabs.currentChanged.connect(lambda idx: self.active_tab_changed.emit(int(idx) + 1))
             except Exception:
                 pass
 
-            # 초기 상태 텍스트
+            # initial status label if present
             self.set_status_text("상태: 대기")
 
-        # 뷰 레벨 핸들러(간단)
-        def _on_show_all_clicked(self, tab: int) -> None:
-            # 뷰는 단순히 시그널 방출(Controller가 해석)
+        # -------------------------
+        # Robust UI load helpers
+        # -------------------------
+        def _robust_load_ui(self, ui_path: str) -> bool:
+            """Try load_ui_with_tab_fix, then uic.loadUi, then uic.loadUiType as final fallback."""
             try:
-                # Clear search box visually
+                if _load_ui_with_tab_fix is not None:
+                    try:
+                        _load_ui_with_tab_fix(ui_path, self)
+                        logger.info("[StatisticsTab] UI 로드 성공 (load_ui_with_tab_fix)")
+                        return True
+                    except Exception as e:
+                        logger.debug("[StatisticsTab] load_ui_with_tab_fix 실패: %s", e)
+                # Try uic.loadUi
+                try:
+                    uic.loadUi(ui_path, self)
+                    logger.info("[StatisticsTab] UI 로드 성공 (uic.loadUi)")
+                    return True
+                except Exception as e:
+                    logger.debug("[StatisticsTab] uic.loadUi 실패: %s", e)
+                # Try loadUiType fallback
+                try:
+                    form_class, base_class = uic.loadUiType(ui_path)
+                    # form_class has setupUi(self)
+                    form = form_class()
+                    form.setupUi(self)
+                    logger.info("[StatisticsTab] UI 로드 성공 (uic.loadUiType 폴백)")
+                    return True
+                except Exception as e:
+                    logger.warning("[StatisticsTab] uic.loadUiType 폴백 실패: %s", e)
+                    return False
+            except Exception as exc:
+                logger.exception("[StatisticsTab] UI 로드 중 예외: %s", exc)
+                return False
+
+        def _has_core_widgets(self) -> bool:
+            """Check for presence of primary expected widgets."""
+            if hasattr(self, "tabWidget_main_tabs") and getattr(self, "tabWidget_main_tabs") is not None:
+                return True
+            # fallback: any table or text_log present
+            for name in ("table_tab_1", "text_log_tab_1"):
+                if hasattr(self, name) and getattr(self, name) is not None:
+                    return True
+            return False
+
+        def _attempt_find_widgets(self) -> None:
+            """Try to auto-bind expected widget names via findChild if attributes missing."""
+            # Bind tabWidget_main_tabs
+            if not hasattr(self, "tabWidget_main_tabs") or getattr(self, "tabWidget_main_tabs") is None:
+                tab = self._find_first_child(QTabWidget)
+                if tab is not None:
+                    try:
+                        setattr(self, "tabWidget_main_tabs", tab)
+                        logger.debug("[StatisticsTab] tabWidget_main_tabs 자동 바인딩 됨 (%s)", tab.objectName())
+                    except Exception:
+                        pass
+            # For tables/texts: attempt findChild by name patterns
+            for i in range(1, 8):
+                if not hasattr(self, f"table_tab_{i}") or getattr(self, f"table_tab_{i}") is None:
+                    w = self._find_widget_by_name(QTableWidget, f"table_tab_{i}")
+                    if w is not None:
+                        try:
+                            setattr(self, f"table_tab_{i}", w)
+                            logger.debug("[StatisticsTab] table_tab_%d 자동 바인딩 (%s)", i, w.objectName())
+                        except Exception:
+                            pass
+                if not hasattr(self, f"text_log_tab_{i}") or getattr(self, f"text_log_tab_{i}") is None:
+                    w = self._find_widget_by_name(QTextEdit, f"text_log_tab_{i}")
+                    if w is not None:
+                        try:
+                            setattr(self, f"text_log_tab_{i}", w)
+                            logger.debug("[StatisticsTab] text_log_tab_%d 자동 바인딩 (%s)", i, w.objectName())
+                        except Exception:
+                            pass
+
+        def _find_widget_by_name(self, cls, name: str):
+            """Wrapper around findChild with None-safe behavior."""
+            try:
+                obj = self.findChild(cls, name)
+                if obj is not None:
+                    return obj
+                # sometimes objectName might have different casing or prefixes; fallback search
+                for child in self.findChildren(cls):
+                    try:
+                        if name in (child.objectName() or ""):
+                            return child
+                    except Exception:
+                        continue
+            except Exception:
+                pass
+            return None
+
+        def _find_first_child(self, cls):
+            try:
+                childs = self.findChildren(cls)
+                if childs:
+                    return childs[0]
+            except Exception:
+                pass
+            return None
+
+        def _show_ui_warning(self, text: str) -> None:
+            """If UI hasn't proper widgets, show a small label so user sees something."""
+            try:
+                # don't override if actual UI present
+                if self._has_core_widgets():
+                    return
+                layout = QVBoxLayout(self)
+                lbl = QLabel(text, self)
+                lbl.setStyleSheet("color: red; font-weight: bold;")
+                layout.addWidget(lbl)
+                self.setLayout(layout)
+            except Exception:
+                pass
+
+        # -------------------------
+        # 뷰 레벨 단순 핸들러 / 헬퍼
+        # -------------------------
+        def _on_show_all_clicked(self, tab: int) -> None:
+            try:
                 le = self._search_boxes.get(tab)
-                if le:
+                if le and hasattr(le, "clear"):
                     try:
                         le.clear()
                     except Exception:
@@ -171,18 +300,17 @@ if _HAS_QT:
                 except Exception:
                     pass
 
-        # View → Controller helper methods (minimal, side-effect 적음)
         def set_status_text(self, text: str) -> None:
             try:
                 lbl = getattr(self, "lbl_toolbar_status", None)
-                if lbl:
+                if lbl is not None:
                     lbl.setText(text)
             except Exception:
                 pass
 
         def insert_table_row(self, tab: int, cells: Sequence[Any]) -> None:
             try:
-                tbl = self._tables.get(tab)
+                tbl: Optional[QTableWidget] = self._tables.get(tab)
                 if tbl is None or not isinstance(tbl, QTableWidget):
                     return
                 col_count = tbl.columnCount()
@@ -241,6 +369,7 @@ if _HAS_QT:
             except Exception:
                 pass
 
+        # 파일 다이얼로그 헬퍼
         def get_open_file_path(self, caption: str = "파일 선택", directory: Optional[str] = None, filter: str = "All Files (*)") -> str:
             try:
                 directory = directory or os.path.expanduser("~")
@@ -255,6 +384,7 @@ if _HAS_QT:
                 return filename or ""
             except Exception:
                 return ""
+
 else:
     class StatisticsTab:
         def __init__(self, *args, **kwargs):
