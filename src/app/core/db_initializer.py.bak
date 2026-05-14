@@ -1,0 +1,450 @@
+﻿# -*- coding: utf-8 -*-
+"""
+DB 초기화 헬퍼
+- DB 연결 검증
+- MongoDB 초기화
+- DataManager/Pipeline 생성
+- staging_candles flush
+
+변경 요지:
+- flush_staging_candles_once 동시 실행 차단용 전역 락 추가 (_flush_lock)
+- flush_staging_candles_once 내부 로직을 최소 변경으로 교체:
+  * 동시 실행 시 즉시 리턴 (중복 실행 방지)
+  * 가능한 경우 전역 pool 초기화 시도 (무해한 보조 시도)
+  * 임시 생성한 connector는 finally 블록에서 항상 안전하게 종료
+- 한 파일 최소 변경 원칙(SRP 유지)
+"""
+from __future__ import annotations
+
+import asyncio as aio
+import os
+import threading
+from types import SimpleNamespace
+from typing import Optional
+
+from .logger import SafeLogger
+from .module_loader import try_import_names, import_module_with_file_fallback, load_module_from_file_abs
+
+# 모듈 전역 락: flush 동시 실행 방지용 (비차단 시도)
+_flush_lock = threading.Lock()
+
+
+def validate_db_connections(static: SimpleNamespace, log: SafeLogger) -> None:
+    """DB 연결 검증 (startup_validator)"""
+    try:
+        validator_candidates = (
+            "14_orchestrator.startup_validator",
+            "src.14_orchestrator.startup_validator",
+            "app.core.startup_validator",
+            "src.app.core.startup_validator",
+        )
+        validator_mod, v_attempts = try_import_names(validator_candidates)
+
+        if validator_mod:
+            run_fn = getattr(validator_mod, "run_startup_validation", None)
+            if callable(run_fn):
+                try:
+                    result = aio.run(run_fn())
+                    if isinstance(result, tuple) and len(result) >= 1:
+                        validation_success = result[0]
+                        static.db_validation_success = validation_success
+                        if validation_success is True:
+                            log.info("[init] ✅ 모든 DB 연결 검증 성공")
+                        elif validation_success is False:
+                            log.warning("[init] DB 연결 검증 실패 (일부)")
+                        else:
+                            log.info("[init] DB 연결 검증 결과 미확인")
+                    else:
+                        static.db_validation_success = None
+                except Exception:
+                    log.exception("[init] run_startup_validation execution failed")
+                    static.db_validation_success = None
+            else:
+                log.warning("[init] run_startup_validation not callable")
+                static.db_validation_success = None
+        else:
+            log.warning("[init] startup_validator 모듈을 로드할 수 없습니다 (계속 진행)")
+            static.db_validation_success = None
+    except Exception:
+        log.exception("[init] DB connection validation failed")
+        static.db_validation_success = None
+
+
+def init_mongodb(log: SafeLogger) -> None:
+    """MongoDB 초기화"""
+    try:
+        names = ("02_data.mongodb.init_mongodb", "src.02_data.mongodb.init_mongodb", "mongodb.init_mongodb")
+        mod, attempts = try_import_names(names)
+
+        if mod:
+            init_fn = getattr(mod, "init_mongodb", None)
+            if callable(init_fn):
+                try:
+                    aio.run(init_fn())
+                    log.debug("[init] MongoDB 초기화 완료")
+                except Exception:
+                    log.debug("[init] MongoDB init function failed", exc_info=True)
+        else:
+            log.debug("[init] MongoDB init skipped or failed")
+    except Exception:
+        log.debug("[init] MongoDB init skipped or failed", exc_info=True)
+
+
+def init_data_manager(static: SimpleNamespace, log: SafeLogger) -> None:
+    """DataManager 초기화"""
+    try:
+        loaders_pkg = import_module_with_file_fallback("app.loaders", [os.path.join("app", "loaders", "__init__.py")])
+
+        if loaders_pkg is not None:
+            create_fn = getattr(loaders_pkg, "create_data_manager", None)
+            if callable(create_fn):
+                try:
+                    dm = create_fn(static)
+                    static.data_manager = dm
+                    log.debug("[init] ✅ DataManager created by app.loaders.create_data_manager")
+                except Exception:
+                    log.exception("[init] datamanager creation via app.loaders failed")
+                    static.data_manager = None
+            else:
+                dm_loader = import_module_with_file_fallback(
+                    "app.loaders.datamanager_loader",
+                    [
+                        os.path.join("app", "loaders", "datamanager_loader.py"),
+                        os.path.join("02_data", "core", "data_manager.py")
+                    ]
+                )
+                if dm_loader is not None:
+                    create_fn2 = getattr(dm_loader, "create_data_manager", None)
+                    if callable(create_fn2):
+                        try:
+                            dm = create_fn2(static)
+                            static.data_manager = dm
+                            log.debug("[init] ✅ DataManager created by datamanager_loader")
+                        except Exception:
+                            log.exception("[init] datamanager_loader.create_data_manager failed")
+                            static.data_manager = None
+                    else:
+                        log.info("[init] datamanager_loader found but has no factory")
+                        static.data_manager = None
+                else:
+                    log.info("[init] datamanager_loader not available; skipping DataManager creation")
+                    static.data_manager = None
+        else:
+            log.info("[init] app.loaders package not importable; skipping DataManager creation")
+            static.data_manager = None
+    except Exception:
+        static.data_manager = None
+
+
+def init_pipeline(static: SimpleNamespace, log: SafeLogger) -> None:
+    """Pipeline 초기화"""
+    try:
+        loaders_pkg = import_module_with_file_fallback("app.loaders", [os.path.join("app", "loaders", "__init__.py")])
+
+        if loaders_pkg is not None:
+            setup_fn = getattr(loaders_pkg, "setup_pipeline", None)
+            if callable(setup_fn):
+                try:
+                    setup_fn(static)
+                    log.debug("[init] Pipeline setup invoked via app.loaders.setup_pipeline()")
+                except Exception:
+                    log.exception("[init] pipeline_loader.setup_pipeline() raised an exception")
+            else:
+                pipe_mod = import_module_with_file_fallback(
+                    "app.loaders.pipeline_loader",
+                    [
+                        os.path.join("app", "loaders", "pipeline_loader.py"),
+                        os.path.join("02_data", "pipeline", "processor.py"),
+                        os.path.join("02_data", "timescale", "operations", "candle_writer.py")
+                    ]
+                )
+                if pipe_mod is not None:
+                    setup_fn2 = getattr(pipe_mod, "setup_pipeline", None) or \
+                                getattr(pipe_mod, "create_pipeline", None) or \
+                                getattr(pipe_mod, "create_processor", None)
+                    if callable(setup_fn2):
+                        try:
+                            setup_fn2(static)
+                            log.debug("[init] Pipeline setup invoked via fallback pipeline module")
+                        except Exception:
+                            log.exception("[init] fallback pipeline setup raised exception")
+                    else:
+                        log.info("[init] pipeline module loaded but no compatible setup function")
+                else:
+                    log.info("[init] pipeline_loader not available; skipping pipeline setup")
+        else:
+            log.info("[init] app.loaders package not importable; skipping pipeline setup")
+    except Exception:
+        log.debug("[init] pipeline setup skipped", exc_info=True)
+
+
+# ---------------------------
+# helper: 안전한 connector close 시도
+# ---------------------------
+def _safe_close_connector(connector_obj):
+    """가능한 여러 방식으로 connector를 안전하게 종료/반환 시도합니다 (예외 시)."""
+    if connector_obj is None:
+        return
+    # try common names in order
+    for name in ("close", "disconnect", "stop", "terminate", "shutdown"):
+        fn = getattr(connector_obj, name, None)
+        if callable(fn):
+            try:
+                fn()
+                return
+            except Exception:
+                continue
+    # if connector exposes 'pg_pool' with closeall/close_pool
+    try:
+        pg_pool = getattr(connector_obj, "pg_pool", None)
+        if pg_pool is not None:
+            try:
+                closeall = getattr(pg_pool, "closeall", None)
+                if callable(closeall):
+                    closeall()
+                    return
+            except Exception:
+                pass
+    except Exception:
+        pass
+    # last resort: if connector has attribute 'conn' or 'connection', try closing that
+    for attr in ("conn", "connection", "_conn"):
+        inner = getattr(connector_obj, attr, None)
+        if inner is not None:
+            try:
+                close_fn = getattr(inner, "close", None)
+                if callable(close_fn):
+                    close_fn()
+                    return
+            except Exception:
+                pass
+
+
+def flush_staging_candles_once(log: SafeLogger) -> int:
+    """staging_candles → candles 테이블로 한 번 flush
+
+    변경 요지(긴급 완화):
+    - 동시 실행을 막아 DB 연결 폭증 완화 (비차단 락: 이미 실행 중이면 즉시 리턴)
+    - 전역 timescale 풀/커넥터가 없으면 가능한 경우 init 시도 (무해한 보조 시도)
+    - 임시로 생성한 커넥터는 finally에서 반드��� 안전하게 닫음
+    """
+    # 동시 실행 방지: 이미 flush 중이면 건너뜀
+    got = _flush_lock.acquire(blocking=False)
+    if not got:
+        try:
+            log.info("[flush_staging] 이미 flush 작업이 실행 중입니다. 중복 실행을 건너뜁니다.")
+        except Exception:
+            pass
+        return 0
+
+    try:
+        # --- (1) 가능한 경우 전역 pool 초기화 시도 (안전한 시도, 실패 시 무시) ---
+        try:
+            # pool 모듈을 파일 경로 또는 import 후보로 시도 로드하여 init_global_pool_from_env 호출
+            pool_mod, _ = try_import_names(("02_data.timescale.pool", "src.02_data.timescale.pool"))
+            if pool_mod and hasattr(pool_mod, "init_global_pool_from_env"):
+                try:
+                    pool_mod.init_global_pool_from_env()
+                    log.debug("[flush_staging] 전역 pool init_global_pool_from_env 시도(성공/무시)")
+                except Exception:
+                    log.debug("[flush_staging] 전역 pool init 시도 실패(무시)", exc_info=True)
+        except Exception:
+            # 안전하게 무시: 전역 풀 초기화는 보조적 시도일 뿐입니다.
+            pass
+
+        # --- 기존 로직: connector 확보 로직 (재사용 우선) ---
+        connector_obj: Optional[object] = None
+        created_here = False
+
+        try:
+            import inspect
+            # 1) static에 이미 등록된 connector가 있으면 재사용
+            try:
+                from .. import bootstrap as _bootstrap_mod  # type: ignore
+                static_candidate = getattr(_bootstrap_mod, "static", None)
+                if static_candidate is not None:
+                    sc_conn = getattr(static_candidate, "timescale_connector", None)
+                    if sc_conn is not None:
+                        connector_obj = sc_conn
+            except Exception:
+                connector_obj = None
+
+            # 2) dynamic file load fallback: try load_module_from_file_abs if available
+            ts_db_paths = []
+            try:
+                from .module_loader import SRC_ROOT, load_module_from_file_abs
+            except Exception:
+                SRC_ROOT = None  # fallback; load_module_from_file_abs imported above if available
+                load_module_from_file_abs = None
+
+            if SRC_ROOT:
+                ts_db_paths.append(os.path.join(SRC_ROOT, "02_data", "timescale", "timescale_db.py"))
+            else:
+                # best-effort common paths relative to this module
+                here = os.path.dirname(__file__)
+                ts_db_paths.append(os.path.join(here, "..", "..", "02_data", "timescale", "timescale_db.py"))
+
+            ts_mod = None
+            for p in ts_db_paths:
+                try:
+                    if p and os.path.isfile(p):
+                        # use load_module_from_file_abs if provided
+                        if load_module_from_file_abs:
+                            ts_mod = load_module_from_file_abs(p, "_timescale_db_flush")
+                        else:
+                            import importlib.util as _ilu
+                            spec = _ilu.spec_from_file_location("_timescale_db_flush_fallback", p)
+                            if spec and spec.loader:
+                                mod = _ilu.module_from_spec(spec)
+                                spec.loader.exec_module(mod)  # type: ignore
+                                ts_mod = mod
+                        if ts_mod is not None:
+                            break
+                except Exception:
+                    continue
+
+            # 3) if not loaded from file, try import candidates
+            if ts_mod is None:
+                ts_mod, _ = try_import_names((
+                    "02_data.timescale.timescale_db",
+                    "src.02_data.timescale.timescale_db",
+                ))
+
+            if ts_mod is None and connector_obj is None:
+                log.debug("[flush_staging] timescale_db 모듈을 읽어들이지 못했습니다")
+                return 0
+
+            # 4) obtain connector object if not already present
+            if connector_obj is None:
+                connector_cls = getattr(ts_mod, "TimescaleConnector", None)
+                get_conn_fn = getattr(ts_mod, "get_timescale_connector", None)
+
+                # If a factory function provided, call it.
+                if callable(get_conn_fn):
+                    try:
+                        connector_obj = get_conn_fn()
+                        created_here = True
+                    except Exception as e:
+                        log.debug("[flush_staging] get_timescale_connector() 호출 실패: %s", e, exc_info=True)
+                        connector_obj = None
+
+                # If a class provided, instantiate it
+                if connector_obj is None and connector_cls is not None:
+                    try:
+                        connector_obj = connector_cls()
+                        created_here = True
+                    except Exception as e:
+                        log.debug("[flush_staging] TimescaleConnector() 인스턴스화 실패: %s", e, exc_info=True)
+                        connector_obj = None
+
+                # last fallback: check module-level 'connector' or 'connector_instance'
+                if connector_obj is None:
+                    for attr in ("connector", "connector_instance", "TimescaleConnectorInstance"):
+                        if hasattr(ts_mod, attr):
+                            try:
+                                potential = getattr(ts_mod, attr)
+                                # if it's a factory, call it
+                                if callable(potential) and not inspect.isclass(potential):
+                                    connector_obj = potential()
+                                    created_here = True
+                                else:
+                                    connector_obj = potential
+                                break
+                            except Exception:
+                                connector_obj = None
+
+            if connector_obj is None:
+                log.debug("[flush_staging] Timescale connector를 확보하지 못해 flush를 건너뜁니다")
+                return 0
+
+            # 5) Ensure connector is connected (if API provides connect())
+            need_disconnect = False
+            connected_ok = False
+            try:
+                # If connector has an 'is_connected' or 'connected' attribute, check it first
+                already_connected = False
+                for flag in ("is_connected", "connected", "is_connected()"):
+                    val = getattr(connector_obj, flag, None)
+                    if isinstance(val, bool):
+                        already_connected = val
+                        break
+
+                if not already_connected:
+                    connect_fn = getattr(connector_obj, "connect", None)
+                    if callable(connect_fn):
+                        try:
+                            r = connect_fn()
+                            # connect() may return truthy on success
+                            if r is True or r is None:
+                                connected_ok = True
+                            else:
+                                # some implementations return connection object
+                                connected_ok = True if r else False
+                            need_disconnect = True
+                        except Exception as e:
+                            log.debug("[flush_staging] connector.connect() 실패: %s", e, exc_info=True)
+                            connected_ok = False
+                    else:
+                        # no connect() method; assume connector manages its own pooling or is always ready
+                        connected_ok = True
+                else:
+                    connected_ok = True
+            except Exception:
+                connected_ok = True  # be permissive; attempt flush and handle errors
+
+            if not connected_ok:
+                log.debug("[flush_staging] DB 연결 실패 - flush 건너뜀")
+                return 0
+
+            # 6) find flush function and execute
+            flush_fn = getattr(connector_obj, "flush_staging_to_candles", None)
+            if not callable(flush_fn):
+                # maybe module-level free function
+                flush_fn = getattr(ts_mod, "flush_staging_to_candles", None)
+
+            if not callable(flush_fn):
+                log.debug("[flush_staging] flush 함수가 없음 - 스킵")
+                return 0
+
+            try:
+                total = flush_fn()
+                try:
+                    if isinstance(total, int):
+                        if total > 0:
+                            log.info("[flush_staging] staging_candles flush 완료: %d건", total)
+                        return total
+                    # some implementations may return tuple or other info
+                    # try to coerce
+                    if isinstance(total, (list, tuple)):
+                        moved = int(total[0]) if total else 0
+                        if moved > 0:
+                            log.info("[flush_staging] staging_candles flush 완료: %d건", moved)
+                        return moved
+                    return 0
+                except Exception:
+                    return 0
+            except Exception:
+                log.debug("[flush_staging] flush 함수 실행 중 예외", exc_info=True)
+                return 0
+
+        except Exception:
+            log.debug("[flush_staging] flush 실패", exc_info=True)
+            return 0
+
+        finally:
+            # 7) 생성한 connector에 대해선 안전하게 닫음(정리)
+            try:
+                if created_here and connector_obj is not None:
+                    try:
+                        _safe_close_connector(connector_obj)
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+    finally:
+        # 락 해제 (반드시)
+        try:
+            _flush_lock.release()
+        except Exception:
+            pass

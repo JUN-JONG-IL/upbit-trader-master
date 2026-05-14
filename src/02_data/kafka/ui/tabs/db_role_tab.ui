@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DbRoleTab</class>
+ <widget class="QWidget" name="DbRoleTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1100</width>
+    <height>760</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DB 역할 안내</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #FFFFFF;
+    color: #1E293B;
+    font-family: &quot;맑은 고딕&quot;, &quot;Segoe UI&quot;;
+    font-size: 9pt;
+}
+QScrollArea {
+    border: none;
+    background-color: #F8F9FA;
+}
+QScrollBar:vertical {
+    border: none;
+    background: #F1F5F9;
+    width: 8px;
+    margin: 0;
+    border-radius: 4px;
+}
+QScrollBar::handle:vertical {
+    background: #CBD5E1;
+    border-radius: 4px;
+    min-height: 20px;
+}
+QScrollBar::handle:vertical:hover {
+    background: #94A3B8;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+}
+QFrame#frame_header {
+    background-color: #EA580C;
+    border-radius: 6px;
+}
+QLabel#label_title {
+    color: #FFFFFF;
+    font-size: 14pt;
+    font-weight: bold;
+}
+QLabel#label_subtitle {
+    color: #FED7AA;
+    font-size: 9pt;
+}
+QFrame#frame_section1, QFrame#frame_section2, QFrame#frame_section3, QFrame#frame_section4 {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+}
+QLabel#label_sec1_title, QLabel#label_sec2_title, QLabel#label_sec3_title, QLabel#label_sec4_title {
+    color: #1E293B;
+    font-size: 11pt;
+    font-weight: bold;
+    border-bottom: 2px solid #E2E8F0;
+    padding-bottom: 4px;
+}
+QFrame#frame_perf {
+    background-color: #F0FDF4;
+    border-left: 4px solid #16A34A;
+    border-radius: 4px;
+}
+QLabel#label_perf_text {
+    color: #166534;
+    font-size: 8pt;
+}
+</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_main">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <widget class="QWidget" name="scrollContents">
+      <layout class="QVBoxLayout" name="vl_scroll">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <property name="leftMargin">
+        <number>16</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>16</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <!-- 헤더 배너 -->
+       <item>
+        <widget class="QFrame" name="frame_header">
+         <layout class="QVBoxLayout" name="vl_header">
+          <property name="leftMargin">
+           <number>20</number>
+          </property>
+          <property name="topMargin">
+           <number>16</number>
+          </property>
+          <property name="rightMargin">
+           <number>20</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_title">
+            <property name="text">
+             <string>🟠 Kafka — 실시간 이벤트 스트리밍 파이프라인</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_subtitle">
+            <property name="text">
+             <string>ALL-IN-ONE 통합 트레이딩 플랫폼의 실시간 이벤트 버스 및 데이터 라우팅 엔진</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 섹션 1: Kafka란? -->
+       <item>
+        <widget class="QFrame" name="frame_section1">
+         <layout class="QVBoxLayout" name="vl_sec1">
+          <property name="leftMargin">
+           <number>16</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>16</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_sec1_title">
+            <property name="text">
+             <string>📌 Kafka란?</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_sec1_body">
+            <property name="text">
+             <string>Kafka는 분산 이벤트 스트리밍 플랫폼입니다. 본 플랫폼에서는 모든 DB 간 데이터 흐름의 중앙 허브 역할로, WebSocket 수신 데이터를 다운스트림 DB(TimescaleDB/ClickHouse/PostgreSQL)로 비동기 분배합니다.
+
+포트: 9092 | 응답: &lt; 5ms | 보관: 24시간(기본) ~ 7일
+Zookeeper 포트: 2181 | Partition Key: hash(symbol) % 16 | 압축: Snappy 70%</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #334155; font-size: 9pt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 섹션 2: 저장 데이터 -->
+       <item>
+        <widget class="QFrame" name="frame_section2">
+         <layout class="QVBoxLayout" name="vl_sec2">
+          <property name="leftMargin">
+           <number>16</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>16</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_sec2_title">
+            <property name="text">
+             <string>💾 저장 데이터 목록 (토픽별)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_sec2_body">
+            <property name="text">
+             <string>• upbit.candles.1m / upbit.candles.5m / upbit.candles.1h
+   캔들 데이터 스트림 — Partition: hash(symbol) % 16
+
+• upbit.ticks
+   실시간 체결 데이터 스트림 — 고빈도 메시지 처리
+
+• upbit.orderbook
+   호가 데이터 스트림 — 호가창 갱신 이벤트
+
+• upbit.events
+   시스템 이벤트 (Gap 감지, 연결 상태, 알림 등)
+
+• db.timescale.archive
+   TimescaleDB → ClickHouse 이관용 아카이브 토픽</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #334155; font-size: 9pt; line-height: 1.6;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 섹션 3: Kafka 특화 기능 -->
+       <item>
+        <widget class="QFrame" name="frame_section3">
+         <layout class="QVBoxLayout" name="vl_sec3">
+          <property name="leftMargin">
+           <number>16</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>16</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_sec3_title">
+            <property name="text">
+             <string>⚙️ Kafka 특화 기능</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_sec3_body">
+            <property name="text">
+             <string>• Topic 파티셔닝
+   hash(symbol) % 16 파티션 → 종목별 데이터 순서 보장
+
+• Consumer Group
+   다중 소비자 병렬 처리 (TimescaleDB Writer, ClickHouse Engine, Analyzer 등)
+
+• 메시지 보관 정책
+   Hot: 24시간 / Warm: 7일 (설정 가능) — 장애 복구용 재처리 지원
+
+• Snappy 압축
+   네트워크 및 스토리지 70% 절감 → 대용량 틱 스트림 처리 효율화</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #334155; font-size: 9pt; line-height: 1.6;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 섹션 4: 활용 방안 -->
+       <item>
+        <widget class="QFrame" name="frame_section4">
+         <layout class="QVBoxLayout" name="vl_sec4">
+          <property name="leftMargin">
+           <number>16</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>16</number>
+          </property>
+          <property name="bottomMargin">
+           <number>16</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_sec4_title">
+            <property name="text">
+             <string>🚀 활용 방안</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_sec4_body">
+            <property name="text">
+             <string>• 실시간 데이터 파이프라인
+   WebSocket → Kafka → TimescaleDB / ClickHouse 비동기 분배
+
+• 장애 복구 (Replay)
+   보관 기간 내 메시지 재처리 → 장애 시 데이터 손실 방지
+
+• 마이크로서비스 디커플링
+   수집기·저장기·분석기 독립 스케일링
+
+• Gap 감지 트리거
+   누락 데이터 감지 → gap_queue 이벤트 발행
+
+• 실시간 알림
+   가격 이상 감지·리스크 이벤트 → 알림 시스템 트리거</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: #334155; font-size: 9pt; line-height: 1.6;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 성능 목표 배너 -->
+       <item>
+        <widget class="QFrame" name="frame_perf">
+         <layout class="QHBoxLayout" name="hl_perf">
+          <property name="leftMargin">
+           <number>16</number>
+          </property>
+          <property name="topMargin">
+           <number>10</number>
+          </property>
+          <property name="rightMargin">
+           <number>16</number>
+          </property>
+          <property name="bottomMargin">
+           <number>10</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_perf_text">
+            <property name="text">
+             <string>🎯 성능 목표:  메시지 처리 P95 &lt; 5ms  |  처리량 &gt; 100,000 msg/s  |  보관: 24시간~7일  |  파티션: 16개</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- 하단 여백 스페이서 -->
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

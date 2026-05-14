@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BackfillTab</class>
+ <widget class="QWidget" name="BackfillTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1600</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="vLayout_databases">
+   <item>
+    <widget class="QTabWidget" name="tabWidget_db_detail">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_db_timescale">
+      <attribute name="title">
+       <string>TimescaleDB</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vLayout_db_timescale">
+       <item>
+        <widget class="QLabel" name="label_db_timescale_placeholder">
+         <property name="text">
+          <string>TimescaleDB 상세 패널 (timescale_panel.py 참조)</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_db_redis">
+      <attribute name="title">
+       <string>Redis</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vLayout_db_redis">
+       <item>
+        <widget class="QLabel" name="label_db_redis_placeholder">
+         <property name="text">
+          <string>Redis 상세 패널 (redis_panel.py 참조)</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_db_mongodb">
+      <attribute name="title">
+       <string>MongoDB</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vLayout_db_mongodb">
+       <item>
+        <widget class="QLabel" name="label_db_mongodb_placeholder">
+         <property name="text">
+          <string>MongoDB 상세 패널 (mongodb_panel.py 참조)</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_db_postgres">
+      <attribute name="title">
+       <string>PostgreSQL</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vLayout_db_postgres">
+       <item>
+        <widget class="QLabel" name="label_db_postgres_placeholder">
+         <property name="text">
+          <string>PostgreSQL 상세 패널 (postgres_panel.py 참조)</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_db_kafka">
+      <attribute name="title">
+       <string>Kafka</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vLayout_db_kafka">
+       <item>
+        <widget class="QLabel" name="label_db_kafka_placeholder">
+         <property name="text">
+          <string>Kafka 상세 패널 (kafka_panel.py 참조)</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_db_clickhouse">
+      <attribute name="title">
+       <string>ClickHouse</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vLayout_db_clickhouse">
+       <item>
+        <widget class="QLabel" name="label_db_clickhouse_placeholder">
+         <property name="text">
+          <string>ClickHouse 상세 패널 (clickhouse_panel.py 참조)</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

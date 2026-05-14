@@ -1,0 +1,1120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TabBasicIndicators</class>
+ <widget class="QWidget" name="TabBasicIndicators">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1180</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  margin-top: 8px;
+  padding: 12px;
+  background: #f9fafb;
+  color: #111111;
+  font-weight: bold;
+}
+QGroupBox::title {
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  padding: 0 8px;
+  color: #111111;
+}
+QLabel {
+  color: #374151;
+  padding: 2px;
+}
+QComboBox {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: white;
+  color: #111111;
+}
+QComboBox:hover {
+  border-color: #3b82f6;
+}
+QComboBox QAbstractItemView {
+  background: #ffffff;
+  color: #111111;
+  selection-background-color: #e8eefc;
+  selection-color: #111111;
+  border: 1px solid #d1d5db;
+}
+QCheckBox {
+  color: #111111;
+  padding: 4px;
+}
+QCheckBox:hover {
+  color: #111111;
+  background: #f3f4f6;
+}
+QCheckBox::indicator {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #d1d5db;
+  background: white;
+}
+QCheckBox::indicator:checked {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+QSpinBox, QDoubleSpinBox {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: white;
+  color: #111111;
+}
+QSpinBox:focus, QDoubleSpinBox:focus {
+  border-color: #3b82f6;
+}</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="leftColumn">
+     <item>
+      <widget class="QGroupBox" name="chartCompareGroup">
+       <property name="title">
+        <string>차트비교 (자동대교)</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_1">
+        <item>
+         <widget class="QCheckBox" name="chartCompareEnable">
+          <property name="text">
+           <string>활성화</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_baseCoin">
+          <property name="text">
+           <string>기준코인:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="baseCoinCombo">
+          <item>
+           <property name="text">
+            <string>KRW-WAXP</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_chartInterval">
+          <property name="text">
+           <string>차트 간격:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="chartIntervalCombo">
+          <item>
+           <property name="text">
+            <string>1분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>30분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1시간</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>4시간</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>일</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>주</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>월</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>년</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="ohlcGroup">
+       <property name="title">
+        <string>OHLC</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_ohlc">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_ohlcInterval">
+          <property name="text">
+           <string>간격:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QComboBox" name="ohlcIntervalCombo">
+          <item>
+           <property name="text">
+            <string>1분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1시간</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>일</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_open">
+          <property name="text">
+           <string>시가:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="openValue">
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.01</double>
+          </property>
+          <property name="maximum">
+           <double>999999.99</double>
+          </property>
+          <property name="value">
+           <double>0.90</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QComboBox" name="openCondition">
+          <item>
+           <property name="text">
+            <string>이상</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>이하</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>초과</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>미만</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_close">
+          <property name="text">
+           <string>종가:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QDoubleSpinBox" name="closeValue">
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.01</double>
+          </property>
+          <property name="maximum">
+           <double>999999.99</double>
+          </property>
+          <property name="value">
+           <double>1.00</double>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QComboBox" name="closeCondition">
+          <item>
+           <property name="text">
+            <string>이상</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>이하</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>초과</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>미만</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_high">
+          <property name="text">
+           <string>고가:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QDoubleSpinBox" name="highValue">
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.01</double>
+          </property>
+          <property name="maximum">
+           <double>999999.99</double>
+          </property>
+          <property name="value">
+           <double>1.00</double>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QComboBox" name="highCondition">
+          <item>
+           <property name="text">
+            <string>이상</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>이하</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>초과</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>미만</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_low">
+          <property name="text">
+           <string>저가:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QDoubleSpinBox" name="lowValue">
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.01</double>
+          </property>
+          <property name="maximum">
+           <double>999999.99</double>
+          </property>
+          <property name="value">
+           <double>1.00</double>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QComboBox" name="lowCondition">
+          <item>
+           <property name="text">
+            <string>이상</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>이하</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>초과</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>미만</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_excludeRecent">
+          <property name="text">
+           <string>최근 제외:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1" colspan="2">
+         <widget class="QSpinBox" name="excludeRecent">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_left">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="centerColumn">
+     <item>
+      <widget class="QGroupBox" name="goldenCrossGroup">
+       <property name="title">
+        <string>골든크로스 (데드크로스)</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QCheckBox" name="goldenEnable">
+          <property name="text">
+           <string>활성화</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_goldenShort">
+          <property name="text">
+           <string>단기:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_goldenShort">
+          <item>
+           <widget class="QComboBox" name="goldenShortInterval">
+            <item>
+             <property name="text">
+              <string>1분</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>5분</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>15분</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1시간</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>일</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="goldenShortPeriod">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>200</number>
+            </property>
+            <property name="value">
+             <number>14</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_goldenLong">
+          <property name="text">
+           <string>장기:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_goldenLong">
+          <item>
+           <widget class="QComboBox" name="goldenLongInterval">
+            <item>
+             <property name="text">
+              <string>1분</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>5분</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>15분</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1시간</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>일</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="goldenLongPeriod">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>200</number>
+            </property>
+            <property name="value">
+             <number>20</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="usePriceDiff">
+          <property name="text">
+           <string>가격차 사용</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_priceDiff">
+          <item>
+           <widget class="QDoubleSpinBox" name="priceDiffValue">
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>0.01</double>
+            </property>
+            <property name="maximum">
+             <double>100.00</double>
+            </property>
+            <property name="value">
+             <double>1.00</double>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="priceDiffCondition">
+            <item>
+             <property name="text">
+              <string>이하</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>이상</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="movingAverageGroup">
+       <property name="title">
+        <string>이동평균</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_ma">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_maInterval">
+          <property name="text">
+           <string>간격:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="maInterval">
+          <item>
+           <property name="text">
+            <string>1분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1시간</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>일</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_maShort">
+          <property name="text">
+           <string>단기:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="maShortPeriod">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>200</number>
+          </property>
+          <property name="value">
+           <number>5</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_maLong">
+          <property name="text">
+           <string>장기:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QSpinBox" name="maLongPeriod">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>200</number>
+          </property>
+          <property name="value">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_maCondition">
+          <property name="text">
+           <string>조건:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="maCondition">
+          <item>
+           <property name="text">
+            <string>골든크로스</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>데드크로스</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>단기&gt;장기</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>단기&lt;장기</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_center">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="rightColumn">
+     <item>
+      <widget class="QGroupBox" name="rsiGroup">
+       <property name="title">
+        <string>RSI</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_rsi">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_rsiInterval">
+          <property name="text">
+           <string>간격:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="rsiInterval">
+          <item>
+           <property name="text">
+            <string>1분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15분</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1시간</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>일</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_rsiPeriod">
+          <property name="text">
+           <string>기간:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="rsiPeriod">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>14</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_rsiThreshold">
+          <property name="text">
+           <string>임계값:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QSpinBox" name="rsiThreshold">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>30</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_rsiCondition">
+          <property name="text">
+           <string>조건:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="rsiCondition">
+          <item>
+           <property name="text">
+            <string>이하</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>이상</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="rsiDivergenceGroup">
+       <property name="title">
+        <string>RSI 다이버전스</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QCheckBox" name="rsiDiv1m">
+          <property name="text">
+           <string>1분</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="rsiDiv5m">
+          <property name="text">
+           <string>5분</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="rsiDiv15m">
+          <property name="text">
+           <string>15분</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="rsiDiv30m">
+          <property name="text">
+           <string>30분</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="rsiDiv1h">
+          <property name="text">
+           <string>1시간</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="rsiDiv4h">
+          <property name="text">
+           <string>4시간</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="rsiDiv1d">
+          <property name="text">
+           <string>일</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_rsiDiv">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_rsiDivMax">
+            <property name="text">
+             <string>RSI 최고:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="rsiDivMax">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>70</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_rsiDivMin">
+            <property name="text">
+             <string>RSI 최저:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="rsiDivMin">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>30</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_rsiDivIgnore">
+            <property name="text">
+             <string>고점후 무시:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="rsiDivIgnore">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>3</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_rsiDivTimeAllow">
+            <property name="text">
+             <string>시간 허용:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="rsiDivTimeAllow">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>20</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_rsiDivRecentExclude">
+            <property name="text">
+             <string>최근 제외:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="rsiDivRecentExclude">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="volumeSurgeGroup">
+       <property name="title">
+        <string>평균거래량 대비 거래량급등</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QCheckBox" name="vol1m">
+          <property name="text">
+           <string>1분</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="vol5m">
+          <property name="text">
+           <string>5분</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="vol15m">
+          <property name="text">
+           <string>15분</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="vol30m">
+          <property name="text">
+           <string>30분</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="vol1h">
+          <property name="text">
+           <string>1시간</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="vol4h">
+          <property name="text">
+           <string>4시간</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="vol1d">
+          <property name="text">
+           <string>일</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_vol">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_volAvgCount">
+            <property name="text">
+             <string>평균 계산:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="volAvgCount">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>200</number>
+            </property>
+            <property name="value">
+             <number>20</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_volAvgRatio">
+            <property name="text">
+             <string>평균 대비:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="volAvgRatio">
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_right">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

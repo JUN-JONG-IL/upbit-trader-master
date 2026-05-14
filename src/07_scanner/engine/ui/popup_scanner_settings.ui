@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ScannerSettingsPopup</class>
+ <widget class="QDialog" name="ScannerSettingsPopup">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>종목 찾기 설정</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>코인 선택</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="coinCombo"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>분봉 선택</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="intervalCombo">
+     <item>
+      <property name="text">
+       <string>1분</string>
+      </property>
+     </item>
+     <!-- 모든 기간 추가: 틱,초,분,일,주,월,년 -->
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>골든크로스</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="maDirectionCombo">
+     <item>
+      <property name="text">
+       <string>우상향</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>우하향</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <!-- RSI, 거래량 등 추가 조건 UI -->
+   <item>
+    <widget class="QPushButton" name="saveButton">
+     <property name="text">
+      <string>저장</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

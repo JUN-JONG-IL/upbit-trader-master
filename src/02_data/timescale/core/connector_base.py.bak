@@ -1,0 +1,907 @@
+# -*- coding: utf-8 -*-
+"""
+connector_base — TimescaleConnector
+연결/풀/execute 담당 핵심 클래스.
+
+변경 요지(안정성 우선):
+- 전역 풀 실패 시 즉시 대규모 로컬 풀을 생성하지 않도록 쿨다운/백오프 정책 추가.
+- 로컬 풀 기본 크기 축소(환경변수로 구성 가능).
+- get_connection_ctx() 컨텍스트 매니저 추가(권장 사용).
+- 기존의 _connection_scope는 유지하되 예외/정상 경로에서 항상 _release_conn가 호출되도록 보강.
+- 동시 DB 작업 수를 제한하는 세마포어 추가(TIMESCALE_MAX_CONCURRENT_OPS).
+- executemany 대량 처리 시 청크 분할(TIMESCALE_EXECUTE_CHUNK_SIZE) 및 execute_values+Json 사용.
+- 로그 및 한글 주석 보강.
+"""
+from __future__ import annotations
+
+import logging
+import os
+import re
+import threading
+import time
+import traceback
+import sys
+import json
+from contextlib import contextmanager
+from typing import Any, Iterable, List, Optional, Tuple, Generator
+from urllib.parse import quote_plus, unquote, urlparse
+from itertools import islice
+
+from .schema_ddl import SchemaDDLMixin
+from .candle_writer import CandleWriterMixin
+from .query_helpers import QueryHelperMixin
+
+# --------------------------------------------------------------------------
+# psycopg2 지연 임포트 (환경에 따라 없을 수 있음)
+# --------------------------------------------------------------------------
+try:
+    import psycopg2
+    import psycopg2.extras as pg_extras
+    from psycopg2.extras import execute_values, RealDictCursor
+    from psycopg2.pool import SimpleConnectionPool as _SimpleConnectionPool
+except Exception:
+    psycopg2 = None  # type: ignore
+    pg_extras = None
+    execute_values = None
+    RealDictCursor = None
+    _SimpleConnectionPool = None  # type: ignore
+
+# --------------------------------------------------------------------------
+# 전역 연결 풀 (pool.py) — 프로세스 내 단 하나의 풀 유지
+# --------------------------------------------------------------------------
+_POOL_MODULE_AVAILABLE = False
+_init_global_pool = None
+_pool_get_connection = None
+_pool_release_connection = None
+_close_global_pool = None
+
+
+def _try_load_pool_module() -> bool:
+    """pool.py 모듈을 상대 또는 파일 경로 기반으로 로드합니다."""
+    global _POOL_MODULE_AVAILABLE, _init_global_pool, _pool_get_connection
+    global _pool_release_connection, _close_global_pool
+    if _POOL_MODULE_AVAILABLE:
+        return True
+    try:
+        # 상대 import (패키지로 로드된 경우)
+        from ..pool import (  # type: ignore
+            init_global_pool as _ig,
+            get_connection as _gc,
+            release_connection as _rc,
+            close_global_pool as _cg,
+        )
+        _init_global_pool = _ig
+        _pool_get_connection = _gc
+        _pool_release_connection = _rc
+        _close_global_pool = _cg
+        _POOL_MODULE_AVAILABLE = True
+        return True
+    except (ImportError, ModuleNotFoundError):
+        pass
+    try:
+        import importlib.util
+        import pathlib
+        _pool_path = pathlib.Path(__file__).parent.parent / "pool.py"
+        if _pool_path.exists():
+            _spec = importlib.util.spec_from_file_location("_timescale_pool_file", str(_pool_path))
+            if _spec and _spec.loader:
+                import sys as _sys
+                _pool_mod = _sys.modules.get("_timescale_pool_file")
+                if _pool_mod is None:
+                    _pool_mod = importlib.util.module_from_spec(_spec)
+                    _sys.modules["_timescale_pool_file"] = _pool_mod
+                    _spec.loader.exec_module(_pool_mod)
+                _init_global_pool = _pool_mod.init_global_pool
+                _pool_get_connection = _pool_mod.get_connection
+                _pool_release_connection = _pool_mod.release_connection
+                _close_global_pool = _pool_mod.close_global_pool
+                _POOL_MODULE_AVAILABLE = True
+                return True
+    except Exception:
+        pass
+    return False
+
+
+def _build_dsn() -> str:
+    """DSN 문자열 생성 — 환경 변수 기반 폴백 포함."""
+    try:
+        from ..timescale_utils import timescale_build_dsn  # type: ignore
+        return timescale_build_dsn()
+    except Exception:
+        pass
+    url = os.environ.get("DATABASE_URL")
+    if url:
+        return url
+    user = os.environ.get("PGUSER") or os.environ.get("POSTGRES_USER") or os.environ.get("POSTGRES_APP_USER")
+    password = os.environ.get("PGPASSWORD") or os.environ.get("POSTGRES_PASSWORD") or os.environ.get("POSTGRES_APP_PASSWORD")
+    host = os.environ.get("PGHOST") or os.environ.get("POSTGRES_HOST") or "127.0.0.1"
+    port = os.environ.get("PGPORT") or os.environ.get("POSTGRES_PORT") or "5432"
+    db = os.environ.get("PGDATABASE") or os.environ.get("POSTGRES_DB") or "upbit_trader"
+    if user and password:
+        pw = quote_plus(password)
+        return f"postgresql://{user}:{pw}@{host}:{port}/{db}"
+    parts = []
+    if host:
+        parts.append(f"host={host}")
+    if port:
+        parts.append(f"port={port}")
+    if db:
+        parts.append(f"dbname={db}")
+    if user:
+        parts.append(f"user={user}")
+    if password:
+        parts.append(f"password={password}")
+    return " ".join(parts)
+
+
+# --------------------------------------------------------------------------
+# 로거 설정 (파일 단독 실행 시도 대비)
+# --------------------------------------------------------------------------
+logger = logging.getLogger("timescale_db")
+if not logger.handlers:
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    fmt = logging.Formatter("[%(asctime)s] [timescale_db] [%(levelname)s] %(message)s", datefmt="%H:%M:%S")
+    ch.setFormatter(fmt)
+    logger.addHandler(ch)
+logger.setLevel(logging.INFO)
+logger.propagate = False
+
+_CONNECT_RETRY_BASE_DELAY = 1.0  # 연결 재시도 기본 대기 시간 (초)
+
+_try_load_pool_module()
+
+# --------------------------------------------------------------------------
+# 동시성 제어 환경변수 (세마포어 / executemany 청크)
+# --------------------------------------------------------------------------
+_MAX_CONCURRENT_OPS = int(os.getenv("TIMESCALE_MAX_CONCURRENT_OPS", "50"))  # 기본 동시 작업 제한
+_OP_SEM_TIMEOUT_SEC = float(os.getenv("TIMESCALE_OP_SEM_TIMEOUT_SEC", "10.0"))  # 세마포어 획득 타임아웃
+_EXECUTE_CHUNK_SIZE = int(os.getenv("TIMESCALE_EXECUTE_CHUNK_SIZE", "500"))  # executemany 청크 사이즈
+
+
+def _chunked(iterable, size):
+    """iterable을 size 단위로 나누는 제너레이터"""
+    it = iter(iterable)
+    while True:
+        chunk = list(islice(it, size))
+        if not chunk:
+            break
+        yield chunk
+
+
+class TimescaleConnector(SchemaDDLMixin, CandleWriterMixin, QueryHelperMixin):
+    """
+    동기식 Timescale/Postgres 커넥터 — 스테이징 + upsert 헬퍼 포함.
+    싱글톤 패턴으로 동작합니다.
+    """
+    _instance = None
+    _lock = threading.Lock()
+    _connection_logged = False
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __init__(self, dsn: Optional[str] = None, ensure_schema_on_connect: bool = True):
+        if hasattr(self, "_initialized"):
+            return
+        self._initialized = True
+        self.dsn = dsn or _build_dsn()
+        self.conn = None
+        self.ensure_schema_on_connect = ensure_schema_on_connect
+        self._last_activity: float = time.time()
+        self._connection_timeout: int = int(os.getenv("TIMESCALE_CONN_TIMEOUT_SEC", "60"))
+        self._pool = None
+        self._pool_lock = threading.Lock()
+        self._conn_lock = threading.Lock()
+        # registry: id(conn) -> "global" | "local" | False
+        self._pool_conn_registry: dict = {}
+        # last time global pool failed - used for cooldown logic
+        self._last_global_pool_fail: float = 0.0
+        self._global_fail_cooldown: float = float(os.getenv("TIMESCALE_GLOBAL_FAIL_COOLDOWN_SEC", "30"))
+        # local pool sizing (safer defaults)
+        self._local_minconn = int(os.getenv("TIMESCALE_LOCAL_MINCONN", "2"))
+        self._local_maxconn = int(os.getenv("TIMESCALE_LOCAL_MAXCONN", "10"))
+        # 동시 작업 제한용 세마포어 (프로세스 내부에서 DB 접속 사용량 제어)
+        self._max_concurrent_ops = max(1, _MAX_CONCURRENT_OPS)
+        self._op_semaphore = threading.BoundedSemaphore(self._max_concurrent_ops)
+        self._op_sem_timeout = _OP_SEM_TIMEOUT_SEC
+        self._init_conn_pool()
+
+    # -------------------
+    # 연결 / 풀 관리
+    # -------------------
+    def connect(self, timeout: int = 5) -> bool:
+        if self.conn:
+            try:
+                if not self.conn.closed:
+                    with self.conn.cursor() as cur:
+                        cur.execute("SELECT 1")
+                        cur.fetchone()
+                    logger.debug("[TimescaleDB] 기존 연결 재사용")
+                    return True
+            except Exception as e:
+                logger.debug("[TimescaleDB] 기존 연결 끊어짐, 재연결 시도: %s", e)
+                try:
+                    self.conn.close()
+                except Exception:
+                    pass
+                self.conn = None
+
+        if psycopg2 is None:
+            logger.error("psycopg2 미설치. pip install psycopg2-binary 실행")
+            return False
+
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                if isinstance(self.dsn, str) and self.dsn.startswith(("postgresql://", "postgres://")):
+                    parsed = urlparse(self.dsn)
+                    user = unquote(parsed.username) if parsed.username else None
+                    password = unquote(parsed.password) if parsed.password else None
+                    host = parsed.hostname or os.environ.get("PGHOST", "127.0.0.1")
+                    port = parsed.port or int(os.environ.get("PGPORT", 5432))
+                    dbname = (parsed.path.lstrip("/") if parsed.path else None) or os.environ.get("PGDATABASE", "upbit_trader")
+                    conn_kwargs = {
+                        "host": host, "port": port, "dbname": dbname,
+                        "connect_timeout": int(timeout),
+                        "keepalives": 1, "keepalives_idle": 30,
+                        "keepalives_interval": 10, "keepalives_count": 5,
+                    }
+                    if user:
+                        conn_kwargs["user"] = user
+                    if password:
+                        conn_kwargs["password"] = password
+                    self.conn = psycopg2.connect(**conn_kwargs)
+                else:
+                    try:
+                        self.conn = psycopg2.connect(
+                            self.dsn, connect_timeout=int(timeout),
+                            keepalives=1, keepalives_idle=30,
+                            keepalives_interval=10, keepalives_count=5,
+                        )
+                    except Exception:
+                        dsn_with = f"{self.dsn} connect_timeout={int(timeout)}"
+                        self.conn = psycopg2.connect(dsn_with)
+
+                self.conn.autocommit = False
+                if not TimescaleConnector._connection_logged:
+                    logger.info("[TimescaleDB] ✅ 최초 연결 성공 (attempt %d/%d)", attempt + 1, max_retries)
+                    TimescaleConnector._connection_logged = True
+                else:
+                    logger.debug("[TimescaleDB] 재연결 성공 (attempt %d/%d)", attempt + 1, max_retries)
+                self._last_activity = time.time()
+
+                if self.ensure_schema_on_connect:
+                    try:
+                        self.ensure_timescaledb_extension()
+                        self.ensure_candles_hypertable()
+                    except Exception as e:
+                        logger.warning("[TimescaleDB] 스키마 초기화 실패 (무시): %s", e)
+                        try:
+                            if self.conn and not self.conn.closed:
+                                self.conn.rollback()
+                        except Exception:
+                            logger.debug("[TimescaleDB] 롤백 실패 (무시): %s", e)
+                return True
+
+            except Exception as e:
+                logger.warning("[TimescaleDB] 연결 실패 (attempt %d/%d): %s", attempt + 1, max_retries, str(e))
+                self.conn = None
+                if attempt < max_retries - 1:
+                    time.sleep(_CONNECT_RETRY_BASE_DELAY * (2 ** attempt))
+
+        logger.error("[TimescaleDB] ❌ 연결 최종 실패 (%d회 시도)", max_retries)
+        return False
+
+    def close(self) -> None:
+        if self.conn:
+            try:
+                self.conn.close()
+            except Exception:
+                pass
+        self.conn = None
+        logger.debug("[TimescaleDB] close() 호출됨 (전역 풀은 유지)")
+
+    def _init_conn_pool(self) -> bool:
+        """
+        로컬 풀 초기화.
+        - 전역 풀 모듈이 존재하면 로컬 풀은 만들지 않습니다(중복 연결 폭증 방지).
+        - 전역 풀을 사용할 수 없는 환경에서만 로컬 풀을 생성합니다.
+        """
+        try:
+            with self._pool_lock:
+                if self._pool is not None:
+                    return True
+                if _POOL_MODULE_AVAILABLE:
+                    # 전역 풀 사용 권장 — 로컬 풀 미생성
+                    logger.info("[TimescaleDB] 전역 풀 사용 가능, 로컬 풀 생성 생략")
+                    self._pool = None
+                    return True
+                if not self.dsn:
+                    logger.error("[TimescaleDB] DSN 비어있음 — 로컬 풀 생성 실패")
+                    return False
+                minc = max(1, self._local_minconn)
+                maxc = max(minc, self._local_maxconn)
+                logger.info("[TimescaleDB] 로컬 연결 풀 생성 시도 (minconn=%d, maxconn=%d)", minc, maxc)
+                if _SimpleConnectionPool is None:
+                    logger.warning("[TimescaleDB] psycopg2.pool.SimpleConnectionPool 미사용 가능 - 로컬 풀 미생성")
+                    self._pool = None
+                    return False
+                self._pool = _SimpleConnectionPool(minconn=minc, maxconn=maxc, dsn=self.dsn)
+                test_conn = self._pool.getconn()
+                if test_conn is None:
+                    try:
+                        self._pool.closeall()
+                    except Exception:
+                        pass
+                    self._pool = None
+                    return False
+                try:
+                    with test_conn.cursor() as cur:
+                        cur.execute("SELECT 1")
+                        cur.fetchone()
+                finally:
+                    try:
+                        self._pool.putconn(test_conn)
+                    except Exception:
+                        pass
+                logger.info("[TimescaleDB] 로컬 연결 풀 초기화 완료 (maxconn=%d)", maxc)
+                return True
+        except Exception as exc:
+            logger.error("[TimescaleDB] 로컬 연결 풀 초기화 실패: %s", exc, exc_info=True)
+            self._pool = None
+            return False
+
+    # ------------------------------------------------------------------
+    # 안전한 connection scope (context manager)
+    # ------------------------------------------------------------------
+    @contextmanager
+    def _connection_scope(self) -> Generator[Tuple[Any, Any], None, None]:
+        """
+        항상 self._acquire_conn()로 얻은 connection을 반환하도록 보장합니다.
+        예외가 발생하면 먼저 conn.rollback()을 시도한 뒤 self._release_conn(..., failed=True)을 호출합니다.
+
+        변경점: 세마포어를 사용하여 동시에 DB 연결을 많이 잡는 작업을 내부적으로 제한합니다.
+        """
+        conn = None
+        from_pool = False
+        acquired_sem = False
+        try:
+            # 세마포어 획득 (타임아웃 적용)
+            try:
+                acquired_sem = self._op_semaphore.acquire(timeout=self._op_sem_timeout)
+                if not acquired_sem:
+                    raise RuntimeError("[TimescaleDB] 동시 작업 제한 초과: DB 작업을 얻지 못했습니다 (세마포어 타임아웃)")
+            except Exception as e:
+                logger.warning("[TimescaleDB] 세마포어 획득 실패/타임아웃: %s", e)
+                raise
+
+            res = self._acquire_conn()
+            if isinstance(res, tuple) and len(res) == 2:
+                conn, from_pool = res
+            else:
+                conn = res
+                from_pool = False
+            yield (conn, from_pool)
+        finally:
+            failed = sys.exc_info()[0] is not None
+            try:
+                if failed:
+                    try:
+                        if conn is not None and not getattr(conn, "closed", False):
+                            conn.rollback()
+                    except Exception:
+                        pass
+                try:
+                    if conn is not None:
+                        self._release_conn(conn, from_pool, failed=failed)
+                except Exception:
+                    logger.exception("[TimescaleDB] _connection_scope: _release_conn 호출 중 예외")
+            except Exception:
+                logger.exception("[TimescaleDB] _connection_scope: finally 블록 예외")
+            finally:
+                # 세마포어 해제는 반드시 수행
+                if acquired_sem:
+                    try:
+                        self._op_semaphore.release()
+                    except Exception:
+                        logger.debug("[TimescaleDB] 세마포어 해제 실패", exc_info=True)
+
+    # -------------------
+    # _acquire_conn / policy 개선
+    # -------------------
+    def _acquire_conn(self):
+        """
+        전역 풀 -> 로컬 풀 -> 단일 연결 순으로 시도합니다.
+
+        정책 변경(안정성):
+         - 전역 풀이 사용 가능하더라도 get_connection 실패가 반복되면 쿨다운을 적용하여
+           즉시 로컬 풀을 만들지 않고 단일 연결(fallback self.conn)로 회귀함.
+         - 로컬 풀은 전역 풀이 없을 때만 생성/사용 (중복 풀 방지).
+        """
+        # 1) 전역 풀 시도 (모듈 API)
+        if _POOL_MODULE_AVAILABLE and _pool_get_connection is not None:
+            # check cooldown from last fail
+            now = time.time()
+            if now - getattr(self, "_last_global_pool_fail", 0.0) > getattr(self, "_global_fail_cooldown", 30.0):
+                try:
+                    conn = _pool_get_connection()
+                    try:
+                        logger.debug("[TimescaleDB.DEBUG] 전역 풀에서 연결 획득 id=%s closed=%s caller:\n%s", id(conn), getattr(conn, "closed", None), "".join(traceback.format_stack(limit=6)))
+                    except Exception:
+                        logger.debug("[TimescaleDB.DEBUG] 전역 풀에서 연결 획득 id=%s", id(conn))
+                    return conn, "global"
+                except Exception as exc:
+                    # record last failure time and avoid immediately creating another local pool that may increase clients
+                    self._last_global_pool_fail = now
+                    logger.warning("[TimescaleDB] 전역 풀 연결 획득 실패 - 인스턴스 풀 시도 (기록 및 쿨다운): %s", exc)
+            else:
+                logger.debug("[TimescaleDB] 전역 풀 최근 실패 쿨다운 중 - 스킵 (%.1fs 남음)", max(0.0, self._global_fail_cooldown - (time.time() - self._last_global_pool_fail)))
+
+        # 2) 로컬 풀 시도 (단, 전역 풀이 사용 불가한 환경에서만)
+        with self._pool_lock:
+            pool = self._pool
+
+        if pool is not None:
+            for attempt in range(3):
+                try:
+                    conn = pool.getconn()
+                    if conn is None:
+                        if attempt < 2:
+                            time.sleep(0.1 * (attempt + 1))
+                            continue
+                        break
+                    if getattr(conn, "closed", False):
+                        try:
+                            pool.putconn(conn, close=True)
+                        except Exception:
+                            pass
+                        if attempt < 2:
+                            time.sleep(0.1 * (attempt + 1))
+                            continue
+                        break
+                    try:
+                        with conn.cursor() as cur:
+                            cur.execute("SELECT 1")
+                            cur.fetchone()
+                        try:
+                            logger.debug("[TimescaleDB.DEBUG] 로컬 풀에서 연결 획득 id=%s caller:\n%s", id(conn), "".join(traceback.format_stack(limit=6)))
+                        except Exception:
+                            logger.debug("[TimescaleDB.DEBUG] 로컬 풀에서 연결 획득 id=%s", id(conn))
+                        return conn, "local"
+                    except Exception as ping_exc:
+                        logger.warning("[TimescaleDB] 풀 연결 ping 실패 (attempt %d/3): %s", attempt + 1, ping_exc)
+                        try:
+                            pool.putconn(conn, close=True)
+                        except Exception:
+                            pass
+                        if attempt < 2:
+                            time.sleep(0.1 * (attempt + 1))
+                            continue
+                        break
+                except Exception as exc:
+                    logger.warning("[TimescaleDB] 풀 연결 획득 실패 (attempt %d/3): %s", attempt + 1, exc)
+                    if attempt < 2:
+                        time.sleep(0.1 * (attempt + 1))
+                        continue
+                    break
+
+        # 3) 단일 연결 폴백 (안정성 우선)
+        logger.info("[TimescaleDB] 단일 연결 폴백 모드 사용")
+        with self._conn_lock:
+            if not self._ensure_connection():
+                raise RuntimeError("[TimescaleDB] 연결 실패")
+            try:
+                logger.debug("[TimescaleDB.DEBUG] 단일 self.conn 사용 id=%s caller:\n%s", id(self.conn), "".join(traceback.format_stack(limit=6)))
+            except Exception:
+                logger.debug("[TimescaleDB.DEBUG] 단일 self.conn 사용 id=%s", id(self.conn) if self.conn is not None else None)
+            return self.conn, False
+
+    def _release_conn(self, conn, from_pool, failed: bool = False) -> None:
+        """
+        conn 반환/종료 처리.
+        from_pool: "global" | "local" | False
+        """
+        if conn is None:
+            return
+        try:
+            # 전역 풀에서 얻은 경우
+            if from_pool == "global" or from_pool is True:
+                try:
+                    logger.debug("[TimescaleDB.DEBUG] release -> global id=%s failed=%s caller:\n%s", id(conn), failed, "".join(traceback.format_stack(limit=6)))
+                except Exception:
+                    logger.debug("[TimescaleDB.DEBUG] release -> global id=%s failed=%s", id(conn), failed)
+
+                # prefer module-level release function if available
+                if _POOL_MODULE_AVAILABLE and _pool_release_connection is not None:
+                    try:
+                        _pool_release_connection(conn, failed=failed)
+                        logger.debug("[TimescaleDB] 전역 풀에 연결 반환(id=%s) 성공 (failed=%s)", id(conn), failed)
+                        return
+                    except Exception as exc:
+                        logger.warning("[TimescaleDB] 전역 풀 반환 실패(모듈 API): %s", exc)
+
+                # fallback: try local pool putconn (best-effort)
+                with self._pool_lock:
+                    pool = self._pool
+                if pool is not None:
+                    try:
+                        pool.putconn(conn, close=failed)
+                        logger.debug("[TimescaleDB] 전역 풀 fallback으로 로컬풀에 putconn(id=%s) 시도", id(conn))
+                        return
+                    except Exception as exc:
+                        logger.warning("[TimescaleDB] 전역 풀 반환 실패(풀.putconn): %s", exc)
+
+            # 로컬 풀에서 얻은 경우
+            if from_pool == "local":
+                try:
+                    logger.debug("[TimescaleDB.DEBUG] release -> local id=%s failed=%s caller:\n%s", id(conn), failed, "".join(traceback.format_stack(limit=6)))
+                except Exception:
+                    logger.debug("[TimescaleDB.DEBUG] release -> local id=%s failed=%s", id(conn), failed)
+
+                with self._pool_lock:
+                    pool = self._pool
+                if pool is not None:
+                    try:
+                        pool.putconn(conn, close=failed)
+                        logger.debug("[TimescaleDB] 로컬 풀에 연결 반환(id=%s) 성공 (failed=%s)", id(conn), failed)
+                        return
+                    except Exception as exc:
+                        logger.warning("[TimescaleDB] 로컬 풀 반환 실패: %s", exc)
+                # 실패하면 안전하게 닫음
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+                return
+
+            # 단일 연결(fallback) 또는 알 수 없는 태그
+            if failed:
+                try:
+                    if getattr(self, "conn", None) is conn:
+                        try:
+                            conn.close()
+                        except Exception:
+                            pass
+                        self.conn = None
+                        logger.debug("[TimescaleDB] 단일 연결 실패로 self.conn 무효화(id=%s)", id(conn))
+                except Exception:
+                    pass
+            else:
+                try:
+                    logger.debug("[TimescaleDB.DEBUG] release -> unknown/close id=%s caller:\n%s", id(conn), "".join(traceback.format_stack(limit=6)))
+                except Exception:
+                    logger.debug("[TimescaleDB.DEBUG] release -> unknown/close id=%s", id(conn))
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+                logger.debug("[TimescaleDB] 출처 불명 연결(id=%s) 닫음", id(conn))
+        except Exception:
+            logger.exception("[TimescaleDB] _release_conn 예외 처리 중 오류")
+
+    def _ensure_connection(self) -> bool:
+        if self.conn is None or getattr(self.conn, "closed", True):
+            logger.info("[TimescaleDB] 연결 없음 — 재연결 시도...")
+            self.conn = None
+            return self.connect()
+        idle_seconds = time.time() - self._last_activity
+        if idle_seconds > self._connection_timeout:
+            logger.debug("[TimescaleDB] 유휴 시간 초과 (%.0f초) — 재연결", idle_seconds)
+            try:
+                self.conn.close()
+            except Exception:
+                pass
+            self.conn = None
+            return self.connect()
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT 1")
+                cur.fetchone()
+            self._last_activity = time.time()
+            return True
+        except Exception as exc:
+            logger.warning("[TimescaleDB] 연결 끊김 감지 (health check): %s", exc)
+            try:
+                self.conn.close()
+            except Exception:
+                pass
+            self.conn = None
+            return self.connect()
+
+    # ------------------------------------------------------------------
+    # 범용 쿼리 실행 (원래 로직 유지, connection_scope 사용)
+    # ------------------------------------------------------------------
+    def run_query(self, sql: str, params: Tuple = ()):
+        # 간단한 run_query: 기존 단일 self.conn 경로 유지 (호출부가 적음)
+        if not self.conn and not self.connect():
+            raise RuntimeError("DB 연결 실패")
+        try:
+            cur_factory = RealDictCursor if RealDictCursor is not None else None
+            with self.conn.cursor(cursor_factory=cur_factory) as cur:
+                cur.execute(sql, params)
+                try:
+                    rows = cur.fetchall()
+                except Exception:
+                    rows = []
+                return rows
+        except Exception:
+            logger.exception("run_query 실패: %s", sql)
+            raise
+
+    # -------------------
+    # execute / executemany / fetchall 개선 (connection_scope 사용)
+    # -------------------
+    def execute(self, query: str, params: tuple = None) -> None:
+        """단일 쿼리 실행 (강화된 폴백 및 진단 로깅 포함)."""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                with self._connection_scope() as (conn, from_pool):
+                    with conn.cursor() as cur:
+                        try:
+                            cur.execute(query, params or ())
+                            conn.commit()
+                            self._last_activity = time.time()
+                            return
+                        except Exception as e_first:
+                            try:
+                                logger.debug("[TimescaleDB] execute 원본 실패: %s", e_first, exc_info=True)
+                            except Exception:
+                                pass
+
+                            # ANY->IN 폴백
+                            try:
+                                if params is not None and isinstance(params, (list, tuple)) and re.search(r'\bANY\s*\(\s*\$1', query, flags=re.IGNORECASE):
+                                    if len(params) == 1 and isinstance(params[0], (list, tuple)):
+                                        ids = list(params[0])
+                                    else:
+                                        ids = list(params)
+                                    if not ids:
+                                        return
+                                    placeholders = ",".join(["%s"] * len(ids))
+                                    new_q = re.sub(r'(\b\w+\b)\s*=\s*ANY\s*\(\s*\$1[^\)]*\)', rf'\1 IN ({placeholders})', query, flags=re.IGNORECASE)
+                                    if new_q == query:
+                                        new_q = re.sub(r'ANY\s*\(\s*\$1[^\)]*\)', f'IN ({placeholders})', query, flags=re.IGNORECASE)
+                                    new_q = re.sub(r'\$\d+', '%s', new_q)
+                                    cur.execute(new_q, tuple(ids))
+                                    conn.commit()
+                                    self._last_activity = time.time()
+                                    logger.debug("[TimescaleDB] execute: ANY->IN 확장 폴백 성공")
+                                    return
+                            except Exception:
+                                pass
+
+                            # $N -> %s 폴백
+                            alt_query = re.sub(r'\$\d+', '%s', query)
+                            try:
+                                cur.execute(alt_query, params or ())
+                                conn.commit()
+                                self._last_activity = time.time()
+                                logger.debug("[TimescaleDB] execute: $N->%%s 변환 재시도 성공")
+                                return
+                            except Exception:
+                                pass
+
+                            # wrapping params 시도
+                            try:
+                                if params is not None and isinstance(params, (list, tuple)):
+                                    if not (len(params) == 1 and isinstance(params[0], (list, tuple))):
+                                        wrapped = (params,)
+                                        cur.execute(alt_query, wrapped)
+                                        conn.commit()
+                                        self._last_activity = time.time()
+                                        logger.debug("[TimescaleDB] execute: alt_query with wrapped params 성공")
+                                        return
+                            except Exception:
+                                pass
+
+                            raise e_first
+
+            except Exception as e_outer:
+                logger.warning("[TimescaleDB] execute 실패 (attempt %d/%d): %s", attempt + 1, max_retries, e_outer)
+                if attempt < max_retries - 1:
+                    time.sleep(0.5 * (2 ** attempt))
+                    continue
+                else:
+                    logger.error("[TimescaleDB] execute 재시도 실패: %s", str(e_outer))
+                    raise
+
+    def executemany(self, query: str, params_list: list) -> None:
+        """배치 쿼리 실행 (execute_values+Json 우선, 청크 분할 + 재시도)."""
+        if not params_list:
+            return
+
+        chunk_size = max(1, _EXECUTE_CHUNK_SIZE)
+        use_execute_values = execute_values is not None
+
+        def _prepare_rows(chunk):
+            processed = []
+            for row in chunk:
+                r = list(row)
+                for i, v in enumerate(r):
+                    if isinstance(v, (dict, list)):
+                        try:
+                            from psycopg2.extras import Json as _Json
+                            # use Json adapter with custom dumps to control serialization
+                            r[i] = _Json(v, dumps=lambda x: json.dumps(x, ensure_ascii=False, separators=(",", ":"), default=str))
+                        except Exception:
+                            r[i] = json.dumps(v, ensure_ascii=False, separators=(",", ":"), default=str)
+                processed.append(tuple(r))
+            return processed
+
+        for chunk in _chunked(params_list, chunk_size):
+            last_exc = None
+            for attempt in range(3):
+                try:
+                    with self._connection_scope() as (conn, from_pool):
+                        try:
+                            cur = conn.cursor()
+                            if use_execute_values:
+                                base_q = query
+                                m = re.search(r'\bVALUES\s*\([^\)]*\)', query, flags=re.IGNORECASE)
+                                if m:
+                                    base_q = re.sub(r'VALUES\s*\([^\)]*\)', 'VALUES %s', query, count=1, flags=re.IGNORECASE)
+                                processed = _prepare_rows(chunk)
+                                execute_values(cur, base_q, processed, page_size=100)
+                                conn.commit()
+                                self._last_activity = time.time()
+                                break
+                            else:
+                                processed = _prepare_rows(chunk)
+                                cur.executemany(query, processed)
+                                conn.commit()
+                                self._last_activity = time.time()
+                                break
+                        except Exception as db_exc:
+                            # ensure rollback and mark failed
+                            try:
+                                conn.rollback()
+                            except Exception:
+                                pass
+                            last_exc = db_exc
+                            logger.warning("[TimescaleDB] executemany chunk failure (attempt %d/3): %s", attempt + 1, db_exc)
+                            try:
+                                # force mark this conn failed and release
+                                self._release_conn(conn, from_pool, failed=True)
+                            except Exception:
+                                logger.debug("[TimescaleDB] _release_conn during executemany failure raised", exc_info=True)
+                            time.sleep(0.25 * (2 ** attempt))
+                            continue
+                except Exception as outer:
+                    last_exc = outer
+                    logger.warning("[TimescaleDB] executemany outer failure (attempt %d/3): %s", attempt + 1, outer)
+                    time.sleep(0.25 * (2 ** attempt))
+                    continue
+            else:
+                logger.error("[TimescaleDB] executemany chunk retries exhausted: %s", last_exc)
+                raise last_exc
+
+    def fetchall(self, query: str, params: tuple = None) -> list:
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                with self._connection_scope() as (conn, from_pool):
+                    with conn.cursor() as cur:
+                        cur.execute(query, params or ())
+                        rows = cur.fetchall()
+                self._last_activity = time.time()
+                return rows
+            except Exception as e:
+                logger.warning("[TimescaleDB] fetchall 실패 (attempt %d/%d): %s", attempt + 1, max_retries, e)
+                if attempt < max_retries - 1:
+                    time.sleep(0.5 * (2 ** attempt))
+                    continue
+                else:
+                    logger.error("[TimescaleDB] fetchall 재시도 실패: %s", str(e))
+                    raise
+
+    # ------------------------------------------------------------------
+    # 어댑터 호환 메서드들
+    # ------------------------------------------------------------------
+    @property
+    def pg_pool(self) -> "TimescaleConnector":
+        return self
+
+    def get_pool(self) -> "TimescaleConnector":
+        return self
+
+    def get_connection(self, retry: bool = True):
+        """
+        기존 호환성: 연결 객체만 반환 (사용자는 put_connection으로 반환).
+        권장: with self.get_connection_ctx() as conn: ... 패턴 사용.
+        """
+        conn, from_pool = self._acquire_conn()
+        try:
+            self._pool_conn_registry[id(conn)] = from_pool
+            try:
+                logger.debug("[TimescaleDB.DEBUG] get_connection id=%s tag=%s caller:\n%s", id(conn), from_pool, "".join(traceback.format_stack(limit=6)))
+            except Exception:
+                logger.debug("[TimescaleDB.DEBUG] get_connection id=%s tag=%s", id(conn), from_pool)
+        except Exception:
+            logger.debug("[TimescaleDB] get_connection: registry 기록 실패", exc_info=True)
+        return conn
+
+    def put_connection(self, conn) -> None:
+        if conn is None:
+            return
+        try:
+            from_pool = self._pool_conn_registry.pop(id(conn), False)
+        except Exception:
+            from_pool = False
+        try:
+            logger.debug("[TimescaleDB.DEBUG] put_connection called id=%s tag=%s caller:\n%s", id(conn), from_pool, "".join(traceback.format_stack(limit=6)))
+        except Exception:
+            logger.debug("[TimescaleDB.DEBUG] put_connection called id=%s tag=%s", id(conn), from_pool)
+        self._release_conn(conn, from_pool=from_pool)
+
+    def close_all(self) -> None:
+        self.close()
+
+    @contextmanager
+    def get_db_connection(self):
+        """
+        직접 새 연결이 필요할 때의 컨텍스트 매니저.
+        (사용 후 자동 커밋/닫힘)
+        """
+        conn = None
+        try:
+            if isinstance(self.dsn, str) and self.dsn.startswith(("postgresql://", "postgres://")):
+                parsed = urlparse(self.dsn)
+                user = unquote(parsed.username) if parsed.username else None
+                password = unquote(parsed.password) if parsed.password else None
+                host = parsed.hostname or "127.0.0.1"
+                port = parsed.port or 5432
+                dbname = parsed.path.lstrip("/") or "upbit_trader"
+                conn = psycopg2.connect(
+                    host=host, port=port, dbname=dbname,
+                    user=user, password=password, connect_timeout=10,
+                )
+            else:
+                conn = psycopg2.connect(self.dsn, connect_timeout=10)
+            conn.autocommit = False
+            yield conn
+            conn.commit()
+        except Exception:
+            if conn:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+            raise
+        finally:
+            if conn:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+
+    # ------------------------------------------------------------------
+    # 편의: 컨텍스트 매니저로 안전하게 연결을 얻는 방법 (권장)
+    # ------------------------------------------------------------------
+    @contextmanager
+    def get_connection_ctx(self):
+        """with connector.get_connection_ctx() as conn: ... 를 권장합니다."""
+        conn = None
+        from_pool = False
+        try:
+            res = self._acquire_conn()
+            if isinstance(res, tuple) and len(res) == 2:
+                conn, from_pool = res
+            else:
+                conn = res
+                from_pool = False
+            yield conn
+        finally:
+            try:
+                if conn is not None:
+                    # 실패 판단은 호출 컨텍스트에 따라 판단되므로 False로 반환 (사용자 예외는 connection_scope에서 처리 권장)
+                    self._release_conn(conn, from_pool=from_pool, failed=False)
+            except Exception:
+                logger.exception("[TimescaleDB] get_connection_ctx: release 실패")
+
+# EOF

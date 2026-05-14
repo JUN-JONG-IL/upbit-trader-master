@@ -1,0 +1,350 @@
+services:
+
+  upbit-redis:
+    image: redis:7-alpine
+    container_name: upbit-redis
+    env_file:
+      - .env
+    environment:
+      REDISCLI_AUTH: "${REDIS_PASSWORD_CONTAINER:-dummy}"
+    command: >
+      redis-server
+      --bind 0.0.0.0
+      --requirepass ${REDIS_PASSWORD_CONTAINER:-dummy}
+      --maxmemory 2gb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --save 900 1
+      --tcp-backlog 511
+      --timeout 300
+      --tcp-keepalive 300
+      --lazyfree-lazy-eviction yes
+      --lazyfree-lazy-expire yes
+    ports:
+      - "127.0.0.1:58530:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  upbit-timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: upbit-timescaledb
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER_CONTAINER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_CONTAINER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB_CONTAINER:-upbit_trader}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    command: >
+      postgres
+      -c port=5432
+      -c listen_addresses='*'
+      -c max_connections=200
+      -c shared_buffers=2GB
+      -c effective_cache_size=4GB
+      -c work_mem=16MB
+      -c maintenance_work_mem=512MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c wal_level=replica
+      -c max_wal_senders=3
+      -c max_replication_slots=3
+    ports:
+      - "127.0.0.1:58529:5432"
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+      - ./docker/init/sql:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+    mem_limit: 4g
+    memswap_limit: 4g
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d upbit_trader -p 5432"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  postgres-primary:
+    image: postgres:16
+    container_name: upbit-postgres-primary
+    environment:
+      POSTGRES_DB: trading
+      POSTGRES_USER: ${POSTGRES_PRIMARY_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PRIMARY_PASSWORD:-secret}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    command: >
+      postgres
+      -c listen_addresses='*'
+      -c wal_level=replica
+      -c max_wal_senders=3
+      -c max_replication_slots=3
+      -c max_connections=100
+      -c shared_buffers=256MB
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres-primary-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_PRIMARY_USER:-admin} -d trading"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  postgres-replica:
+    image: postgres:16
+    container_name: upbit-postgres-replica
+    environment:
+      POSTGRES_DB: trading
+      POSTGRES_USER: ${POSTGRES_PRIMARY_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PRIMARY_PASSWORD:-secret}
+      PGUSER: ${POSTGRES_PRIMARY_USER:-admin}
+      PGPASSWORD: ${POSTGRES_PRIMARY_PASSWORD:-secret}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    command: >
+      postgres
+      -c listen_addresses='*'
+      -c hot_standby=on
+      -c max_connections=200
+      -c shared_buffers=256MB
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - postgres-replica-data:/var/lib/postgresql/data
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_PRIMARY_USER:-admin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: upbit-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "127.0.0.1:2181:2181"
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "echo srvr | nc localhost 2181 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: upbit-kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_RETENTION_HOURS: 168
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  upbit-mongodb:
+    image: mongo:7
+    container_name: upbit-mongodb
+    env_file:
+      - .env
+    command: >
+      mongod
+      --bind_ip 0.0.0.0
+      --noauth
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  upbit-clickhouse:
+    image: clickhouse/clickhouse-server:24.1-alpine
+    container_name: upbit-clickhouse
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8123:8123"
+      - "127.0.0.1:9000:9000"
+    environment:
+      CLICKHOUSE_DB: trading_events
+      CLICKHOUSE_USER: trader
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8123/ping || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: upbit-mlflow
+    command:
+      - sh
+      - -c
+      - |
+        mlflow server \
+          --host 0.0.0.0 \
+          --port 5000 \
+          --backend-store-uri sqlite:///mlflow/mlflow.db \
+          --default-artifact-root /mlflow/artifacts
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - mlflow-data:/mlflow
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:5000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    profiles:
+      - ai
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: upbit-prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./src/01_core/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9090/-/healthy || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: upbit-grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    profiles:
+      - monitoring
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: upbit-jaeger
+    ports:
+      - "127.0.0.1:6831:6831/udp"
+      - "127.0.0.1:16686:16686"
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    volumes:
+      - jaeger-data:/tmp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:16686/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    profiles:
+      - monitoring
+
+  vault:
+    image: hashicorp/vault:latest
+    container_name: upbit-vault
+    ports:
+      - "127.0.0.1:8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_DEV_TOKEN:-root}
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8200/v1/sys/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    profiles:
+      - monitoring
+
+volumes:
+  redis-data:
+  timescale-data:
+  postgres-primary-data:
+  postgres-replica-data:
+  zookeeper-data:
+  zookeeper-logs:
+  kafka-data:
+  clickhouse-data:
+  mongo-data:
+  mongo-config:
+  mlflow-data:
+  prometheus-data:
+  grafana-data:
+  jaeger-data:

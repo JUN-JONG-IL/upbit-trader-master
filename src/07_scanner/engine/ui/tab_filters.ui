@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TabFilters</class>
+ <widget class="QWidget" name="TabFilters">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1180</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  margin-top: 8px;
+  padding: 12px;
+  background: #f9fafb;
+  color: #111111;
+  font-weight: bold;
+}
+QGroupBox::title {
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  padding: 0 8px;
+  color: #111111;
+}
+QLabel {
+  color: #374151;
+  padding: 2px;
+}
+QComboBox {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: white;
+  color: #111111;
+}
+QComboBox:hover {
+  border-color: #3b82f6;
+}
+QComboBox QAbstractItemView {
+  background: #ffffff;
+  color: #111111;
+  selection-background-color: #e8eefc;
+  selection-color: #111111;
+  border: 1px solid #d1d5db;
+}
+QCheckBox {
+  color: #111111;
+  padding: 4px;
+}
+QCheckBox:hover {
+  color: #111111;
+  background: #f3f4f6;
+}
+QCheckBox::indicator {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #d1d5db;
+  background: white;
+}
+QCheckBox::indicator:checked {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+QSpinBox {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: white;
+  color: #111111;
+}
+QSpinBox:focus {
+  border-color: #3b82f6;
+}
+QTimeEdit {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: white;
+  color: #111111;
+}
+QTimeEdit:focus {
+  border-color: #3b82f6;
+}
+QTextEdit {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 6px 8px;
+  background: white;
+  color: #111111;
+}
+QTextEdit:focus {
+  border-color: #3b82f6;
+}</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="leftColumn">
+     <item>
+      <widget class="QGroupBox" name="priceFilterGroup">
+       <property name="title">
+        <string>가격 필터</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_price">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_minPrice">
+          <property name="text">
+           <string>최소 가격:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSpinBox" name="minPrice">
+          <property name="suffix">
+           <string> KRW</string>
+          </property>
+          <property name="maximum">
+           <number>99999999</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_maxPrice">
+          <property name="text">
+           <string>최대 가격:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="maxPrice">
+          <property name="suffix">
+           <string> KRW</string>
+          </property>
+          <property name="maximum">
+           <number>99999999</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_minMarketCap">
+          <property name="text">
+           <string>최소 시가총액:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QSpinBox" name="minMarketCap">
+          <property name="suffix">
+           <string> 억</string>
+          </property>
+          <property name="maximum">
+           <number>999999999</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_maxMarketCap">
+          <property name="text">
+           <string>최대 시가총액:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QSpinBox" name="maxMarketCap">
+          <property name="suffix">
+           <string> 억</string>
+          </property>
+          <property name="maximum">
+           <number>999999999</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_change24h">
+          <property name="text">
+           <string>24시간 변동:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QSpinBox" name="change24h">
+          <property name="prefix">
+           <string>±</string>
+          </property>
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="minimum">
+           <number>-100</number>
+          </property>
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_from52wHigh">
+          <property name="text">
+           <string>52주 고점 대비:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QSpinBox" name="from52wHigh">
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="minimum">
+           <number>-100</number>
+          </property>
+          <property name="maximum">
+           <number>0</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_from52wLow">
+          <property name="text">
+           <string>52주 저점 대비:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QSpinBox" name="from52wLow">
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_left">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="centerColumn">
+     <item>
+      <widget class="QGroupBox" name="timeFilterGroup">
+       <property name="title">
+        <string>시간 필터</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_time">
+        <item>
+         <widget class="QCheckBox" name="useTimeRange">
+          <property name="text">
+           <string>시간 범위 사용</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_time">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_startTime">
+            <property name="text">
+             <string>시작 시간:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QTimeEdit" name="startTime">
+            <property name="displayFormat">
+             <string>HH:mm</string>
+            </property>
+            <property name="time">
+             <time>
+              <hour>9</hour>
+              <minute>0</minute>
+              <second>0</second>
+             </time>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_endTime">
+            <property name="text">
+             <string>종료 시간:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QTimeEdit" name="endTime">
+            <property name="displayFormat">
+             <string>HH:mm</string>
+            </property>
+            <property name="time">
+             <time>
+              <hour>18</hour>
+              <minute>0</minute>
+              <second>0</second>
+             </time>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="excludeWeekend">
+          <property name="text">
+           <string>주말 제외</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="excludeMarketStart">
+          <property name="text">
+           <string>시장 시작 제외</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_marketStart">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_marketStartMinutes">
+            <property name="text">
+             <string>시작 후:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="marketStartMinutes">
+            <property name="suffix">
+             <string> 분</string>
+            </property>
+            <property name="maximum">
+             <number>240</number>
+            </property>
+            <property name="value">
+             <number>30</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="excludeMarketEnd">
+          <property name="text">
+           <string>시장 종료 제외</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_marketEnd">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_marketEndMinutes">
+            <property name="text">
+             <string>종료 전:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="marketEndMinutes">
+            <property name="suffix">
+             <string> 분</string>
+            </property>
+            <property name="maximum">
+             <number>240</number>
+            </property>
+            <property name="value">
+             <number>30</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_center">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="rightColumn">
+     <item>
+      <widget class="QGroupBox" name="coinFilterGroup">
+       <property name="title">
+        <string>종목 필터</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_coin">
+        <item>
+         <widget class="QCheckBox" name="favoriteOnly">
+          <property name="text">
+           <string>즐겨찾기만</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="useBlacklist">
+          <property name="text">
+           <string>블랙리스트 사용</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_blacklist">
+          <property name="text">
+           <string>블랙리스트 (쉼표 구분):</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="blacklistText">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>예: KRW-BTC, KRW-ETH</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="topMarketCap">
+          <property name="text">
+           <string>시가총액 상위</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_topMarketCap">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_topMarketCapCount">
+            <property name="text">
+             <string>상위:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="topMarketCapCount">
+            <property name="suffix">
+             <string> 개</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>500</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="topVolume">
+          <property name="text">
+           <string>거래량 상위</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_topVolume">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_topVolumeCount">
+            <property name="text">
+             <string>상위:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="topVolumeCount">
+            <property name="suffix">
+             <string> 개</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>500</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_right">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

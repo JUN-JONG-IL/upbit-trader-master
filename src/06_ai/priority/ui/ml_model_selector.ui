@@ -1,0 +1,347 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui version="4.0">
+ <class>MLModelSelectorWindow</class>
+ <widget class="QMainWindow" name="MLModelSelectorWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>720</width>
+    <height>780</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AI/ML 모델 선택 (ML Model Selector)</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <property name="spacing">
+     <number>8</number>
+    </property>
+    <property name="leftMargin">
+     <number>12</number>
+    </property>
+    <property name="topMargin">
+     <number>12</number>
+    </property>
+    <property name="rightMargin">
+     <number>12</number>
+    </property>
+    <property name="bottomMargin">
+     <number>12</number>
+    </property>
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <!-- ===== TAB 1: Gap 예측 모델 ===== -->
+      <widget class="QWidget" name="tabGap">
+       <attribute name="title">
+        <string>Gap 예측 모델</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="vboxGap">
+        <item>
+         <widget class="QGroupBox" name="grpGapModel">
+          <property name="title">
+           <string>Gap 예측 모델 선택</string>
+          </property>
+          <layout class="QVBoxLayout" name="vboxGapModel">
+           <item>
+            <widget class="QCheckBox" name="chkGapEnabled">
+             <property name="text">
+              <string>Gap 예측 활성화</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioGapXGBoost">
+             <property name="text">
+              <string>XGBoost (기본)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioGapLightGBM">
+             <property name="text">
+              <string>LightGBM (빠르고 메모리 효율적, 추천)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioGapCatBoost">
+             <property name="text">
+              <string>CatBoost (범주형 데이터 강점)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioGapProphet">
+             <property name="text">
+              <string>Prophet (Facebook, 시계열 특화)</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnTestGap">
+          <property name="text">
+           <string>Gap 예측 테스트</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <!-- ===== TAB 2: Adaptive TimeFrame ===== -->
+      <widget class="QWidget" name="tabAdaptive">
+       <attribute name="title">
+        <string>Adaptive TimeFrame</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="vboxAdaptive">
+        <item>
+         <widget class="QGroupBox" name="grpAdaptiveTF">
+          <property name="title">
+           <string>Adaptive TimeFrame 설정</string>
+          </property>
+          <layout class="QVBoxLayout" name="vboxAdaptiveTF">
+           <item>
+            <widget class="QCheckBox" name="chkAdaptiveTF">
+             <property name="text">
+              <string>Adaptive TimeFrame 활성화</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioAdaptiveSymbol">
+             <property name="text">
+              <string>심볼별 최적 타임프레임 자동 선택</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioAdaptiveVolatility">
+             <property name="text">
+              <string>동적 타임프레임 조정 (변동성 기반)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioAdaptiveHybrid">
+             <property name="text">
+              <string>하이브리드 (심볼 + 변동성)</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <!-- ===== TAB 3: 이상치 감지 ===== -->
+      <widget class="QWidget" name="tabAnomaly">
+       <attribute name="title">
+        <string>이상치 감지</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="vboxAnomaly">
+        <item>
+         <widget class="QGroupBox" name="grpAnomalyModel">
+          <property name="title">
+           <string>이상치 감지 모델</string>
+          </property>
+          <layout class="QVBoxLayout" name="vboxAnomalyModel">
+           <item>
+            <widget class="QCheckBox" name="chkAnomalyEnabled">
+             <property name="text">
+              <string>이상치 감지 활성화</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioAnomalyAutoencoder">
+             <property name="text">
+              <string>Autoencoder (딥러닝 기반)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioAnomalyIsolationForest">
+             <property name="text">
+              <string>Isolation Forest (빠르고 효율적, 추천)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioAnomalyOneClassSVM">
+             <property name="text">
+              <string>One-Class SVM</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="grpAnomalyThreshold">
+          <property name="title">
+           <string>임계값 설정</string>
+          </property>
+          <layout class="QVBoxLayout" name="vboxAnomalyThreshold">
+           <item>
+            <widget class="QLabel" name="lblAnomalyThreshold">
+             <property name="text">
+              <string>임계값: 0.95 (95%)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="sliderAnomalyThreshold">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="minimum">
+              <number>50</number>
+             </property>
+             <property name="maximum">
+              <number>99</number>
+             </property>
+             <property name="value">
+              <number>95</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnTestAnomaly">
+          <property name="text">
+           <string>이상치 감지 테스트</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <!-- ===== TAB 4: Drift 모니터링 ===== -->
+      <widget class="QWidget" name="tabDrift">
+       <attribute name="title">
+        <string>Drift 모니터링</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="vboxDrift">
+        <item>
+         <widget class="QGroupBox" name="grpDriftMonitor">
+          <property name="title">
+           <string>Drift 모니터링 도구</string>
+          </property>
+          <layout class="QVBoxLayout" name="vboxDriftMonitor">
+           <item>
+            <widget class="QCheckBox" name="chkDriftEnabled">
+             <property name="text">
+              <string>Drift 모니터링 활성화</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioDriftAlibi">
+             <property name="text">
+              <string>Alibi Detect</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioDriftEvidently">
+             <property name="text">
+              <string>Evidently AI (오픈소스, 실시간 대시보드, 추천)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="grpDriftInterval">
+          <property name="title">
+           <string>체크 간격 설정</string>
+          </property>
+          <layout class="QVBoxLayout" name="vboxDriftInterval">
+           <item>
+            <widget class="QLabel" name="lblDriftInterval">
+             <property name="text">
+              <string>체크 간격: 3600초 (60분)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="sliderDriftInterval">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="minimum">
+              <number>60</number>
+             </property>
+             <property name="maximum">
+              <number>86400</number>
+             </property>
+             <property name="value">
+              <number>3600</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnTestDrift">
+          <property name="text">
+           <string>Drift 체크 테스트</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <!-- 하단 버튼 -->
+    <item>
+     <layout class="QHBoxLayout" name="hboxMLButtons">
+      <item>
+       <widget class="QPushButton" name="btnSave">
+        <property name="text">
+         <string>저장</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnLoad">
+        <property name="text">
+         <string>불러오기</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

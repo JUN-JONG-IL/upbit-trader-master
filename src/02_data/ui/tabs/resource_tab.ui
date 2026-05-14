@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ResourceTab</class>
+ <widget class="QWidget" name="ResourceTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1600</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="vLayout_system">
+   <item>
+    <widget class="QGroupBox" name="groupBox_system">
+     <property name="title">
+      <string>시스템 리소스 현황 (1초 자동 갱신)</string>
+     </property>
+     <layout class="QVBoxLayout" name="vLayout_system_inner">
+      <item>
+       <widget class="QFrame" name="frame_cpu">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <layout class="QHBoxLayout" name="hLayout_cpu">
+         <item>
+          <widget class="QLabel" name="label_cpu_title">
+           <property name="text">
+            <string>🖥️ CPU 사용률:</string>
+           </property>
+           <property name="minimumWidth">
+            <number>150</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QProgressBar" name="progress_cpu">
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="format">
+            <string>%p%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_cpu_value">
+           <property name="text">
+            <string>-- %</string>
+           </property>
+           <property name="minimumWidth">
+            <number>80</number>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_memory">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <layout class="QHBoxLayout" name="hLayout_memory">
+         <item>
+          <widget class="QLabel" name="label_memory_title">
+           <property name="text">
+            <string>💾 메모리 사용률:</string>
+           </property>
+           <property name="minimumWidth">
+            <number>150</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QProgressBar" name="progress_memory">
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="format">
+            <string>%p%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_memory_value">
+           <property name="text">
+            <string>-- %</string>
+           </property>
+           <property name="minimumWidth">
+            <number>80</number>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_disk">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <layout class="QHBoxLayout" name="hLayout_disk">
+         <item>
+          <widget class="QLabel" name="label_disk_title">
+           <property name="text">
+            <string>💿 디스크 사용률:</string>
+           </property>
+           <property name="minimumWidth">
+            <number>150</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QProgressBar" name="progress_disk">
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="format">
+            <string>%p%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_disk_value">
+           <property name="text">
+            <string>-- %</string>
+           </property>
+           <property name="minimumWidth">
+            <number>80</number>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_network">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <layout class="QHBoxLayout" name="hLayout_network">
+         <item>
+          <widget class="QLabel" name="label_network_title">
+           <property name="text">
+            <string>🌐 네트워크 I/O:</string>
+           </property>
+           <property name="minimumWidth">
+            <number>150</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_network_value">
+           <property name="text">
+            <string>송신: -- KB/s | 수신: -- KB/s</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_process">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_process">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_pid_title">
+           <property name="text">
+            <string>🆔 프로세스 PID:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_pid_value">
+           <property name="text">
+            <string>--</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_threads_title">
+           <property name="text">
+            <string>🧵 스레드 수:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_threads_value">
+           <property name="text">
+            <string>--</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_uptime_title">
+           <property name="text">
+            <string>⏱️ 가동 시간:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_uptime_value">
+           <property name="text">
+            <string>--</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_system">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

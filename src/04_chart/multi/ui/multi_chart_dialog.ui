@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MultiChartDialog</class>
+ <widget class="QWidget" name="MultiChartDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>멀티차트 레이아웃</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="toolbarLayout">
+     <!-- Layout Icon Buttons (6 types) -->
+     <item>
+      <widget class="QPushButton" name="btn_layout_1x1">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>⬜</string>
+       </property>
+       <property name="toolTip">
+        <string>1x1 (전체 화면)</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton { border:1px solid #c8c8c8; background:#3b82f6; color:#ffffff; border-radius:4px; font-size:18px; } QPushButton:hover { background:#2563eb; }</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_layout_2x1">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>▤</string>
+       </property>
+       <property name="toolTip">
+        <string>2x1 (가로 2분할)</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton { border:1px solid #c8c8c8; background:#2c2c2c; color:#ffffff; border-radius:4px; font-size:18px; } QPushButton:hover { background:#2563eb; }</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_layout_1x2">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>▥</string>
+       </property>
+       <property name="toolTip">
+        <string>1x2 (세로 2분할)</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton { border:1px solid #c8c8c8; background:#2c2c2c; color:#ffffff; border-radius:4px; font-size:18px; } QPushButton:hover { background:#2563eb; }</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_layout_2x2">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>田</string>
+       </property>
+       <property name="toolTip">
+        <string>2x2 (4개 그리드)</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton { border:1px solid #c8c8c8; background:#2c2c2c; color:#ffffff; border-radius:4px; font-size:18px; } QPushButton:hover { background:#2563eb; }</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_layout_3x2">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>⚏</string>
+       </property>
+       <property name="toolTip">
+        <string>3x2 (6개 그리드)</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton { border:1px solid #c8c8c8; background:#2c2c2c; color:#ffffff; border-radius:4px; font-size:18px; } QPushButton:hover { background:#2563eb; }</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_layout_4x4">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>⊞</string>
+       </property>
+       <property name="toolTip">
+        <string>4x4 (16개 그리드)</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton { border:1px solid #c8c8c8; background:#2c2c2c; color:#ffffff; border-radius:4px; font-size:18px; } QPushButton:hover { background:#2563eb; }</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="separator1">
+       <property name="minimumSize">
+        <size>
+         <width>1</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>1</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: #c8c8c8;</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::VLine</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnNewLayout">
+       <property name="text">
+        <string>새 레이아웃</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnLoadLayout">
+       <property name="text">
+        <string>레이아웃 불러오기</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSaveLayout">
+       <property name="text">
+        <string>레이아웃 저장</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboPresets">
+       <property name="minimumWidth">
+        <number>150</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>프리셋 선택...</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Single Chart</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Dual Timeframe</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Quad Chart (2x2)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Symbol Comparison</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Analysis Workspace</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelGrid">
+       <property name="text">
+        <string>그리드:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="spinGridCols">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>16</number>
+       </property>
+       <property name="value">
+        <number>12</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelX">
+       <property name="text">
+        <string>x</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="spinGridRows">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>12</number>
+       </property>
+       <property name="value">
+        <number>6</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkSyncTime">
+       <property name="text">
+        <string>시간 동기화</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkSyncSymbol">
+       <property name="text">
+        <string>심볼 동기화</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboTheme">
+       <property name="minimumWidth">
+        <number>100</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>다크 테마</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>라이트 테마</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnHelp">
+       <property name="text">
+        <string>❓ 도움말</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QFrame" name="gridContainer">
+     <property name="minimumSize">
+      <size>
+       <width>1000</width>
+       <height>600</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="statusLayout">
+     <item>
+      <widget class="QLabel" name="labelStatus">
+       <property name="text">
+        <string>준비</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelChartCount">
+       <property name="text">
+        <string>차트: 0개</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

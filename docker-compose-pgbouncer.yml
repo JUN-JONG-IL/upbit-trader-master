@@ -1,0 +1,16 @@
+﻿services:
+  pgbouncer:
+    image: edoburu/pgbouncer
+    container_name: pgbouncer
+    ports:
+      - "6432:6432"
+    volumes:
+      - ./deploy-pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./deploy-pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    restart: unless-stopped
+    networks:
+      - upbit-trader-master_default
+
+networks:
+  upbit-trader-master_default:
+    external: true

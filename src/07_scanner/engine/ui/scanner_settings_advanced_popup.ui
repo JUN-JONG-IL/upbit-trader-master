@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ScannerSettingsAdvancedDialog</class>
+ <widget class="QDialog" name="ScannerSettingsAdvancedDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>종목 찾기 상세 설정</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+  background: #ffffff;
+  color: #111111;
+}
+QPushButton {
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  font-weight: bold;
+}
+QPushButton:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+QPushButton:pressed {
+  background: #1d4ed8;
+}
+QTabWidget::pane {
+  border: 1px solid #d1d5db;
+  background: white;
+}
+QTabBar::tab {
+  background: #f3f4f6;
+  color: #111111;
+  border: 1px solid #d1d5db;
+  padding: 8px 16px;
+  margin-right: 2px;
+}
+QTabBar::tab:selected {
+  background: white;
+  color: #3b82f6;
+  font-weight: bold;
+  border-bottom: 2px solid #3b82f6;
+}
+QTabBar::tab:hover {
+  background: #e5e7eb;
+  color: #111111;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_basic">
+      <attribute name="title">
+       <string>기본 지표</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tab_advanced">
+      <attribute name="title">
+       <string>고급 지표</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tab_patterns">
+      <attribute name="title">
+       <string>패턴 &amp; 거래량</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tab_filters">
+      <attribute name="title">
+       <string>필터</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tab_alerts">
+      <attribute name="title">
+       <string>알림 &amp; 프리셋</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="buttonContainer" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="applyButton">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>35</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>적용</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="cancelButton">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>35</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>취소</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

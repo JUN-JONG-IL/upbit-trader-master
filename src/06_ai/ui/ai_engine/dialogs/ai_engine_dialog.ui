@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AIEngineDialog</class>
+ <widget class="QDialog" name="AIEngineDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AI 엔진 관리</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="controlGroupBox">
+     <property name="title">
+      <string>모델 배포 제어</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="modelLabel">
+        <property name="text">
+         <string>모델 선택:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="modelComboBox"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="deployButton">
+        <property name="text">
+         <string>배포 시작</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="rollbackButton">
+        <property name="text">
+         <string>롤백</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="progressLabel">
+        <property name="text">
+         <string>배포 진행:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="3">
+       <widget class="QProgressBar" name="deployProgressBar">
+        <property name="value">
+         <number>0</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QGroupBox" name="metricsGroupBox">
+      <property name="title">
+       <string>성능 메트릭</string>
+      </property>
+      <layout class="QVBoxLayout" name="metricsLayout">
+       <item>
+        <widget class="QTableWidget" name="modelTable">
+         <property name="columnCount">
+          <number>4</number>
+         </property>
+         <column>
+          <property name="text">
+           <string>모델명</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>버전</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>상태</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>정확도</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QGroupBox" name="logGroupBox">
+      <property name="title">
+       <string>로그</string>
+      </property>
+      <layout class="QVBoxLayout" name="logLayout">
+       <item>
+        <widget class="QTextEdit" name="logTextEdit">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>460</width>
+    <height>780</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>회원 로그인</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"><![CDATA[
+/* 전체 배경 */
+QWidget#Form {
+	background-color: #0f172a;
+	color: #e5e7eb;
+}
+
+/* 중앙 카드 */
+QFrame#login_card {
+	background-color: rgba(2, 6, 23, 0.55);
+	border: 1px solid rgba(148, 163, 184, 0.18);
+	border-radius: 18px;
+}
+
+/* 제목 */
+QLabel#label_title {
+	color: #f9fafb;
+	font-weight: 700;
+}
+
+/* 입력 */
+QLineEdit#lineEdit_access,
+QLineEdit#lineEdit_secret {
+	background-color: rgba(15, 23, 42, 0.9);
+	border: 1px solid rgba(148, 163, 184, 0.22);
+	border-radius: 12px;
+	padding: 12px 14px;
+	color: #e5e7eb;
+}
+QLineEdit#lineEdit_access:focus,
+QLineEdit#lineEdit_secret:focus {
+	border: 1px solid rgba(96, 165, 250, 0.95);
+}
+
+/* 체크박스 */
+QCheckBox#checkBox_save_user { color: rgba(229, 231, 235, 0.9); }
+QCheckBox::indicator {
+	width: 18px; height: 18px;
+	border-radius: 6px;
+	border: 1px solid rgba(148, 163, 184, 0.35);
+	background-color: rgba(15, 23, 42, 0.9);
+}
+QCheckBox::indicator:checked {
+	background-color: rgba(96, 165, 250, 0.95);
+	border: 1px solid rgba(96, 165, 250, 0.95);
+}
+
+/* 로그인 버튼 */
+QPushButton#pushButton_connect {
+	background-color: rgba(96, 165, 250, 0.95);
+	color: #0b1220;
+	border: none;
+	border-radius: 12px;
+	padding: 12px 14px;
+	font-weight: 700;
+}
+QPushButton#pushButton_connect:hover { background-color: rgba(59, 130, 246, 0.98); }
+QPushButton#pushButton_connect:pressed { background-color: rgba(37, 99, 235, 0.98); }
+
+/* 보조 버튼 */
+QPushButton#btn_signup,
+QPushButton#btn_find_id,
+QPushButton#btn_find_pw,
+QPushButton#btn_edit_profile {
+	background-color: transparent;
+	border: none;
+	color: rgba(226, 232, 240, 0.9);
+	padding: 6px 8px;
+	text-align: left;
+}
+QPushButton#btn_signup:hover,
+QPushButton#btn_find_id:hover,
+QPushButton#btn_find_pw:hover,
+QPushButton#btn_edit_profile:hover {
+	color: rgba(96, 165, 250, 0.95);
+}
+
+/* 안내 문구 */
+QLabel#label_hint { color: rgba(148, 163, 184, 0.95); }
+
+/* 하단 */
+QFrame#bottom {
+	background-color: rgba(2, 6, 23, 0.75);
+	border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+QLabel#label_credits { color: rgba(148, 163, 184, 0.75); }
+]]></string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_root">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+
+   <!-- Content -->
+   <item>
+    <widget class="QFrame" name="content">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <layout class="QVBoxLayout" name="layout_content">
+      <property name="leftMargin">
+       <number>22</number>
+      </property>
+      <!-- 상단 제거: 22 → 8 -->
+      <property name="topMargin">
+       <number>8</number>
+      </property>
+      <property name="rightMargin">
+       <number>22</number>
+      </property>
+      <property name="bottomMargin">
+       <number>22</number>
+      </property>
+
+      <!-- spacer_top2 제거 -->
+
+      <item>
+       <widget class="QFrame" name="login_card">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <layout class="QVBoxLayout" name="layout_card">
+         <property name="leftMargin">
+          <number>22</number>
+         </property>
+         <!-- 카드 내부 상단도 줄임: 22 → 14 -->
+         <property name="topMargin">
+          <number>14</number>
+         </property>
+         <property name="rightMargin">
+          <number>22</number>
+         </property>
+         <property name="bottomMargin">
+          <number>22</number>
+         </property>
+         <property name="spacing">
+          <number>14</number>
+         </property>
+
+         <item>
+          <widget class="QLabel" name="label_title">
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>18</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>회원 로그인</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignHCenter|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QLineEdit" name="lineEdit_access">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>44</height>
+            </size>
+           </property>
+           <property name="maxLength">
+            <number>50</number>
+           </property>
+           <property name="placeholderText">
+            <string>아이디</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QLineEdit" name="lineEdit_secret">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>44</height>
+            </size>
+           </property>
+           <property name="maxLength">
+            <number>50</number>
+           </property>
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
+           </property>
+           <property name="placeholderText">
+            <string>비밀번호</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QCheckBox" name="checkBox_save_user">
+           <property name="text">
+            <string>아이디/비밀번호 저장</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QPushButton" name="pushButton_connect">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>46</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>로그인</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QFrame" name="frame_links">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <layout class="QGridLayout" name="grid_links">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>8</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <property name="horizontalSpacing">
+             <number>8</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>6</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QPushButton" name="btn_signup">
+              <property name="text">
+               <string>회원가입</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="btn_find_id">
+              <property name="text">
+               <string>아이디 찾기</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="btn_find_pw">
+              <property name="text">
+               <string>비밀번호 찾기</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="btn_edit_profile">
+              <property name="text">
+               <string>회원정보 수정</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+
+         <!-- 라벨을 frame_links 바로 다음에 위치시켜 카드 내부에서 줄바꿈되어 보이도록 함 -->
+         <item>
+          <widget class="QLabel" name="label_hint">
+           <property name="text">
+            <string>시스템 상태: 초기화 중...</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+
+        </layout>
+       </widget>
+      </item>
+
+      <item>
+       <spacer name="spacer_bottom2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+
+     </layout>
+    </widget>
+   </item>
+
+   <!-- Bottom -->
+   <item>
+    <widget class="QFrame" name="bottom">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <layout class="QHBoxLayout" name="layout_bottom">
+      <property name="leftMargin">
+       <number>14</number>
+      </property>
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="rightMargin">
+       <number>14</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_credits">
+        <property name="text">
+         <string>테스트 로그인 상태: 앱 완성 후 실제 회원 인증으로 교체 예정</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

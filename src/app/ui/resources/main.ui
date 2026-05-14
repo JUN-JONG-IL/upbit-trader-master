@@ -1,0 +1,1098 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1920</width>
+    <height>1080</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1920</width>
+    <height>1080</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>맑은 고딕</family>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>Upbit Trader v9.0 - 기관급 트레이딩 시스템</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QToolTip { border: none; background-color: #ffffff; color: #000000; padding: 5px; border-radius: 4px; }
+QWidget { color: #000000; background-color: #ffffff; selection-background-color: #3daee9; selection-color: #000000; border: none; outline: none; }
+QWidget:item:hover { background-color: #f0f0f0; color: #000000; }
+QWidget:item:selected { background-color: #3daee9; }
+QCheckBox, QRadioButton, QGroupBox, QMenuBar, QMenu, QAbstractItemView, QLineEdit, QTextEdit, QPlainTextEdit, QHeaderView, QTabWidget, QTabBar, QDockWidget, QToolBar, QPushButton, QComboBox, QAbstractSpinBox, QLabel, QFrame, QSplitter, QProgressBar, QSpinBox, QDoubleSpinBox { border: none; border-radius: 4px; padding: 5px; background-color: #ffffff; color: #000000; }
+QPushButton:hover, QToolButton:hover, QComboBox:hover, QAbstractSpinBox:hover, QLineEdit:hover, QTextEdit:hover, QPlainTextEdit:hover, QAbstractView:hover, QTreeView:hover { background-color: #f0f0f0; }
+QPushButton:pressed, QToolButton:pressed { background-color: #e0e0e0; }
+QTableView, QTreeView, QListView { border: none; gridline-color: transparent; background-color: #ffffff; alternate-background-color: #f0f0f0; color: #000000; }
+QHeaderView::section { background-color: #f0f0f0; color: #000000; padding: 5px; border: none; }
+QScrollBar:horizontal, QScrollBar:vertical { background-color: #f0f0f0; border: none; border-radius: 4px; }
+QSlider::groove:horizontal, QSlider::groove:vertical { background: #f0f0f0; border: none; border-radius: 4px; }
+QSlider::handle:horizontal, QSlider::handle:vertical { background: #ffffff; border: none; border-radius: 4px; }
+QProgressBar { background-color: #f0f0f0; border: none; border-radius: 4px; text-align: center; color: #000000; }
+QProgressBar::chunk { background-color: #3daee9; border-radius: 4px; }</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_5">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QStackedWidget" name="qStackedWidget">
+      <property name="font">
+       <font>
+        <family>맑은 고딕</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #ffffff; border: none;</string>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="firstpage">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="4,3,2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QFrame" name="frame_1">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_7" stretch="1,7">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QFrame" name="sub_frame_top">
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Plain</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_sub" stretch="3,1">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="chart_widget" native="true">
+                <property name="styleSheet">
+                 <string notr="true">border: none; background-color: #ffffff;</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="search_frame_widget" native="true">
+                <property name="styleSheet">
+                 <string notr="true">border: none; background-color: #ffffff;</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="coinlist_widget" native="true">
+             <property name="styleSheet">
+              <string notr="true">border: none; background-color: #ffffff;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_2">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QWidget" name="orderbook_widget" native="true">
+             <property name="styleSheet">
+              <string notr="true">border: none; background-color: #ffffff;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_3">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QWidget" name="holding_list_widget" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>250</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border: none; background-color: #ffffff;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="trade_widget" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>250</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border: none; background-color: #ffffff;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="secondpage">
+       <layout class="QVBoxLayout" name="verticalLayout_12" stretch="1,3">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QFrame" name="frame_4">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_13">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QWidget" name="userinfo_widget" native="true"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_5">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QWidget" name="detailholdinglist_widget" native="true"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="thirdpage">
+       <layout class="QVBoxLayout" name="verticalLayout_9" stretch="1,3">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QFrame" name="frame_6">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_10">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QWidget" name="signal_list_widget" native="true"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_7">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_14">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QWidget" name="signal_select_widget" native="true"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1920</width>
+     <height>24</height>
+   </rect>
+   </property>
+
+   <widget class="QMenu" name="menuHome">
+    <property name="title">
+     <string>🏠 홈</string>
+    </property>
+    <addaction name="actionDashboard"/>
+    <addaction name="actionRefresh"/>
+   </widget>
+
+   <widget class="QMenu" name="menuUser">
+    <property name="title">
+     <string>👤 사용자</string>
+    </property>
+    <addaction name="actionProfile"/>
+    <addaction name="actionAPIKeys"/>
+    <addaction name="actionAccountInfo"/>
+   </widget>
+
+   <widget class="QMenu" name="menuMarket">
+    <property name="title">
+     <string>📈 마켓</string>
+    </property>
+    <addaction name="actionMarketOverview"/>
+    <addaction name="actionOrderbookAnalysis"/>
+    <addaction name="actionVolumeProfile"/>
+   </widget>
+
+   <widget class="QMenu" name="menuChart">
+    <property name="title">
+     <string>📊 차트</string>
+    </property>
+    <addaction name="actionMultiChart"/>
+    <addaction name="actionInteractiveChart"/>
+    <addaction name="actionChartSettings"/>
+   </widget>
+
+   <widget class="QMenu" name="menuSignal">
+    <property name="title">
+     <string>⚡ 시그널</string>
+    </property>
+    <addaction name="actionSignalManager"/>
+    <addaction name="actionBacktest"/>
+   </widget>
+
+   <widget class="QMenu" name="menuPortfolio">
+    <property name="title">
+     <string>💼 포트폴리오</string>
+    </property>
+    <addaction name="actionPortfolioManager"/>
+    <addaction name="actionRiskManagement"/>
+    <addaction name="actionPerformanceReport"/>
+   </widget>
+
+   <widget class="QMenu" name="menuScanner">
+    <property name="title">
+     <string>🔍 스캐너</string>
+    </property>
+    <addaction name="actionSymbolScanner"/>
+    <addaction name="actionGapDetector"/>
+    <addaction name="actionAnomalyDetection"/>
+   </widget>
+
+   <widget class="QMenu" name="menuAI">
+    <property name="title">
+     <string>🤖 AI/ML</string>
+    </property>
+    <addaction name="actionAIEngine"/>
+    <addaction name="actionPrediction"/>
+    <addaction name="actionSentiment"/>
+    <addaction name="separator"/>
+    <addaction name="actionMLflow"/>
+    <addaction name="actionFeatureStore"/>
+   </widget>
+
+   <widget class="QMenu" name="menuData">
+    <property name="title">
+     <string>💾 데이터베이스</string>
+    </property>
+    <addaction name="actionDB_Timescale"/>
+    <addaction name="actionDB_Redis"/>
+    <addaction name="actionDB_Mongo"/>
+    <addaction name="actionDB_Kafka"/>
+    <addaction name="actionDB_ClickHouse"/>
+    <addaction name="actionDB_PostgreSQL"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrioritySettings"/>
+    <addaction name="actionMLModelSelector"/>
+    <addaction name="actionPriorityDashboard"/>
+   </widget>
+
+   <widget class="QMenu" name="menuServer">
+    <property name="title">
+     <string>🖥️ 서버</string>
+    </property>
+    <addaction name="actionFastAPI"/>
+    <addaction name="actionWebSocket"/>
+    <addaction name="actionServerStatus"/>
+    <addaction name="actionServerSettings"/>
+   </widget>
+
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>🛠️ 도구</string>
+    </property>
+    <addaction name="actionBackfillManager"/>
+    <addaction name="actionSnowflakeID"/>
+   </widget>
+
+   <widget class="QMenu" name="menuMonitoring">
+    <property name="title">
+     <string>📊 모니터링</string>
+    </property>
+    <addaction name="actionSystemMonitor"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrometheus"/>
+    <addaction name="actionGrafana"/>
+    <addaction name="actionJaeger"/>
+   </widget>
+
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>⚙️ 설정</string>
+    </property>
+    <addaction name="actionPreferences"/>
+    <addaction name="actionAPISettings"/>
+    <addaction name="actionDBSettings"/>
+    <addaction name="separator"/>
+    <addaction name="actionTheme"/>
+   </widget>
+
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>❓ 도움말</string>
+    </property>
+    <addaction name="actionDocumentation"/>
+    <addaction name="actionAbout"/>
+    <addaction name="actionCheckUpdate"/>
+   </widget>
+
+   <addaction name="menuHome"/>
+   <addaction name="menuUser"/>
+   <addaction name="menuMarket"/>
+   <addaction name="menuChart"/>
+   <addaction name="menuSignal"/>
+   <addaction name="menuPortfolio"/>
+   <addaction name="menuScanner"/>
+   <addaction name="menuAI"/>
+   <addaction name="menuData"/>
+   <addaction name="menuServer"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuMonitoring"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuHelp"/>
+  </widget>
+
+  <widget class="QStatusBar" name="statusbar"/>
+
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>도구 모음</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionDashboard"/>
+   <addaction name="actionRefresh"/>
+   <addaction name="separator"/>
+   <addaction name="actionAIEngine"/>
+   <addaction name="actionPrediction"/>
+   <addaction name="actionSentiment"/>
+   <addaction name="separator"/>
+   <addaction name="actionDB_Timescale"/>
+   <addaction name="actionDB_Redis"/>
+   <addaction name="actionDB_Mongo"/>
+   <addaction name="actionDB_Kafka"/>
+   <addaction name="actionDB_ClickHouse"/>
+   <addaction name="actionDB_PostgreSQL"/>
+   <addaction name="separator"/>
+   <addaction name="actionSystemMonitor"/>
+  </widget>
+
+  <!-- ==================== 홈 메뉴 액션 ==================== -->
+  <action name="actionDashboard">
+   <property name="text">
+    <string>대시보드</string>
+   </property>
+   <property name="toolTip">
+    <string>메인 대시보드</string>
+   </property>
+  </action>
+
+  <action name="actionRefresh">
+   <property name="text">
+    <string>새로고침</string>
+   </property>
+   <property name="toolTip">
+    <string>데이터 새로고침</string>
+   </property>
+  </action>
+
+  <!-- ==================== 사용자 메뉴 액션 ==================== -->
+  <action name="actionProfile">
+   <property name="text">
+    <string>프로필</string>
+   </property>
+   <property name="toolTip">
+    <string>사용자 프로필</string>
+   </property>
+  </action>
+
+  <action name="actionAPIKeys">
+   <property name="text">
+    <string>API 키 관리</string>
+   </property>
+   <property name="toolTip">
+    <string>Upbit API 키 설정</string>
+   </property>
+  </action>
+
+  <action name="actionAccountInfo">
+   <property name="text">
+    <string>계좌 정보</string>
+   </property>
+   <property name="toolTip">
+    <string>잔고 및 계좌 정보</string>
+   </property>
+  </action>
+
+  <!-- ==================== 마켓 메뉴 액션 ==================== -->
+  <action name="actionMarketOverview">
+   <property name="text">
+    <string>마켓 개요</string>
+   </property>
+   <property name="toolTip">
+    <string>전체 시장 개요</string>
+   </property>
+  </action>
+
+  <action name="actionOrderbookAnalysis">
+   <property name="text">
+    <string>호가 분석</string>
+   </property>
+   <property name="toolTip">
+    <string>실시간 호가창 분석</string>
+   </property>
+  </action>
+
+  <action name="actionVolumeProfile">
+   <property name="text">
+    <string>볼륨 프로파일</string>
+   </property>
+   <property name="toolTip">
+    <string>거래량 프로파일</string>
+   </property>
+  </action>
+
+  <!-- ==================== 차트 메뉴 액션 ==================== -->
+  <action name="actionMultiChart">
+   <property name="text">
+    <string>멀티차트</string>
+   </property>
+   <property name="toolTip">
+    <string>다중 차트 뷰</string>
+   </property>
+  </action>
+
+  <action name="actionInteractiveChart">
+   <property name="text">
+    <string>인터랙티브 차트</string>
+   </property>
+   <property name="toolTip">
+    <string>인터랙티브 차트 (Plotly/Lightweight)</string>
+   </property>
+  </action>
+
+  <action name="actionChartSettings">
+   <property name="text">
+    <string>차트 설정</string>
+   </property>
+   <property name="toolTip">
+    <string>차트 엔진 및 지표 설정</string>
+   </property>
+  </action>
+
+  <!-- ==================== 시그널 메뉴 액션 ==================== -->
+  <action name="actionSignalManager">
+   <property name="text">
+    <string>시그널 관리</string>
+   </property>
+   <property name="toolTip">
+    <string>매매 시그널 관리</string>
+   </property>
+  </action>
+
+  <action name="actionBacktest">
+   <property name="text">
+    <string>백테스트</string>
+   </property>
+   <property name="toolTip">
+    <string>전략 백테스트</string>
+   </property>
+  </action>
+
+  <!-- ==================== 포트폴리오 메뉴 액션 ==================== -->
+  <action name="actionPortfolioManager">
+   <property name="text">
+    <string>포트폴리오 관리</string>
+   </property>
+   <property name="toolTip">
+    <string>포트폴리오 구성 및 리밸런싱</string>
+   </property>
+  </action>
+
+  <action name="actionRiskManagement">
+   <property name="text">
+    <string>리스크 관리</string>
+   </property>
+   <property name="toolTip">
+    <string>VaR, 손절/익절 관리</string>
+   </property>
+  </action>
+
+  <action name="actionPerformanceReport">
+   <property name="text">
+    <string>성과 보고서</string>
+   </property>
+   <property name="toolTip">
+    <string>수익률 및 성과 분석</string>
+   </property>
+  </action>
+
+  <!-- ==================== 스캐너 메뉴 액션 ==================== -->
+  <action name="actionSymbolScanner">
+   <property name="text">
+    <string>심볼 스캐너</string>
+   </property>
+   <property name="toolTip">
+    <string>우선순위 기반 심볼 스캐너</string>
+   </property>
+  </action>
+
+  <action name="actionGapDetector">
+   <property name="text">
+    <string>Gap 탐지</string>
+   </property>
+   <property name="toolTip">
+    <string>데이터 Gap 탐지 및 자동 보정</string>
+   </property>
+  </action>
+
+  <action name="actionAnomalyDetection">
+   <property name="text">
+    <string>이상 탐지</string>
+   </property>
+   <property name="toolTip">
+    <string>VAE 기반 이상 패턴 탐지</string>
+   </property>
+  </action>
+
+  <!-- ==================== AI/ML 메뉴 액션 ==================== -->
+  <action name="actionAIEngine">
+   <property name="text">
+    <string>AI 엔진</string>
+   </property>
+   <property name="toolTip">
+    <string>AI 엔진 통합 관리</string>
+   </property>
+  </action>
+
+  <action name="actionPrediction">
+   <property name="text">
+    <string>예측 모델</string>
+   </property>
+   <property name="toolTip">
+    <string>LightGBM/XGBoost 가격 예측</string>
+   </property>
+  </action>
+
+  <action name="actionSentiment">
+   <property name="text">
+    <string>감성 분석</string>
+   </property>
+   <property name="toolTip">
+    <string>뉴스/소셜 감성 분석</string>
+   </property>
+  </action>
+
+  <action name="actionMLflow">
+   <property name="text">
+    <string>MLflow</string>
+   </property>
+   <property name="toolTip">
+    <string>모델 추적 및 레지스트리</string>
+   </property>
+  </action>
+
+  <action name="actionFeatureStore">
+   <property name="text">
+    <string>Feature Store</string>
+   </property>
+   <property name="toolTip">
+    <string>Feast Feature Store</string>
+   </property>
+  </action>
+
+  <!-- ==================== 데이터베이스 메뉴 액션 ==================== -->
+  <action name="actionDB_Timescale">
+   <property name="text">
+    <string>TimescaleDB</string>
+   </property>
+   <property name="toolTip">
+    <string>TimescaleDB (Hypertables, CAGG, Compression)</string>
+   </property>
+  </action>
+
+  <action name="actionDB_Redis">
+   <property name="text">
+    <string>Redis</string>
+   </property>
+   <property name="toolTip">
+    <string>Redis (L1 캐시, Pub/Sub, Gap Queue)</string>
+   </property>
+  </action>
+
+  <action name="actionDB_Mongo">
+   <property name="text">
+    <string>MongoDB</string>
+   </property>
+   <property name="toolTip">
+    <string>MongoDB (메타데이터, 우선순위, 샤딩)</string>
+   </property>
+  </action>
+
+  <action name="actionDB_Kafka">
+   <property name="text">
+    <string>Kafka</string>
+   </property>
+   <property name="toolTip">
+    <string>Kafka (이벤트 스트림, 토픽, 컨슈머 그룹)</string>
+   </property>
+  </action>
+
+  <action name="actionDB_ClickHouse">
+   <property name="text">
+    <string>ClickHouse</string>
+   </property>
+   <property name="toolTip">
+    <string>ClickHouse (분석 OLAP, 샤드, 쿼리)</string>
+   </property>
+  </action>
+
+  <action name="actionDB_PostgreSQL">
+   <property name="text">
+    <string>PostgreSQL CQRS</string>
+   </property>
+   <property name="toolTip">
+    <string>PostgreSQL Primary/Replica (원장, 이벤트 스토어)</string>
+   </property>
+  </action>
+
+  <action name="actionPrioritySettings">
+   <property name="text">
+    <string>우선순위 종목 설정</string>
+   </property>
+   <property name="toolTip">
+    <string>종목 우선순위 설정 (거래량/시가총액/변동성 등)</string>
+   </property>
+  </action>
+
+  <action name="actionMLModelSelector">
+   <property name="text">
+    <string>ML 모델 선택</string>
+   </property>
+   <property name="toolTip">
+    <string>Gap 예측/이상 탐지/Drift 모니터링 모델 선택</string>
+   </property>
+  </action>
+
+  <action name="actionPriorityDashboard">
+   <property name="text">
+    <string>우선순위 대시보드</string>
+   </property>
+   <property name="toolTip">
+    <string>우선순위 점수 및 TOP-N 종목 대시보드</string>
+   </property>
+  </action>
+
+  <!-- ==================== 서버 메뉴 액션 ==================== -->
+  <action name="actionFastAPI">
+   <property name="text">
+    <string>FastAPI Swagger</string>
+   </property>
+   <property name="toolTip">
+    <string>FastAPI Swagger UI (localhost:8000/docs)</string>
+   </property>
+  </action>
+
+  <action name="actionWebSocket">
+   <property name="text">
+    <string>WebSocket 테스트</string>
+   </property>
+   <property name="toolTip">
+    <string>WebSocket 클라이언트 테스트</string>
+   </property>
+  </action>
+
+  <action name="actionServerStatus">
+   <property name="text">
+    <string>서버 상태</string>
+   </property>
+   <property name="toolTip">
+    <string>FastAPI 서버 상태 및 모니터링</string>
+   </property>
+  </action>
+
+  <action name="actionServerSettings">
+   <property name="text">
+    <string>서버 설정</string>
+   </property>
+   <property name="toolTip">
+    <string>서버 환경설정 (포트, 호스트, 미들웨어)</string>
+   </property>
+  </action>
+
+  <!-- ==================== 도구 메뉴 액션 ==================== -->
+  <action name="actionBackfillManager">
+   <property name="text">
+    <string>Backfill 관리</string>
+   </property>
+   <property name="toolTip">
+    <string>자동 Gap Fill 및 히스토리 수집</string>
+   </property>
+  </action>
+
+  <action name="actionSnowflakeID">
+   <property name="text">
+    <string>Snowflake ID</string>
+   </property>
+   <property name="toolTip">
+    <string>분산 ID 생성기</string>
+   </property>
+  </action>
+
+  <action name="actionSystemMonitor">
+   <property name="text">
+    <string>시스템 모니터링</string>
+   </property>
+   <property name="toolTip">
+    <string>시스템 상태 점검</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+M</string>
+   </property>
+  </action>
+
+  <action name="actionPrometheus">
+   <property name="text">
+    <string>Prometheus</string>
+   </property>
+   <property name="toolTip">
+    <string>메트릭 수집 (localhost:9090)</string>
+   </property>
+  </action>
+
+  <action name="actionGrafana">
+   <property name="text">
+    <string>Grafana</string>
+   </property>
+   <property name="toolTip">
+    <string>대시보드 시각화 (localhost:3000)</string>
+   </property>
+  </action>
+
+  <action name="actionJaeger">
+   <property name="text">
+    <string>Jaeger</string>
+   </property>
+   <property name="toolTip">
+    <string>분산 추적 (localhost:16686)</string>
+   </property>
+  </action>
+
+  <!-- ==================== 설정 메뉴 액션 ==================== -->
+  <action name="actionPreferences">
+   <property name="text">
+    <string>환경설정</string>
+   </property>
+   <property name="toolTip">
+    <string>앱 환경설정</string>
+   </property>
+  </action>
+
+  <action name="actionAPISettings">
+   <property name="text">
+    <string>API 설정</string>
+   </property>
+   <property name="toolTip">
+    <string>Upbit API 키 및 권한</string>
+   </property>
+  </action>
+
+  <action name="actionDBSettings">
+   <property name="text">
+    <string>DB 설정</string>
+   </property>
+   <property name="toolTip">
+    <string>데이터베이스 연결 설정</string>
+   </property>
+  </action>
+
+  <action name="actionTheme">
+   <property name="text">
+    <string>테마</string>
+   </property>
+   <property name="toolTip">
+    <string>라이트/다크 테마 전환</string>
+   </property>
+  </action>
+
+  <!-- ==================== 도움말 메뉴 액션 ==================== -->
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>문서</string>
+   </property>
+   <property name="toolTip">
+    <string>사용 설명서</string>
+   </property>
+  </action>
+
+  <action name="actionAbout">
+   <property name="text">
+    <string>정보</string>
+   </property>
+   <property name="toolTip">
+    <string>Upbit Trader v9.0 정보</string>
+   </property>
+  </action>
+
+  <action name="actionCheckUpdate">
+   <property name="text">
+    <string>업데이트 확인</string>
+   </property>
+   <property name="toolTip">
+    <string>최신 버전 확인</string>
+   </property>
+  </action>
+
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

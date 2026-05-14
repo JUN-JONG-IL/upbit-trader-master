@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TabAlertsPresets</class>
+ <widget class="QWidget" name="TabAlertsPresets">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1180</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  margin-top: 8px;
+  padding: 12px;
+  background: #f9fafb;
+  color: #111111;
+  font-weight: bold;
+}
+QGroupBox::title {
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  padding: 0 8px;
+  color: #111111;
+}
+QLabel {
+  color: #374151;
+  padding: 2px;
+}
+QCheckBox {
+  color: #111111;
+  padding: 4px;
+}
+QCheckBox:hover {
+  color: #111111;
+  background: #f3f4f6;
+}
+QCheckBox::indicator {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #d1d5db;
+  background: white;
+}
+QCheckBox::indicator:checked {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+QComboBox {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: white;
+  color: #111111;
+}
+QComboBox:hover {
+  border-color: #3b82f6;
+}
+QComboBox QAbstractItemView {
+  background: #ffffff;
+  color: #111111;
+  selection-background-color: #e8eefc;
+  selection-color: #111111;
+  border: 1px solid #d1d5db;
+}
+QSpinBox {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: white;
+  color: #111111;
+}
+QSpinBox:focus {
+  border-color: #3b82f6;
+}
+QLineEdit {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 6px 8px;
+  background: white;
+  color: #111111;
+}
+QLineEdit:focus {
+  border-color: #3b82f6;
+}
+QPushButton {
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  font-weight: bold;
+}
+QPushButton:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+QPushButton:pressed {
+  background: #1d4ed8;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="topLayout">
+     <item>
+      <widget class="QGroupBox" name="alertSettingsGroup">
+       <property name="title">
+        <string>알림 설정</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_alert">
+        <item>
+         <widget class="QCheckBox" name="soundAlert">
+          <property name="text">
+           <string>소리 알림</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_sound">
+          <item>
+           <widget class="QPushButton" name="soundFileButton">
+            <property name="text">
+             <string>소리 파일 선택</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="popupAlert">
+          <property name="text">
+           <string>팝업 알림</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="telegramAlert">
+          <property name="text">
+           <string>텔레그램 알림</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_telegram">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_telegramToken">
+            <property name="text">
+             <string>토큰:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="telegramToken">
+            <property name="placeholderText">
+             <string>봇 토큰 입력</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_telegramChatId">
+            <property name="text">
+             <string>Chat ID:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="telegramChatId">
+            <property name="placeholderText">
+             <string>채팅 ID 입력</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="emailAlert">
+          <property name="text">
+           <string>이메일 알림</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_email">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_emailAddress">
+            <property name="text">
+             <string>이메일:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="emailAddress">
+            <property name="placeholderText">
+             <string>example@email.com</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_cooldown">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_alertCooldown">
+            <property name="text">
+             <string>알림 쿨다운:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="alertCooldown">
+            <property name="suffix">
+             <string> 분</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>60</number>
+            </property>
+            <property name="value">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="presetManagementGroup">
+       <property name="title">
+        <string>프리셋 관리</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_preset">
+        <item>
+         <widget class="QLabel" name="label_presetCombo">
+          <property name="text">
+           <string>프리셋 선택:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="presetCombo">
+          <item>
+           <property name="text">
+            <string>기본</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>단타용</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>스윙용</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>사용자 정의 1</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>사용자 정의 2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>사용자 정의 3</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>사용자 정의 4</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>사용자 정의 5</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="savePreset">
+          <property name="text">
+           <string>프리셋 저장</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="loadPreset">
+          <property name="text">
+           <string>프리셋 불러오기</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="deletePreset">
+          <property name="text">
+           <string>프리셋 삭제</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_preset">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QWidget" name="bottomContainer" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_bottom">
+      <item>
+       <widget class="QCheckBox" name="autoRefreshCheck">
+        <property name="text">
+         <string>자동 새로고침</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="autoRefreshInterval">
+        <property name="suffix">
+         <string> 분</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>60</number>
+        </property>
+        <property name="value">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_bottom">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

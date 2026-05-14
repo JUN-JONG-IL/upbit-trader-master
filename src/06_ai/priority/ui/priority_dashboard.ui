@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui version="4.0">
+ <class>PriorityDashboardWindow</class>
+ <widget class="QMainWindow" name="PriorityDashboardWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>우선순위 대시보드 (Priority Dashboard)</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <property name="spacing">
+     <number>8</number>
+    </property>
+    <property name="leftMargin">
+     <number>12</number>
+    </property>
+    <property name="topMargin">
+     <number>12</number>
+    </property>
+    <property name="rightMargin">
+     <number>12</number>
+    </property>
+    <property name="bottomMargin">
+     <number>12</number>
+    </property>
+    <!-- 상단 컨트롤 바 -->
+    <item>
+     <layout class="QHBoxLayout" name="hboxTop">
+      <item>
+       <widget class="QLabel" name="lblTitle">
+        <property name="text">
+         <string>심볼 우선순위 점수 대시보드</string>
+        </property>
+        <property name="styleSheet">
+         <string>font-size: 16px; font-weight: bold; color: #2c3e50;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblLastUpdated">
+        <property name="text">
+         <string>마지막 업데이트: -</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnRefresh">
+        <property name="text">
+         <string>새로고침</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <!-- 심볼별 점수 테이블 -->
+    <item>
+     <widget class="QGroupBox" name="grpScoreTable">
+      <property name="title">
+       <string>심볼 점수 테이블</string>
+      </property>
+      <layout class="QVBoxLayout" name="vboxTable">
+       <item>
+        <widget class="QTableWidget" name="tableScores">
+         <property name="columnCount">
+          <number>11</number>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>80</number>
+         </attribute>
+         <!-- 헤더 라벨 -->
+         <column>
+          <property name="text">
+           <string>순위</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>심볼</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>거래량</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>시가총액</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>인기</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>신규상장</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>변동성</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>급등/급락</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>패턴</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>소셜</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>종합점수</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <!-- 점수 진행 바 섹션 -->
+    <item>
+     <widget class="QGroupBox" name="grpProgressBars">
+      <property name="title">
+       <string>TOP 5 심볼 점수</string>
+      </property>
+      <layout class="QGridLayout" name="gridProgress">
+       <item row="0" column="0">
+        <widget class="QLabel" name="lblTop1Symbol">
+         <property name="text">
+          <string>-</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QProgressBar" name="progressTop1">
+         <property name="value">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lblTop2Symbol">
+         <property name="text">
+          <string>-</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QProgressBar" name="progressTop2">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="lblTop3Symbol">
+         <property name="text">
+          <string>-</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QProgressBar" name="progressTop3">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="lblTop4Symbol">
+         <property name="text">
+          <string>-</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QProgressBar" name="progressTop4">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="lblTop5Symbol">
+         <property name="text">
+          <string>-</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QProgressBar" name="progressTop5">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

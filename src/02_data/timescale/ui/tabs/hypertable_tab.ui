@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HypertableTab</class>
+ <widget class="QWidget" name="HypertableTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Hypertable 관리</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #FFFFFF;
+    color: #2C3E50;
+    font-family: &quot;맑은 고딕&quot;;
+    font-size: 9pt;
+}
+QTableWidget {
+    gridline-color: #BDC3C7;
+    background-color: #FFFFFF;
+    alternate-background-color: #F8F9FA;
+    selection-background-color: #3498DB;
+    selection-color: #FFFFFF;
+}
+QTableWidget::item {
+    padding: 4px;
+    border: none;
+}
+QHeaderView::section {
+    background-color: #ECF0F1;
+    color: #2C3E50;
+    padding: 6px;
+    border: 1px solid #BDC3C7;
+    font-weight: bold;
+}
+QPushButton {
+    background-color: #3498DB;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #2980B9;
+}
+QPushButton:disabled {
+    background-color: #BDC3C7;
+    color: #7F8C8D;
+}
+QGroupBox {
+    border: 2px solid #BDC3C7;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: #F8F9FA;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    color: #2C3E50;
+    font-weight: bold;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>8</number>
+   </property>
+   <property name="leftMargin">
+    <number>12</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>12</number>
+   </property>
+   <property name="bottomMargin">
+    <number>12</number>
+   </property>
+   <item>
+    <widget class="QFrame" name="frame_banner">
+     <property name="styleSheet">
+      <string notr="true">QFrame#frame_banner {
+    background-color: #EBF5FB;
+    border-left: 4px solid #3498DB;
+    border-radius: 3px;
+    padding: 4px;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QVBoxLayout" name="vl_banner">
+      <property name="spacing">
+       <number>2</number>
+      </property>
+      <property name="leftMargin">
+       <number>8</number>
+      </property>
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="rightMargin">
+       <number>8</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_banner">
+        <property name="text">
+         <string>TimescaleDB Hypertable: 시계열 데이터를 시간 기준으로 자동 파티셔닝합니다. (15초 갱신)
+주요 테이블: candles_1m·candles_5m·candles_1h (캔들), market_ticks (체결), orderbook_snapshots (호가)</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: #2C3E50; font-size: 8pt;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_title">
+     <property name="text">
+      <string>🗂️ Hypertable 관리</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableWidget" name="table_hypertables">
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <column>
+      <property name="text">
+       <string>테이블명</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>청크수</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>압축률</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>보존기간</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>총크기</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

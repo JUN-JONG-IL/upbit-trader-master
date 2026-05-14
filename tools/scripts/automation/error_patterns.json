@@ -1,0 +1,67 @@
+{
+  "model_oom": {
+    "pattern": "(CUDA out of memory|OOM|MemoryError)",
+    "solution": "배치 크기 축소, GPU 메모리 정리",
+    "prevention": "동적 배치 크기 조정, 모델 양자화"
+  },
+  "feature_not_found": {
+    "pattern": "KeyError.*feature",
+    "solution": "Feature Store 스키마 확인",
+    "prevention": "Feature 존재 검증 로직 추가"
+  },
+  "twitter_rate_limit": {
+    "pattern": "429.*Twitter",
+    "solution": "대기 후 재시도",
+    "prevention": "요청 간격 150ms 이상 유지"
+  },
+  "kafka_connection_error": {
+    "pattern": "(KafkaException|ConnectionError.*kafka|Connection refused.*9092)",
+    "solution": "Kafka 서버 시작 확인, docker-compose up -d",
+    "prevention": "Kafka health check 추가, 재연결 로직 구현"
+  },
+  "redis_connection_error": {
+    "pattern": "(RedisError|ConnectionError.*redis|Connection refused.*6379)",
+    "solution": "Redis 서버 시작 확인",
+    "prevention": "Redis health check 추가, in-memory fallback"
+  },
+  "model_not_found": {
+    "pattern": "Model.*not found|No such model",
+    "solution": "모델 레지스트리 확인, 모델 경로 검증",
+    "prevention": "모델 존재 검증 추가"
+  },
+  "sentiment_model_load_error": {
+    "pattern": "(transformers.*not available|Failed to load.*model)",
+    "solution": "transformers 라이브러리 설치, 모델 다운로드 확인",
+    "prevention": "fallback to rule-based sentiment"
+  },
+  "xgboost_import_error": {
+    "pattern": "No module named.*xgboost",
+    "solution": "pip install xgboost",
+    "prevention": "requirements.txt에 xgboost 추가됨"
+  },
+  "torch_import_error": {
+    "pattern": "No module named.*torch",
+    "solution": "pip install torch",
+    "prevention": "requirements.txt에 torch 추가됨, CPU 버전 사용"
+  },
+  "canary_deployment_failed": {
+    "pattern": "CanaryDeploymentError",
+    "solution": "모델 smoke test 확인, 롤백 실행",
+    "prevention": "더 엄격한 smoke test, 점진적 traffic ramp"
+  },
+  "prediction_accuracy_low": {
+    "pattern": "MAE|RMSE.*too high",
+    "solution": "Feature engineering 개선, 하이퍼파라미터 튜닝",
+    "prevention": "정기적인 모델 재학습, 드리프트 감지"
+  },
+  "backtest_no_trades": {
+    "pattern": "No trades.*backtest",
+    "solution": "거래 시그널 threshold 조정",
+    "prevention": "백테스트 전 시그널 생성 확인"
+  },
+  "nlp_processing_timeout": {
+    "pattern": "Timeout.*NLP|sentiment.*timeout",
+    "solution": "배치 크기 축소, 타임아웃 증가",
+    "prevention": "비동기 처리, 배치 크기 동적 조정"
+  }
+}

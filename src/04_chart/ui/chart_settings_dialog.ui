@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ChartSettingsDialog</class>
+ <widget class="QDialog" name="ChartSettingsDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1100</width>
+    <height>750</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>차트 설정 - 100+ 기술 지표</string>
+  </property>
+  <property name="modal">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+QDialog {
+  background-color: #f9fafb;
+}
+   </string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <property name="spacing">
+    <number>15</number>
+   </property>
+   <property name="leftMargin">
+    <number>15</number>
+   </property>
+   <property name="topMargin">
+    <number>15</number>
+   </property>
+   <property name="rightMargin">
+    <number>15</number>
+   </property>
+   <property name="bottomMargin">
+    <number>15</number>
+   </property>
+
+   <!-- 헤더 -->
+   <item>
+    <widget class="QLabel" name="headerLabel">
+     <property name="text">
+      <string>⚙️ 차트 설정</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
+font-size: 16pt;
+font-weight: bold;
+color: #1f2937;
+padding: 5px;
+      </string>
+     </property>
+    </widget>
+   </item>
+
+   <!-- 검색 바 -->
+   <item>
+    <layout class="QHBoxLayout" name="searchLayout">
+     <item>
+      <widget class="QLabel" name="searchLabel">
+       <property name="text">
+        <string>🔍 검색:</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+font-size: 13px;
+color: #6b7280;
+        </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="searchInput">
+       <property name="placeholderText">
+        <string>지표 이름 입력...</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+QLineEdit {
+  padding: 8px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+}
+QLineEdit:focus {
+  border-color: #3b82f6;
+}
+        </string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+
+   <!-- 탭 위젯 (카테고리별) -->
+   <item>
+    <widget class="QTabWidget" name="categoryTabs">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
+QTabWidget::pane {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+}
+QTabBar::tab {
+  background: #f3f4f6;
+  padding: 10px 20px;
+  margin-right: 2px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+QTabBar::tab:selected {
+  background: #3b82f6;
+  color: white;
+}
+QTabBar::tab:hover {
+  background: #dbeafe;
+}
+      </string>
+     </property>
+
+     <!-- 탭 1: Trend -->
+     <widget class="QWidget" name="trendTab">
+      <attribute name="title">
+       <string>Trend</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="trendTabLayout">
+       <item>
+        <widget class="QScrollArea" name="trendScrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <widget class="QWidget" name="trendScrollContent">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1050</width>
+            <height>500</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="trendContentLayout">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+           <!-- 지표들은 Python 코드에서 동적 생성 -->
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- 탭 2: Momentum -->
+     <widget class="QWidget" name="momentumTab">
+      <attribute name="title">
+       <string>Momentum</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="momentumTabLayout">
+       <item>
+        <widget class="QScrollArea" name="momentumScrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <widget class="QWidget" name="momentumScrollContent">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1050</width>
+            <height>500</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="momentumContentLayout">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- 탭 3: Volatility -->
+     <widget class="QWidget" name="volatilityTab">
+      <attribute name="title">
+       <string>Volatility</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="volatilityTabLayout">
+       <item>
+        <widget class="QScrollArea" name="volatilityScrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <widget class="QWidget" name="volatilityScrollContent">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1050</width>
+            <height>500</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="volatilityContentLayout">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- 탭 4: Volume -->
+     <widget class="QWidget" name="volumeTab">
+      <attribute name="title">
+       <string>Volume</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="volumeTabLayout">
+       <item>
+        <widget class="QScrollArea" name="volumeScrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <widget class="QWidget" name="volumeScrollContent">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1050</width>
+            <height>500</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="volumeContentLayout">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- 탭 5: Oscillators -->
+     <widget class="QWidget" name="oscillatorsTab">
+      <attribute name="title">
+       <string>Oscillators</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="oscillatorsTabLayout">
+       <item>
+        <widget class="QScrollArea" name="oscillatorsScrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <widget class="QWidget" name="oscillatorsScrollContent">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1050</width>
+            <height>500</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="oscillatorsContentLayout">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- 탭 6: Support/Resistance -->
+     <widget class="QWidget" name="supportTab">
+      <attribute name="title">
+       <string>Support/Resistance</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="supportTabLayout">
+       <item>
+        <widget class="QScrollArea" name="supportScrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <widget class="QWidget" name="supportScrollContent">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1050</width>
+            <height>500</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="supportContentLayout">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- 탭 7: Others -->
+     <widget class="QWidget" name="othersTab">
+      <attribute name="title">
+       <string>Others</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="othersTabLayout">
+       <item>
+        <widget class="QScrollArea" name="othersScrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <widget class="QWidget" name="othersScrollContent">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1050</width>
+            <height>500</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="othersContentLayout">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+    </widget>
+   </item>
+
+   <!-- 일반 설정 그룹 -->
+   <item>
+    <widget class="QGroupBox" name="generalGroup">
+     <property name="title">
+      <string>일반 설정</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
+QGroupBox {
+  font-weight: bold;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  background: white;
+}
+QGroupBox::title {
+  subcontrol-origin: margin;
+  left: 10px;
+  padding: 0 5px;
+}
+      </string>
+     </property>
+     <layout class="QHBoxLayout" name="generalLayout">
+      <item>
+       <widget class="QLabel" name="chartTypeLabel">
+        <property name="text">
+         <string>차트 타입:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="chartTypeCombo">
+        <property name="styleSheet">
+         <string notr="true">
+QComboBox {
+  padding: 5px;
+  font-size: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+         </string>
+        </property>
+        <item>
+         <property name="text">
+          <string>캔들스틱</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>OHLC 바</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>라인</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>영역</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>할로우 캔들</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>하이켄 아시</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="timezoneLabel">
+        <property name="text">
+         <string>타임존:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="timezoneCombo">
+        <property name="styleSheet">
+         <string notr="true">
+QComboBox {
+  padding: 5px;
+  font-size: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+         </string>
+        </property>
+        <item>
+         <property name="text">
+          <string>KST</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>UTC</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>EST</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>PST</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <spacer name="generalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <!-- 버튼 영역 -->
+   <item>
+    <layout class="QHBoxLayout" name="buttonLayout">
+     <property name="spacing">
+      <number>8</number>
+     </property>
+     <item>
+      <spacer name="buttonSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="presetSaveButton">
+       <property name="text">
+        <string>💾 프리셋 저장</string>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>120</width>
+         <height>36</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+QPushButton {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+}
+QPushButton:hover {
+  background-color: #10b981dd;
+}
+QPushButton:pressed {
+  background-color: #10b981bb;
+}
+        </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="presetLoadButton">
+       <property name="text">
+        <string>📂 프리셋 로드</string>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>120</width>
+         <height>36</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+QPushButton {
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+}
+QPushButton:hover {
+  background-color: #6366f1dd;
+}
+QPushButton:pressed {
+  background-color: #6366f1bb;
+}
+        </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelButton">
+       <property name="text">
+        <string>❌ 취소</string>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>36</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+QPushButton {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+}
+QPushButton:hover {
+  background-color: #6b7280dd;
+}
+QPushButton:pressed {
+  background-color: #6b7280bb;
+}
+        </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="saveButton">
+       <property name="text">
+        <string>✅ 저장</string>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>36</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+QPushButton {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+}
+QPushButton:hover {
+  background-color: #3b82f6dd;
+}
+QPushButton:pressed {
+  background-color: #3b82f6bb;
+}
+        </string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

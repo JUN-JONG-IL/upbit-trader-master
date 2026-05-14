@@ -1,0 +1,33 @@
+clickhouse:
+  host: 127.0.0.1
+  port: 8123
+kafka:
+  host: 127.0.0.1
+  port: 9092
+mlflow:
+  host: 127.0.0.1
+  port: 5000
+mongo:
+  host: 127.0.0.1
+  port: 27017
+postgres_primary:
+  database: upbit_trader
+  host: 127.0.0.1
+  password: ''
+  port: 5433
+  user: admin
+postgres_replica:
+  database: upbit_trader
+  host: 127.0.0.1
+  password: ''
+  port: 5434
+  user: admin
+redis:
+  host: 127.0.0.1
+  port: 58530
+timescale:
+  host: 127.0.0.1
+  port: 58529
+zookeeper:
+  host: 127.0.0.1
+  port: 2181

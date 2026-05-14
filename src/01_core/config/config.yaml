@@ -1,0 +1,306 @@
+# upbit-trader 통합 플랫폼 환경설정 파일 (실행/GUI/DB/로그 모두 중앙관리)
+# === [자동 생성 시 관리, 직접 편집 주의] ===
+
+LOG:
+  # 로그 포맷 (파일명과 라인 번호 포함)
+  FORMAT: '[%(asctime)s.%(msecs)03d: %(levelname).1s %(filename)s:%(lineno)s] %(message)s'
+  
+  # 로그 파일 경로
+  PATH: upbit-trader.log
+  
+  # 콘솔 출력 활성화(true/false)
+  PRINT: true
+  
+  # 파일 저장 활성화(개발 시 false 권장 - 성능)
+  SAVE: false
+  
+  # 로그 레벨 (DEBUG/INFO/WARNING/ERROR)
+  # 개발 단계: INFO 권장 (불필요한 DEBUG 로그 제거)
+  LEVEL: INFO
+
+  # 콘솔 전용 레벨: WARNING (터미널에는 경고/에러만 출력)
+  CONSOLE_LEVEL: WARNING
+
+MONGO:
+  # MongoDB 인증 정보 (Docker 컨테이너는 인증 없이 구성됨)
+  # 인증 필요 시에만 설정, 로컬 개발 환경에서는 null 권장
+  ID: null
+  PASSWORD: null
+  IP: localhost
+  PORT: 27017
+
+NAME_TOGGLE:
+  KOREAN: true                # 한글/영문 UI 전환
+
+PROGRAM:
+  GUI: true                   # GUI 실행(True: PyQt5, False: CLI)
+  DEBUG_MODE: false           # 디버그 모드 (개발 전용)
+
+SETTINGS:
+  AUTO_TRADING: false         # 자동매매 on/off
+
+STRATEGY:
+  MAX_INDIVIDUAL_TRADE_PRICE: 10000  # 단일 주문 최대 한도(원)
+  TYPE: VariousIndicator             # 전략명
+
+UPBIT:
+  # Upbit API 키 (환경변수 사용 권장)
+  ACCESS_KEY: ''
+  SECRET_KEY: ''
+
+# ==============================================================================
+# Database Configuration
+# ==============================================================================
+
+TIMESCALE:
+  # TimescaleDB 연결 설정 (Docker 호스트 매핑 포트)
+  HOST: "127.0.0.1"
+  PORT: 58529
+  DATABASE: "upbit_trader"
+  USER: "postgres"
+  PASSWORD: "postgres"
+  POOL:
+    MIN_CONNECTIONS: 5
+    MAX_CONNECTIONS: 50
+    TIMEOUT: 30
+
+REDIS:
+  # Redis 연결 설정 (Docker 호스트 매핑 포트)
+  HOST: "127.0.0.1"
+  PORT: 58530
+  DB: 0
+  PASSWORD: "dummy"
+  DECODE_RESPONSES: true
+  SOCKET_TIMEOUT: 5
+  SOCKET_CONNECT_TIMEOUT: 5
+  RETRY_ON_TIMEOUT: true
+  HEALTH_CHECK_INTERVAL: 30
+
+POSTGRES_PRIMARY:
+  # PostgreSQL Primary 연결 설정 (CQRS Write)
+  HOST: "127.0.0.1"
+  PORT: 5433
+  DATABASE: "trading"
+  USER: "admin"
+  PASSWORD: "secret"
+  POOL:
+    MIN_CONNECTIONS: 2
+    MAX_CONNECTIONS: 20
+    TIMEOUT: 30
+
+POSTGRES_REPLICA:
+  # PostgreSQL Replica 연결 설정 (CQRS Read)
+  HOST: "127.0.0.1"
+  PORT: 5434
+  DATABASE: "trading"
+  USER: "admin"
+  PASSWORD: "secret"
+  POOL:
+    MIN_CONNECTIONS: 2
+    MAX_CONNECTIONS: 20
+    TIMEOUT: 30
+
+# ==============================================================================
+# Message Queue Configuration
+# ==============================================================================
+
+KAFKA:
+  BOOTSTRAP_SERVERS: "localhost:9092"
+  CLIENT_ID: "upbit-trader"
+  TOPICS:
+    ORDERS: "trading.orders"
+    TRADES: "trading.trades"
+    CANDLES: "trading.candles"
+  PRODUCER:
+    COMPRESSION_TYPE: "gzip"
+    ACKS: 1
+    RETRIES: 3
+    BATCH_SIZE: 16384
+    LINGER_MS: 10
+  CONSUMER:
+    GROUP_ID: "upbit-trader-group"
+    AUTO_OFFSET_RESET: "latest"
+    ENABLE_AUTO_COMMIT: true
+    AUTO_COMMIT_INTERVAL_MS: 5000
+    MAX_POLL_RECORDS: 500
+
+ZOOKEEPER:
+  HOSTS: "localhost:2181"
+  TIMEOUT: 10000
+  SESSION_TIMEOUT: 30000
+
+# ==============================================================================
+# Analytics & Storage
+# ==============================================================================
+
+CLICKHOUSE:
+  HOST: "127.0.0.1"
+  PORT: 8123
+  DATABASE: "trading_events"
+  USER: "trader"
+  PASSWORD: "clickhouse"
+  HTTP_PORT: 8123
+  NATIVE_PORT: 9000
+  COMPRESSION: "lz4"
+  SECURE: false
+  CONNECT_TIMEOUT: 10
+  SEND_RECEIVE_TIMEOUT: 300
+
+# ==============================================================================
+# Monitoring & Observability
+# ==============================================================================
+
+PROMETHEUS:
+  HOST: "127.0.0.1"
+  PORT: 9090
+  SCRAPE_INTERVAL: "15s"
+  EVALUATION_INTERVAL: "15s"
+  RETENTION_TIME: "30d"
+
+GRAFANA:
+  HOST: "127.0.0.1"
+  PORT: 3000
+  USERNAME: "admin"
+  PASSWORD: "admin"
+  ALLOW_SIGN_UP: false
+
+JAEGER:
+  AGENT_HOST: "127.0.0.1"
+  AGENT_PORT: 6831
+  UI_PORT: 16686
+  SAMPLING_RATE: 0.1
+  COLLECTOR_OTLP_ENABLED: true
+
+VAULT:
+  ENABLED: false
+  HOST: "127.0.0.1"
+  PORT: 8200
+  TOKEN: "root"
+  DEV_MODE: true
+
+# ==============================================================================
+# AI/ML Configuration
+# ==============================================================================
+
+MLFLOW:
+  TRACKING_URI: "http://127.0.0.1:5000"
+  EXPERIMENT_NAME: "upbit-trading"
+  ARTIFACT_LOCATION: "/mlflow/artifacts"
+  BACKEND_STORE_URI: "sqlite:///mlflow/mlflow.db"
+  ENABLED: false
+
+# ==============================================================================
+# Data Collection Configuration
+# ==============================================================================
+
+DATA_COLLECTION:
+  MODE: "auto"                    # auto/manual/scheduled
+  ENABLED_TIMEFRAMES:
+    - "1m"
+    - "5m"
+    - "1h"
+  
+  UPBIT_API:
+    CALLS_PER_SECOND: 8
+    MAX_RETRIES: 3
+    TIMEOUT: 10
+    BACKOFF_FACTOR: 2
+  
+  GAP_DETECTION:
+    GRACE_PERIOD_SECONDS: 300
+    MIN_THRESHOLD_SECONDS: 600
+    QUEUE_MAX_SIZE: 50000
+    LOOKBACK_DAYS: 3
+    AUTO_BACKFILL: true
+    FORCE_ENQUEUE_LOOKBACK_DAYS: 3
+  
+  TIMESCALE_BATCH:
+    BATCH_SIZE: 200
+    MAX_CONNECTIONS: 50
+    COMPRESSION_DAYS: 1
+    RETENTION_DAYS: 90
+
+# ==============================================================================
+# Application Settings
+# ==============================================================================
+
+APP:
+  DEBUG_MODE: false
+  
+  UI:
+    THEME: "dark"
+    UPDATE_INTERVAL_MS: 1000
+    MAX_CHART_POINTS: 1000
+    REFRESH_RATE: 60
+  
+  SCHEDULER:
+    AUTO_BACKFILL_INTERVAL: 30    # 초 단위
+    STAGING_FLUSH_INTERVAL: 60    # 초 단위
+    HEALTH_CHECK_INTERVAL: 10     # 초 단위
+
+# ==============================================================================
+# Security
+# ==============================================================================
+
+SECURITY:
+  VAULT:
+    ENABLED: false
+    HOST: "127.0.0.1"
+    PORT: 8200
+    TOKEN: "root"
+  
+  UPBIT_API:
+    ACCESS_KEY: ""
+    SECRET_KEY: ""
+  
+  JWT:
+    SECRET_KEY: "change-this-in-production"
+    ALGORITHM: "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: 30
+
+# ==============================================================================
+# Feature Flags
+# ==============================================================================
+
+FEATURES:
+  AI_ML_ENABLED: false
+  REALTIME_TRADING: false
+  BACKTESTING: true
+  PAPER_TRADING: true
+  AUTO_GAP_DETECTION: true
+  WEBSOCKET_ENABLED: true
+  KAFKA_ENABLED: true
+  CLICKHOUSE_ENABLED: true
+  MONITORING_ENABLED: true
+
+# ==============================================================================
+# Performance Tuning
+# ==============================================================================
+
+PERFORMANCE:
+  WORKER_THREADS: 4
+  ASYNC_IO_ENABLED: true
+  CONNECTION_POOL_SIZE: 100
+  MAX_CONCURRENT_REQUESTS: 50
+  CACHE_TTL_SECONDS: 300
+  
+  TIMESCALE:
+    CHUNK_TIME_INTERVAL: "7 days"
+    COMPRESSION_AFTER: "1 day"
+    RETENTION_POLICY: "90 days"
+  
+  REDIS:
+    MAX_MEMORY: "2gb"
+    MAX_MEMORY_POLICY: "allkeys-lru"
+    APPENDONLY: true
+
+# ==============================================================================
+# Symbol & Subscription Limits
+# ==============================================================================
+symbols:
+  max_subscribe: 300          # WebSocket 최대 구독 심볼 수 (0 = 무제한)
+  mongo_fallback_limit: 300   # MongoDB 폴백 시 최대 심볼 수
+  rest_collector_limit: 0   # REST 캔들 수집기 최대 심볼 수 (0 = 무제한)
+  redis_scan_count: 500       # Redis scan_iter 배치 힌트
+  ui_display_limit: 500       # UI 테이블 최대 표시 심볼 수
+  db_fallback_limit: 300      # DB 폴백 조회 최대 수

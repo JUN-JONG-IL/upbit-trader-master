@@ -1,0 +1,173 @@
+# =============================================================================
+# 기관급 트레이딩 시스템 - 데이터베이스 연결 설정
+# 버전: v8.0 (DB설계.md 기반)
+# 우선순위: 환경 변수 > 이 파일의 기본값
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Tier 1: Redis (Hot Tier - 실시간 캐시)
+# ---------------------------------------------------------------------------
+redis:
+  host: "${REDIS_HOST:localhost}"
+  port: "${REDIS_PORT:6379}"
+  password: "${REDIS_PASSWORD:}"
+  db: "${REDIS_DB:0}"
+  max_connections: "${REDIS_MAX_CONNECTIONS:20}"
+  # L1 캐시 설정
+  cache:
+    candles_max_size: 500        # 최근 500개 캔들
+    orderbook_ttl: 5             # 호가 TTL (초)
+    trade_ttl: 300               # 체결 TTL (5분)
+    candle_ttl: 604800           # 캔들 TTL (7일)
+  # Pub/Sub 채널
+  channels:
+    timescale_events: "timescale:events"
+    candles: "candles:{symbol}:{tf}"
+    ticker: "ticker"
+    orderbook: "orderbook"
+    trade: "trade"
+    signal: "signal"
+  # Gap Fill 큐
+  gap_fill_queue: "gap_fill_queue"
+  # 파이프라인 배치 크기
+  pipeline_batch: 100
+
+# ---------------------------------------------------------------------------
+# Tier 2: TimescaleDB (Warm Tier - 시계열 저장)
+# ---------------------------------------------------------------------------
+timescaledb:
+  host: "${TIMESCALE_HOST:localhost}"
+  port: "${TIMESCALE_PORT:5432}"
+  database: "${TIMESCALE_DB:upbit_trader}"
+  user: "${TIMESCALE_USER:postgres}"
+  password: "${TIMESCALE_PASSWORD:postgres}"
+  min_pool_size: "${TIMESCALE_MIN_POOL:5}"
+  max_pool_size: "${TIMESCALE_MAX_POOL:20}"
+  command_timeout: 30
+  # 배치 UPSERT 설정
+  batch:
+    insert_size: 1000            # 배치 삽입 크기
+    flush_interval: 5            # 강제 플러시 간격 (초)
+  # 테이블 설정
+  tables:
+    candles: "candles"
+    staging: "staging_candles"
+    isolated: "isolated_candles"
+    snapshot: "latest_snapshot"
+  # 파티션 설정
+  partitions: 16                 # 16-way hash partitioning (symbol 기준)
+  # 정책
+  policies:
+    compress_after: "7 days"
+    retain_for: "1 year"
+
+# ---------------------------------------------------------------------------
+# Tier 3: PostgreSQL Primary - CQRS + Event Store (Core Tier)
+# ---------------------------------------------------------------------------
+postgres:
+  primary:
+    host: "${POSTGRES_PRIMARY_HOST:localhost}"
+    port: "${POSTGRES_PRIMARY_PORT:5433}"
+    database: "${POSTGRES_PRIMARY_DB:trading}"
+    user: "${POSTGRES_PRIMARY_USER:trader}"
+    password: "${POSTGRES_PRIMARY_PASSWORD:}"
+    min_pool_size: 5
+    max_pool_size: 10
+  replica:
+    host: "${POSTGRES_REPLICA_HOST:localhost}"
+    port: "${POSTGRES_REPLICA_PORT:5434}"
+    database: "${POSTGRES_REPLICA_DB:trading}"
+    user: "${POSTGRES_REPLICA_USER:trader}"
+    password: "${POSTGRES_REPLICA_PASSWORD:}"
+    min_pool_size: 2
+    max_pool_size: 5
+  event_store:
+    table: "event_store"
+    snapshot_table: "aggregate_snapshots"
+    notify_channel: "event_store_channel"
+
+# ---------------------------------------------------------------------------
+# Tier 4: Kafka (Event Streaming)
+# ---------------------------------------------------------------------------
+kafka:
+  brokers: "${KAFKA_BROKERS:localhost:9092}"
+  group_id: "${KAFKA_GROUP_ID:upbit-trader}"
+  auto_offset_reset: "${KAFKA_AUTO_OFFSET_RESET:earliest}"
+  compression_type: "${KAFKA_COMPRESSION_TYPE:lz4}"
+  # 토픽 설정
+  topics:
+    # 실시간 데이터
+    ticker_raw: "ticker.raw"
+    orderbook_raw: "orderbook.raw"
+    trade_raw: "trade.raw"
+    candle_1m: "candle.1m"
+    candle_5m: "candle.5m"
+    candle_1h: "candle.1h"
+    # 이벤트 소싱
+    trading_events: "trading.events"
+    order_created: "order.created"
+    order_filled: "order.filled"
+  # 보존 정책
+  retention:
+    realtime: "86400000"         # 24시간 (밀리초)
+    events: "604800000"          # 7일 (밀리초)
+  # 컨슈머 배치
+  consumer_batch: 1000
+
+# ---------------------------------------------------------------------------
+# MongoDB (메타데이터 + 설정)
+# ---------------------------------------------------------------------------
+mongodb:
+  host: "${MONGO_HOST:localhost}"
+  port: "${MONGO_PORT:27017}"
+  database: "${MONGO_DB:upbit_trader}"
+  user: "${MONGO_INITDB_ROOT_USERNAME:}"
+  password: "${MONGO_INITDB_ROOT_PASSWORD:}"
+  max_pool_size: 10
+  # 컬렉션 설정
+  collections:
+    metadata: "metadata"
+    priority_settings: "priority_settings"
+    user_favorites: "user_favorites"
+    strategies: "strategies"
+    ml_models: "ml_models"
+    orders_view: "orders_view"
+    trades_view: "trades_view"
+    latest_snapshot: "latest_snapshot"
+
+# ---------------------------------------------------------------------------
+# ClickHouse (Cold Tier - 장기 분석)
+# ---------------------------------------------------------------------------
+clickhouse:
+  host: "${CLICKHOUSE_HOST:localhost}"
+  port: "${CLICKHOUSE_PORT:9000}"
+  http_port: "${CLICKHOUSE_HTTP_PORT:8123}"
+  database: "${CLICKHOUSE_DB:trading}"
+  user: "${CLICKHOUSE_USER:trader}"
+  password: "${CLICKHOUSE_PASSWORD:}"
+  # 이관 설정
+  archive:
+    source_table: "candles"      # TimescaleDB 소스
+    target_table: "candle_events" # ClickHouse 대상
+    migrate_after: "90 days"     # 3개월 경과 데이터 이관
+    schedule: "0 3 * * *"       # 매일 새벽 3시
+
+# ---------------------------------------------------------------------------
+# 파이프라인 공통 설정
+# ---------------------------------------------------------------------------
+pipeline:
+  batch_size: 1000               # 기본 배치 크기
+  flush_interval: 5              # 플러시 간격 (초)
+  gap_check_interval: 60         # Gap 체크 간격 (초)
+  max_gap_factor: 10             # Gap 허용 배수
+  # 타임프레임별 초 단위
+  timeframe_seconds:
+    "1s": 1
+    "1m": 60
+    "3m": 180
+    "5m": 300
+    "15m": 900
+    "30m": 1800
+    "1h": 3600
+    "4h": 14400
+    "1d": 86400

@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CollectionSettingsDialog</class>
+ <widget class="QDialog" name="CollectionSettingsDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>860</width>
+    <height>760</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>수집 설정 (상세)</string>
+  </property>
+  <layout class="QVBoxLayout" name="vLayout_settings">
+   <property name="spacing">
+    <number>4</number>
+   </property>
+   <!-- ===== 역할 안내 헤더 ===== -->
+   <item>
+    <widget class="QLabel" name="label_role_header">
+      <property name="text">
+       <string>【 전역 수집 정책(단일 편집 소스) 】 수집 타임프레임 · 타임프레임별 최대 캔들 수 · 압축 시점 · 보관 기간 · WebSocket 설정을 여기서만 편집합니다.
+※ '백필/스케줄러 설정' 창은 실행 설정/상태 확인 전용입니다.</string>
+      </property>
+     <property name="wordWrap"><bool>true</bool></property>
+     <property name="styleSheet">
+      <string notr="true">background-color: #E8F5E9; color: #1B5E20; font-size: 9pt; font-weight: bold; padding: 6px; border-radius: 4px;</string>
+     </property>
+      <property name="toolTip">
+       <string>【 이 창의 담당 범위 (SSOT) 】
+• 실시간 수집 타임프레임 (1m/5m/15m/1h/4h/1d)
+• 데이터 용량 프리셋(라이트/밸런스/헤비) + 타임프레임별 최대 캔들 수
+• TimescaleDB 압축 시작 시점
+• 데이터 보관 기간(만료 시 삭제)
+• WebSocket 심볼 구독 수
+• 수집 정책 프리셋
+
+【 백필/스케줄러 창 (실행 전용) 】
+• 백필 기간(최근 7/30/90일/사용자 지정)
+• 대상 심볼(전체/선택 심볼)
+• 배치/재시도/자동실행 주기/상태</string>
+      </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_timeframes">
+     <property name="title">
+      <string>수집할 타임프레임 (전역 설정)</string>
+     </property>
+      <property name="toolTip">
+       <string>전역 수집 타임프레임 설정(SSOT)입니다.
+백필/스케줄러 실행 시에도 이 타임프레임 정책이 동일하게 적용됩니다.</string>
+      </property>
+     <layout class="QGridLayout">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="chk_tf_1m">
+        <property name="text"><string>1분봉 (1m) - 필수 (항상 활성)</string></property>
+        <property name="checked"><bool>true</bool></property>
+        <property name="enabled"><bool>false</bool></property>
+        <property name="toolTip"><string>1분봉은 모든 지표/AI 계산의 기본 데이터입니다. 비활성화 불가.</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="chk_tf_5m">
+        <property name="text"><string>5분봉 (5m) - 단기 지표 (RSI/MACD/BB 권장)</string></property>
+        <property name="checked"><bool>true</bool></property>
+        <property name="toolTip"><string>5분봉: RSI14(최소 70봉), MACD26(최소 182봉), BB20(최소 140봉) 안정화에 필요. 권장.</string></property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="chk_tf_15m">
+        <property name="text"><string>15분봉 (15m) - 중기 지표</string></property>
+        <property name="checked"><bool>false</bool></property>
+        <property name="toolTip"><string>15분봉: 중기 추세 분석에 활용. AI/ML 최소 복원 정책에서 권장.</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="chk_tf_1h">
+        <property name="text"><string>1시간봉 (1h) - 중장기 추세 (권장)</string></property>
+        <property name="checked"><bool>true</bool></property>
+        <property name="toolTip"><string>1시간봉: EMA200(최소 200봉), 볼린저밴드, 피보나치 등 중장기 지표에 필수. 권장.</string></property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="chk_tf_4h">
+        <property name="text"><string>4시간봉 (4h) - 스윙 트레이딩</string></property>
+        <property name="checked"><bool>false</bool></property>
+        <property name="toolTip"><string>4시간봉: 스윙 트레이딩 및 AI/ML 특징 다양성 강화에 활용.</string></property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="chk_tf_1d">
+        <property name="text"><string>일봉 (1d) - 장기 추세/AI 학습</string></property>
+        <property name="checked"><bool>false</bool></property>
+        <property name="toolTip"><string>일봉: 장기 추세 분석, AI/ML 모델 특징 변수 확보에 활용. AI/ML 최소 복원 정책에서 권장.</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_historical">
+     <property name="title">
+      <string>지표/AI-ML 최소 복원 기준 (전역 하한값)</string>
+     </property>
+     <property name="toolTip">
+      <string>Gap 탐지·백필 시 최소한 이 기간 이상의 데이터를 확보하도록 유도합니다.
+백필 실행 기간(7일/30일)은 '백필/스케줄러 설정' 창에서 별도로 설정합니다.
+
+• 지표 최소 복원: RSI/MACD/BB/EMA 지표 안정화에 필요한 최소 데이터 기간
+• AI/ML 최소 복원: Prophet/XGBoost/Transformer 모델 학습에 필요한 최소 데이터 기간</string>
+     </property>
+     <layout class="QVBoxLayout">
+      <item>
+       <widget class="QLabel" name="label_historical_intro">
+        <property name="text">
+         <string>지표·AI-ML 계산에 필요한 최소 데이터 기간을 전역 하한으로 지정합니다. 최대 조회 기간이 이 값보다 커야 정확한 분석이 가능합니다.</string>
+        </property>
+        <property name="wordWrap"><bool>true</bool></property>
+        <property name="styleSheet"><string>color: #2980b9; font-size: 9pt;</string></property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout_historical">
+        <item row="0" column="0">
+         <widget class="QLabel">
+          <property name="text"><string>지표 최소 복원:</string></property>
+          <property name="toolTip"><string>RSI(14), MACD(26,12,9), BB(20), EMA(200) 등 기술 지표 안정화에 필요한 최소 봉 수. 7일(=1m: 10,080봉) 권장.</string></property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="combo_indicator_min">
+          <item><property name="text"><string>3일 (RSI/BB 최소)</string></property></item>
+          <item><property name="text"><string>7일 (지표 안정 권장)</string></property></item>
+          <item><property name="text"><string>14일 (EMA200 포함)</string></property></item>
+          <item><property name="text"><string>30일 (장기 지표)</string></property></item>
+          <property name="currentIndex"><number>1</number></property>
+          <property name="toolTip"><string>RSI14: 최소 14봉. MACD26: 최소 26봉. BB20: 최소 20봉. EMA200: 최소 200봉. 7일(1분봉 기준 10,080봉) 권장.</string></property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_indicator_hint">
+          <property name="text"><string>RSI14/MACD26/BB20/EMA200 안정화 기준</string></property>
+          <property name="styleSheet"><string>color: #7F8C8D; font-size: 8pt;</string></property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel">
+          <property name="text"><string>AI/ML 최소 복원:</string></property>
+          <property name="toolTip"><string>Prophet, XGBoost, Transformer 등 ML 모델 학습에 필요한 최소 데이터 기간. 30일 이상 권장.</string></property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="combo_aiml_min">
+          <item><property name="text"><string>7일 (경량 모델)</string></property></item>
+          <item><property name="text"><string>14일 (중급)</string></property></item>
+          <item><property name="text"><string>30일 (AI/ML 권장)</string></property></item>
+          <item><property name="text"><string>60일 (딥러닝)</string></property></item>
+          <item><property name="text"><string>90일 (고정밀)</string></property></item>
+          <property name="currentIndex"><number>2</number></property>
+          <property name="toolTip"><string>Prophet: 최소 2배 주기. XGBoost: 30일+ 권장. Transformer: 60일+ 권장. 30일(1분봉 기준 43,200봉) 기본값.</string></property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="label_aiml_hint">
+          <property name="text"><string>Prophet/XGBoost/Transformer 학습 기준</string></property>
+          <property name="styleSheet"><string>color: #7F8C8D; font-size: 8pt;</string></property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel">
+          <property name="text"><string>최대 조회 기간:</string></property>
+          <property name="toolTip"><string>Gap 탐지·백필 실행 시 현재 시각 기준 과거 N일까지만 탐색합니다.
+지나치게 오래된 구간을 탐색하지 않도록 하는 전역 가드입니다.
+
+※ 백필 실행 기간(7일/30일/90일 등)은 '백필/스케줄러 설정' 창에서 별도로 설정합니다.
+  이 설정은 탐색 범위의 상한을 제어합니다.</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="combo_lookback_days">
+          <item><property name="text"><string>1일 (초절약 모드)</string></property></item>
+          <item><property name="text"><string>3일 (기본)</string></property></item>
+          <item><property name="text"><string>7일</string></property></item>
+          <item><property name="text"><string>14일</string></property></item>
+          <item><property name="text"><string>30일 (대용량 필요)</string></property></item>
+          <item><property name="text"><string>60일 (AI/ML 심화)</string></property></item>
+          <item><property name="text"><string>90일 (고정밀 AI)</string></property></item>
+          <property name="toolTip"><string>Gap 탐지 시 현재로부터 과거 N일까지 탐색 범위를 제한합니다.
+지표/AI 최소 복원 기간 이상으로 설정하는 것이 안전합니다.</string></property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label_lookback_size">
+          <property name="text"><string>예상 용량: ~10GB</string></property>
+          <property name="styleSheet"><string>color: #7F8C8D; font-size: 8pt;</string></property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_data_preset">
+      <property name="title">
+       <string>데이터 용량 프리셋 — 타임프레임별 최대 캔들 수 (SSOT)</string>
+      </property>
+      <property name="toolTip">
+       <string>라이트/밸런스/헤비는 타임프레임별 최대 캔들 수를 일괄 적용합니다.
+이 값은 디스크 사용량·초기 백필 시간에 직접 영향을 줍니다.</string>
+      </property>
+      <layout class="QVBoxLayout">
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <widget class="QLabel">
+           <property name="text"><string>프리셋:</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="combo_volume_preset">
+           <item>
+            <property name="text"><string>라이트 (기본 지표 최소 복원)</string></property>
+           </item>
+           <item>
+            <property name="text"><string>밸런스 (일반 운용)</string></property>
+           </item>
+           <item>
+            <property name="text"><string>헤비 (AI/ML 최소 복원)</string></property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_volume_preset_light">
+           <property name="text"><string>🟢 라이트</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_volume_preset_balance">
+           <property name="text"><string>🔵 밸런스</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_volume_preset_heavy">
+           <property name="text"><string>🔴 헤비</string></property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="gridLayout_volume_limits">
+         <item row="0" column="0"><widget class="QLabel"><property name="text"><string>1m 최대:</string></property></widget></item>
+         <item row="0" column="1"><widget class="QSpinBox" name="spin_limit_1m"><property name="minimum"><number>10000</number></property><property name="maximum"><number>5000000</number></property><property name="value"><number>150000</number></property></widget></item>
+         <item row="0" column="2"><widget class="QLabel"><property name="text"><string>5m 최대:</string></property></widget></item>
+         <item row="0" column="3"><widget class="QSpinBox" name="spin_limit_5m"><property name="minimum"><number>5000</number></property><property name="maximum"><number>2000000</number></property><property name="value"><number>50000</number></property></widget></item>
+         <item row="1" column="0"><widget class="QLabel"><property name="text"><string>15m 최대:</string></property></widget></item>
+         <item row="1" column="1"><widget class="QSpinBox" name="spin_limit_15m"><property name="minimum"><number>5000</number></property><property name="maximum"><number>1000000</number></property><property name="value"><number>30000</number></property></widget></item>
+         <item row="1" column="2"><widget class="QLabel"><property name="text"><string>1h 최대:</string></property></widget></item>
+         <item row="1" column="3"><widget class="QSpinBox" name="spin_limit_1h"><property name="minimum"><number>1000</number></property><property name="maximum"><number>500000</number></property><property name="value"><number>12000</number></property></widget></item>
+         <item row="2" column="0"><widget class="QLabel"><property name="text"><string>4h 최대:</string></property></widget></item>
+         <item row="2" column="1"><widget class="QSpinBox" name="spin_limit_4h"><property name="minimum"><number>500</number></property><property name="maximum"><number>200000</number></property><property name="value"><number>5000</number></property></widget></item>
+         <item row="2" column="2"><widget class="QLabel"><property name="text"><string>1d 최대:</string></property></widget></item>
+         <item row="2" column="3"><widget class="QSpinBox" name="spin_limit_1d"><property name="minimum"><number>100</number></property><property name="maximum"><number>10000</number></property><property name="value"><number>500</number></property></widget></item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_volume_ssot_hint">
+         <property name="text"><string>라이트 고정 기준: 1m 150000 / 5m 50000 / 15m 30000 / 1h 12000 / 4h 5000 / 1d 500</string></property>
+         <property name="styleSheet"><string notr="true">color: #1B5E20; font-size: 8pt;</string></property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_compression">
+     <property name="title">
+      <string>압축 정책 (TimescaleDB) — 저장 최적화</string>
+     </property>
+     <property name="toolTip">
+      <string>【 압축 = 삭제가 아닙니다 】
+압축은 오래된 데이터를 컬럼 형식으로 재저장하는 저장 최적화입니다.
+압축된 데이터도 차트·지표·AI/ML 분석·감성분석·스캐너에 정상적으로 조회됩니다.
+
+• 최근 데이터(비압축): 빠른 실시간 쿼리에 최적화
+• 과거 데이터(압축): 디스크 절약 (약 75~90%), 조회 가능
+• 삭제: 보관 기간 만료 시에만 자동 삭제됩니다 (아래 '자동 삭제 정책' 참고)</string>
+     </property>
+     <layout class="QVBoxLayout">
+      <item>
+       <layout class="QHBoxLayout">
+        <item>
+         <widget class="QLabel">
+          <property name="text"><string>압축 시작:</string></property>
+          <property name="toolTip"><string>지정한 일수가 지난 데이터를 TimescaleDB가 자동으로 압축합니다. (0 = 즉시)</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spin_compression_days">
+          <property name="minimum"><number>0</number></property>
+          <property name="maximum"><number>365</number></property>
+          <property name="value"><number>1</number></property>
+          <property name="suffix"><string> 일</string></property>
+          <property name="specialValueText"><string>즉시 (0일)</string></property>
+          <property name="toolTip"><string>압축을 시작할 일수를 직접 입력합니다. 0 = 즉시 압축. 압축 후에도 조회/차트/지표 계산 모두 가능합니다.</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel">
+          <property name="text"><string>일 후 압축 (0=즉시) | 프리셋:</string></property>
+          <property name="styleSheet"><string notr="true">color: #555555; font-size: 8pt;</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="combo_compression_days">
+          <item><property name="text"><string>즉시 (0일)</string></property></item>
+          <item><property name="text"><string>1일 후 (권장)</string></property></item>
+          <item><property name="text"><string>7일 후 (기본)</string></property></item>
+          <item><property name="text"><string>30일 후</string></property></item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel">
+          <property name="text"><string>압축률: 약 75~90% (조회 계속 가능)</string></property>
+          <property name="styleSheet"><string notr="true">color: #2E7D32; font-size: 8pt;</string></property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_compression_hint">
+        <property name="text">
+         <string>ℹ️ 압축은 삭제가 아닙니다. 압축된 과거 데이터도 차트·지표·AI/ML에 정상 사용됩니다. 데이터 삭제는 아래 '보관 기간' 만료 시에만 발생합니다.</string>
+        </property>
+        <property name="wordWrap"><bool>true</bool></property>
+        <property name="styleSheet"><string notr="true">color: #1565C0; font-size: 8pt; background-color: #E3F2FD; padding: 4px; border-radius: 3px;</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_retention">
+     <property name="title">
+      <string>자동 삭제 정책 — 보관 기간 만료 시 영구 삭제</string>
+     </property>
+     <property name="toolTip">
+      <string>【 보관 기간 = 실제 삭제 기준 】
+설정한 기간이 지난 데이터는 TimescaleDB에서 자동으로 영구 삭제됩니다.
+차트·지표·AI/ML에 필요한 데이터가 삭제되지 않도록 충분히 길게 설정하세요.
+
+권장:
+• 기본 지표/스캐너 운용: 3개월(90일) 이상
+• AI/ML 학습 (Prophet/XGBoost): 1년(365일) 이상
+• 장기 백테스트: 영구 보관 (0 입력)
+
+압축(위 설정)과 삭제(이 설정)는 별개입니다.
+압축된 데이터도 보관 기간 내에는 조회됩니다.</string>
+     </property>
+     <layout class="QHBoxLayout">
+      <item>
+       <widget class="QLabel">
+        <property name="text"><string>보관 기간:</string></property>
+        <property name="toolTip"><string>이 일수가 지나면 데이터가 영구 삭제됩니다. 0 = 영구 보관. AI/ML·장기 지표에 필요한 기간보다 짧게 설정하지 마세요.</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="spin_retention_days">
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>36500</number></property>
+        <property name="value"><number>90</number></property>
+        <property name="suffix"><string> 일</string></property>
+        <property name="specialValueText"><string>영구 보관 (0일)</string></property>
+        <property name="toolTip"><string>보관할 일수를 직접 입력합니다. 0 = 영구 보관. 이 기간이 지나면 데이터가 영구 삭제됩니다.</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel">
+        <property name="text"><string>일 보관 (0=영구) | 프리셋:</string></property>
+        <property name="styleSheet"><string notr="true">color: #555555; font-size: 8pt;</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="combo_retention_days">
+        <item><property name="text"><string>30일 (1개월, 초절약)</string></property></item>
+        <item><property name="text"><string>90일 (3개월, 기본 권장)</string></property></item>
+        <item><property name="text"><string>180일 (6개월)</string></property></item>
+        <item><property name="text"><string>365일 (1년, AI/ML 권장)</string></property></item>
+        <item><property name="text"><string>영구 보관 (0일)</string></property></item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_disk_usage">
+     <property name="title">
+      <string>디스크 용량 모니터링</string>
+     </property>
+     <layout class="QGridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>TimescaleDB 사용량:</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_timescale_size">
+        <property name="text"><string>-- GB</string></property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>Redis 사용량:</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_redis_size">
+        <property name="text"><string>-- MB</string></property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel">
+        <property name="text"><string>ClickHouse 사용량:</string></property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_clickhouse_size">
+        <property name="text"><string>-- GB</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_presets">
+     <property name="title">
+      <string>수집 정책 프리셋 — 타임프레임 · 캔들 수 · 압축 · 보관 일괄 설정</string>
+     </property>
+     <property name="toolTip">
+      <string>【 프리셋 적용 범위 】
+수집할 타임프레임, 타임프레임별 최대 캔들 수, 압축 시작 시점, 데이터 보관 기간을 한 번에 설정합니다.
+
+• 🟢 라이트: 1m+5m+1h, 캔들 최소, 1일 후 압축, 90일 보관 (기본 지표용)
+• 🔵 밸런스: 1m+5m+1h+1d, 캔들 중간, 7일 후 압축, 180일 보관 (균형 운용)
+• 🔴 헤비: 전체 타임프레임, 캔들 최대, 30일 후 압축, 365일 보관 (AI/ML용)
+• 🔄 기본값 복원: 수집 설정 전체를 기본값(라이트 기준)으로 복원
+
+※ 타임프레임별 최대 캔들 수 한도도 이 창(SSOT)에서 함께 관리합니다.</string>
+     </property>
+     <layout class="QHBoxLayout">
+      <item>
+       <widget class="QPushButton" name="btn_preset_light">
+        <property name="text"><string>🟢 라이트</string></property>
+        <property name="minimumSize"><size><width>130</width><height>40</height></size></property>
+        <property name="toolTip"><string>【 라이트 】 타임프레임: 1m+5m+1h | 캔들: 최소 | 압축: 1일 후 | 보관: 90일
+기본 RSI/MACD/BB 지표용 최소 구성. 디스크 절약 최대.</string></property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #4CAF50; color: white; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_preset_balance">
+        <property name="text"><string>🔵 밸런스</string></property>
+        <property name="minimumSize"><size><width>130</width><height>40</height></size></property>
+        <property name="toolTip"><string>【 밸런스 】 타임프레임: 1m+5m+1h+1d | 캔들: 중간 | 압축: 7일 후 | 보관: 180일
+균형 잡힌 일반 운용 설정.</string></property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #2196F3; color: white; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_preset_heavy">
+        <property name="text"><string>🔴 헤비</string></property>
+        <property name="minimumSize"><size><width>130</width><height>40</height></size></property>
+        <property name="toolTip"><string>【 헤비 】 타임프레임: 전체(1m+5m+15m+1h+4h+1d) | 캔들: 최대 | 압축: 30일 후 | 보관: 365일
+AI/ML 학습·장기 분석용 풀 구성. 디스크 대용량 필요.</string></property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #F44336; color: white; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_preset_default">
+        <property name="text"><string>🔄 기본값 복원</string></property>
+        <property name="minimumSize"><size><width>130</width><height>40</height></size></property>
+        <property name="toolTip"><string>수집 설정 전체를 기본값으로 복원합니다.
+타임프레임: 1m+5m+1h | 캔들: 라이트 | 압축: 1일 후 | 보관: 90일</string></property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #607D8B; color: white; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_ws_subscribe">
+     <property name="title">
+      <string>WebSocket 심볼 구독 수</string>
+     </property>
+     <layout class="QVBoxLayout">
+      <item>
+       <layout class="QHBoxLayout">
+        <item>
+         <widget class="QLabel">
+          <property name="text"><string>최대 구독 심볼 수:</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spin_ws_max_subscribe">
+          <property name="minimum"><number>50</number></property>
+          <property name="maximum"><number>10000</number></property>
+          <property name="singleStep"><number>10</number></property>
+          <property name="value"><number>300</number></property>
+          <property name="toolTip">
+           <string>WebSocket 최대 구독 종목 수 (50~10,000). 1,000 초과 시 메모리/속도에 영향 가능.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_apply_ws_limit">
+          <property name="text"><string>적용 및 저장</string></property>
+          <property name="minimumSize"><size><width>120</width><height>36</height></size></property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #2196F3; color: white; font-weight: bold;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation"><enum>Qt::Horizontal</enum></property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_ws_hint">
+        <property name="text"><string>업비트 상장 종목 ~245개. 100 초과 시 다중 소켓 자동 분산.</string></property>
+        <property name="styleSheet"><string notr="true">color: #7F8C8D; font-size: 8pt;</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_settings">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeHint" stdset="0">
+      <size><width>20</width><height>20</height></size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="hLayout_footer">
+     <item>
+      <spacer name="horizontalSpacer_footer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_close">
+       <property name="text"><string>닫기 (자동 저장됨)</string></property>
+       <property name="minimumSize"><size><width>200</width><height>40</height></size></property>
+       <property name="styleSheet">
+        <string notr="true">background-color: #007AFF; color: white; font-weight: bold;</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

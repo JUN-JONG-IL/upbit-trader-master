@@ -1,0 +1,35 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'redis-cluster'
+    static_configs:
+      - targets:
+        - 'redis-node-1:7001'
+        - 'redis-node-2:7002'
+        - 'redis-node-3:7003'
+
+  - job_name: 'postgres'
+    static_configs:
+      - targets:
+        - 'postgres-primary:5432'
+        - 'postgres-replica:5432'
+
+  - job_name: 'clickhouse'
+    static_configs:
+      - targets:
+        - 'upbit-clickhouse:8123'
+        - 'clickhouse-shard-2:8123'
+        - 'clickhouse-shard-3:8123'
+
+  - job_name: 'kafka'
+    static_configs:
+      - targets:
+        - 'kafka:9092'
+        - 'kafka-2:9093'
+        - 'kafka-3:9094'

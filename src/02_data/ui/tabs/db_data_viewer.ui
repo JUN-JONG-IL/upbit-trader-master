@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DBDataViewerForm</class>
+ <widget class="QWidget" name="DBDataViewerForm">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>1400</width><height>760</height></rect>
+  </property>
+  <property name="windowTitle"><string>DB 데이터 뷰어</string></property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing"><number>4</number></property>
+   <property name="leftMargin"><number>6</number></property>
+   <property name="topMargin"><number>6</number></property>
+   <property name="rightMargin"><number>6</number></property>
+   <property name="bottomMargin"><number>6</number></property>
+
+   <item>
+    <layout class="QHBoxLayout" name="topControlLayout">
+     <item><widget class="QLabel" name="label_asset_class"><property name="text"><string>자산군:</string></property></widget></item>
+     <item><widget class="QComboBox" name="combo_asset_class"><property name="minimumWidth"><number>110</number></property></widget></item>
+     <item><widget class="QLabel" name="label_exchange"><property name="text"><string>거래소:</string></property></widget></item>
+     <item><widget class="QComboBox" name="combo_exchange"><property name="minimumWidth"><number>100</number></property></widget></item>
+     <item><widget class="QLabel" name="label_symbol"><property name="text"><string>심볼:</string></property></widget></item>
+     <item>
+      <widget class="QComboBox" name="combo_symbol">
+       <property name="minimumWidth"><number>140</number></property>
+       <property name="editable"><bool>true</bool></property>
+      </widget>
+     </item>
+     <item><widget class="QLabel" name="label_search"><property name="text"><string>검색:</string></property></widget></item>
+     <item>
+      <widget class="QLineEdit" name="edit_search">
+       <property name="minimumWidth"><number>180</number></property>
+       <property name="placeholderText"><string>심볼·한글·영문·초성·심볼명 검색 (예: shib, 시바, ㅅㅂ)</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_search_result">
+       <property name="text"><string></string></property>
+       <property name="minimumWidth"><number>70</number></property>
+       <property name="styleSheet"><string>color: #2980b9;</string></property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+
+   <item>
+    <layout class="QHBoxLayout" name="queryControlLayout">
+     <item><widget class="QLabel" name="label_data_source"><property name="text"><string>데이터소스:</string></property></widget></item>
+     <item><widget class="QComboBox" name="combo_data_source"><property name="minimumWidth"><number>120</number></property></widget></item>
+     <item><widget class="QLabel" name="label_timeframe"><property name="text"><string>타임프레임:</string></property></widget></item>
+     <item><widget class="QComboBox" name="combo_timeframe"><property name="minimumWidth"><number>70</number></property></widget></item>
+     <item><widget class="QLabel" name="label_period"><property name="text"><string>기간:</string></property></widget></item>
+     <item><widget class="QComboBox" name="combo_period"><property name="minimumWidth"><number>110</number></property></widget></item>
+     <item>
+      <widget class="QPushButton" name="btn_query">
+       <property name="text"><string>조회</string></property>
+       <property name="minimumWidth"><number>60</number></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_export">
+       <property name="text"><string>내보내기</string></property>
+       <property name="minimumWidth"><number>70</number></property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+
+   <item>
+    <layout class="QHBoxLayout" name="statusBannerLayout">
+     <item><widget class="QLabel" name="label_status_indicator"><property name="text"><string>●</string></property><property name="toolTip"><string>저장 상태</string></property></widget></item>
+     <item><widget class="QLabel" name="label_status_text"><property name="text"><string>저장 상태: 확인 중...</string></property></widget></item>
+     <item><widget class="QLabel" name="label_candles_total"><property name="text"><string>Candles: -</string></property></widget></item>
+     <item><widget class="QLabel" name="label_staging_total"><property name="text"><string>Staging: -</string></property></widget></item>
+     <item><widget class="QLabel" name="label_isolated_total"><property name="text"><string>Isolated: -</string></property></widget></item>
+     <item><widget class="QLabel" name="label_last_save_time"><property name="text"><string>최종 저장: -</string></property></widget></item>
+     <item><widget class="QLabel" name="label_save_rate"><property name="text"><string>저장 속도: -/초</string></property></widget></item>
+     <item>
+      <spacer>
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+
+   <item>
+    <widget class="QTableWidget" name="table_candles">
+     <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+     <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+     <property name="alternatingRowColors"><bool>true</bool></property>
+     <property name="sortingEnabled"><bool>true</bool></property>
+     <property name="columnCount"><number>9</number></property>
+     <attribute name="horizontalHeaderStretchLastSection"><bool>true</bool></attribute>
+     <column><property name="text"><string>시각</string></property></column>
+     <column><property name="text"><string>시가</string></property></column>
+     <column><property name="text"><string>고가</string></property></column>
+     <column><property name="text"><string>저가</string></property></column>
+     <column><property name="text"><string>종가</string></property></column>
+     <column><property name="text"><string>거래량</string></property></column>
+     <column><property name="text"><string>거래대금</string></property></column>
+     <column><property name="text"><string>체결수</string></property></column>
+     <column><property name="text"><string>완성</string></property></column>
+    </widget>
+   </item>
+
+   <item>
+    <layout class="QHBoxLayout" name="bottomLayout">
+     <item><widget class="QLabel" name="label_summary"><property name="text"><string>총 조회: 0건</string></property></widget></item>
+     <item>
+      <spacer>
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+      </spacer>
+     </item>
+     <item><widget class="QLabel" name="label_query_time"><property name="text"><string>조회 시간: -</string></property></widget></item>
+    </layout>
+   </item>
+
+   <item>
+    <widget class="QGroupBox" name="groupBox_backfill_verify">
+     <property name="title">
+      <string>백필 검증 (과거 데이터 검증)</string>
+     </property>
+     <property name="toolTip">
+      <string>백필이 정상적으로 완료되었는지 시간 범위/심볼/타임프레임별로 확인합니다.</string>
+     </property>
+     <layout class="QVBoxLayout">
+      <item>
+       <layout class="QHBoxLayout" name="hLayout_verify_filters">
+        <item>
+         <widget class="QLabel">
+          <property name="text"><string>시작:</string></property>
+          <property name="toolTip"><string>검증할 기간의 시작 날짜 (YYYY-MM-DD)</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDateEdit" name="edit_verify_start">
+          <property name="minimumWidth"><number>120</number></property>
+          <property name="calendarPopup"><bool>true</bool></property>
+          <property name="displayFormat"><string>yyyy-MM-dd</string></property>
+          <property name="toolTip"><string>검증 시작 날짜 (달력 버튼 클릭으로 선택)</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel">
+          <property name="text"><string>종료:</string></property>
+          <property name="toolTip"><string>검증할 기간의 종료 날짜 (YYYY-MM-DD, 비어있으면 현재)</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDateEdit" name="edit_verify_end">
+          <property name="minimumWidth"><number>120</number></property>
+          <property name="calendarPopup"><bool>true</bool></property>
+          <property name="displayFormat"><string>yyyy-MM-dd</string></property>
+          <property name="toolTip"><string>검증 종료 날짜 (달력 버튼 클릭으로 선택)</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel">
+          <property name="text"><string>타임프레임:</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="combo_verify_timeframe">
+          <property name="minimumWidth"><number>70</number></property>
+          <property name="toolTip"><string>검증할 캔들 타임프레임 (1m, 5m, 1h 등)</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_verify">
+          <property name="text"><string>검증 실행</string></property>
+          <property name="minimumSize"><size><width>90</width><height>28</height></size></property>
+          <property name="styleSheet"><string notr="true">background-color: #2196F3; color: white; font-weight: bold;</string></property>
+          <property name="toolTip"><string>선택한 심볼/타임프레임/기간에 대해 기대 봉수 vs 실제 봉수, 누락/중복을 검증합니다.</string></property>
+         </widget>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation"><enum>Qt::Horizontal</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="hLayout_verify_result">
+        <item>
+         <widget class="QLabel" name="label_verify_expected">
+          <property name="text"><string>기대 봉수: -</string></property>
+          <property name="toolTip"><string>선택한 기간과 타임프레임 기준 기대 총 봉수 (휴장일 제외 없음)</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_verify_actual">
+          <property name="text"><string>실제 봉수: -</string></property>
+          <property name="toolTip"><string>DB에 실제 저장된 캔들 봉수</string></property>
+          <property name="styleSheet"><string>color: #2980b9;</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_verify_missing">
+          <property name="text"><string>누락: -</string></property>
+          <property name="toolTip"><string>기대 봉수 - 실제 봉수. 양수이면 누락 발생.</string></property>
+          <property name="styleSheet"><string>color: #e74c3c;</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_verify_duplicate">
+          <property name="text"><string>중복: -</string></property>
+          <property name="toolTip"><string>동일 타임스탬프의 중복 캔들 수. 0이 정상.</string></property>
+          <property name="styleSheet"><string>color: #e67e22;</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_verify_status">
+          <property name="text"><string>상태: 미검증</string></property>
+          <property name="toolTip"><string>백필 검증 결과. 정상/누락/중복 여부를 나타냅니다.</string></property>
+          <property name="styleSheet"><string>font-weight: bold;</string></property>
+         </widget>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation"><enum>Qt::Horizontal</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

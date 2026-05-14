@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ServerStatusDialog</class>
+ <widget class="QDialog" name="ServerStatusDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>620</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>서버 상태 모니터링</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+    QDialog { background-color: #31363b; color: #eff0f1; }
+    QTabWidget::pane { border: 1px solid #4a4f54; background-color: #31363b; }
+    QTabBar::tab { background-color: #2a2e32; color: #eff0f1; padding: 6px 14px; border: 1px solid #4a4f54; border-bottom: none; border-radius: 4px 4px 0 0; }
+    QTabBar::tab:selected { background-color: #31363b; color: #3daee9; font-weight: bold; }
+    QTabBar::tab:hover { background-color: #3a3f44; }
+    QTableWidget { background-color: #232629; color: #eff0f1; gridline-color: #4a4f54; border: 1px solid #4a4f54; selection-background-color: #3daee9; }
+    QTableWidget::item { padding: 4px; }
+    QHeaderView::section { background-color: #2a2e32; color: #eff0f1; padding: 4px; border: 1px solid #4a4f54; font-weight: bold; }
+    QLabel { color: #eff0f1; }
+    QPushButton { background-color: #3daee9; color: #ffffff; border-radius: 4px; padding: 5px 16px; border: none; }
+    QPushButton:hover { background-color: #4dc0f5; }
+    QPushButton:pressed { background-color: #2a9bd3; }
+    QProgressBar { background-color: #232629; border: 1px solid #4a4f54; border-radius: 3px; text-align: center; color: #eff0f1; }
+    QProgressBar::chunk { background-color: #3daee9; border-radius: 2px; }
+    QComboBox { background-color: #232629; color: #eff0f1; border: 1px solid #4a4f54; border-radius: 3px; padding: 3px 8px; }
+    QComboBox QAbstractItemView { background-color: #232629; color: #eff0f1; selection-background-color: #3daee9; }
+    QSpinBox { background-color: #232629; color: #eff0f1; border: 1px solid #4a4f54; border-radius: 3px; padding: 3px 8px; }
+    QPlainTextEdit { background-color: #232629; color: #eff0f1; border: 1px solid #4a4f54; border-radius: 3px; }
+    QScrollBar:vertical { background-color: #232629; width: 10px; }
+    QScrollBar::handle:vertical { background-color: #4a4f54; border-radius: 5px; }
+   </string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_main">
+   <property name="spacing">
+    <number>8</number>
+   </property>
+   <property name="leftMargin">
+    <number>12</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>12</number>
+   </property>
+   <property name="bottomMargin">
+    <number>8</number>
+   </property>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+
+     <!-- Tab 1: FastAPI 상태 -->
+     <widget class="QWidget" name="tabFastAPI">
+      <attribute name="title">
+       <string>📡 FastAPI 상태</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vl_fastapi">
+       <property name="spacing">
+       <number>8</number>
+      </property>
+       <item>
+        <widget class="QTableWidget" name="tableEndpoints">
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <column>
+          <property name="text"><string>경로</string></property>
+         </column>
+         <column>
+          <property name="text"><string>메서드</string></property>
+         </column>
+         <column>
+          <property name="text"><string>req/s</string></property>
+         </column>
+         <column>
+          <property name="text"><string>평균응답시간</string></property>
+         </column>
+         <column>
+          <property name="text"><string>에러율</string></property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="hl_fastapi_bottom">
+         <item>
+          <widget class="QLabel" name="labelActiveRequests">
+           <property name="text">
+            <string>활성 요청: 0</string>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">font-weight: bold; color: #3daee9;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="sp_fastapi">
+           <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnRestartServer">
+           <property name="text">
+            <string>서버 재시작</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- Tab 2: WebSocket 상태 -->
+     <widget class="QWidget" name="tabWebSocket">
+      <attribute name="title">
+       <string>🔌 WebSocket 상태</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vl_ws">
+       <property name="spacing"><number>8</number></property>
+       <item>
+        <widget class="QTableWidget" name="tableWSConnections">
+         <property name="alternatingRowColors"><bool>true</bool></property>
+         <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+         <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+         <column><property name="text"><string>클라이언트ID</string></property></column>
+         <column><property name="text"><string>연결시간</string></property></column>
+         <column><property name="text"><string>구독채널</string></property></column>
+         <column><property name="text"><string>msg/s</string></property></column>
+         <column><property name="text"><string>핑/퐁</string></property></column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="hl_ws_bottom">
+         <item>
+          <widget class="QLabel" name="labelTotalWSConnections">
+           <property name="text"><string>전체 연결: 0</string></property>
+           <property name="styleSheet"><string notr="true">font-weight: bold; color: #3daee9;</string></property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="sp_ws">
+           <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnDisconnectClient">
+           <property name="text"><string>클라이언트 연결 해제</string></property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- Tab 3: 리소스 모니터링 -->
+     <widget class="QWidget" name="tabResources">
+      <attribute name="title">
+       <string>💻 리소스 모니터링</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vl_res">
+       <property name="spacing"><number>8</number></property>
+       <item>
+        <widget class="QFrame" name="frameResourceBars">
+         <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+         <layout class="QFormLayout" name="fl_res">
+          <property name="leftMargin"><number>8</number></property>
+          <property name="topMargin"><number>8</number></property>
+          <property name="rightMargin"><number>8</number></property>
+          <property name="bottomMargin"><number>8</number></property>
+          <property name="horizontalSpacing"><number>12</number></property>
+          <property name="verticalSpacing"><number>8</number></property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelCPUTitle">
+            <property name="text"><string>CPU 사용률</string></property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QProgressBar" name="progressCPU">
+            <property name="value"><number>0</number></property>
+            <property name="format"><string>%p%</string></property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelMemTitle">
+            <property name="text"><string>메모리 사용률</string></property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QProgressBar" name="progressMemory">
+            <property name="value"><number>0</number></property>
+            <property name="format"><string>%p%</string></property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelDiskTitle">
+            <property name="text"><string>디스크 사용률</string></property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QProgressBar" name="progressDisk">
+            <property name="value"><number>0</number></property>
+            <property name="format"><string>%p%</string></property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelNetInTitle">
+            <property name="text"><string>네트워크 수신</string></property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="labelNetworkInput">
+            <property name="text"><string>0 B/s</string></property>
+            <property name="styleSheet"><string notr="true">color: #3daee9; font-weight: bold;</string></property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="labelNetOutTitle">
+            <property name="text"><string>네트워크 송신</string></property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="labelNetworkOutput">
+            <property name="text"><string>0 B/s</string></property>
+            <property name="styleSheet"><string notr="true">color: #27ae60; font-weight: bold;</string></property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelProcessTitle">
+         <property name="text"><string>프로세스 목록</string></property>
+         <property name="styleSheet"><string notr="true">font-weight: bold;</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="tableProcesses">
+         <property name="alternatingRowColors"><bool>true</bool></property>
+         <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+         <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+         <column><property name="text"><string>프로세스</string></property></column>
+         <column><property name="text"><string>CPU%</string></property></column>
+         <column><property name="text"><string>메모리</string></property></column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- Tab 4: 요청 통계 -->
+     <widget class="QWidget" name="tabRequestStats">
+      <attribute name="title">
+       <string>📊 요청 통계</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vl_stats">
+       <property name="spacing"><number>8</number></property>
+       <item>
+        <widget class="QLabel" name="labelReqStatTitle">
+         <property name="text"><string>시간대별 요청 수</string></property>
+         <property name="styleSheet"><string notr="true">font-weight: bold;</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="tableRequestStats">
+         <property name="alternatingRowColors"><bool>true</bool></property>
+         <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+         <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+         <column><property name="text"><string>시간대</string></property></column>
+         <column><property name="text"><string>요청수</string></property></column>
+         <column><property name="text"><string>성공</string></property></column>
+         <column><property name="text"><string>실패</string></property></column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelEndpointStatTitle">
+         <property name="text"><string>엔드포인트별 호출 수</string></property>
+         <property name="styleSheet"><string notr="true">font-weight: bold;</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="tableEndpointStats">
+         <property name="alternatingRowColors"><bool>true</bool></property>
+         <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+         <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+         <column><property name="text"><string>엔드포인트</string></property></column>
+         <column><property name="text"><string>호출수</string></property></column>
+         <column><property name="text"><string>평균응답시간</string></property></column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelRespDistTitle">
+         <property name="text"><string>응답 시간 분포</string></property>
+         <property name="styleSheet"><string notr="true">font-weight: bold;</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="tableResponseDist">
+         <property name="alternatingRowColors"><bool>true</bool></property>
+         <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+         <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+         <column><property name="text"><string>응답시간범위</string></property></column>
+         <column><property name="text"><string>비율</string></property></column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- Tab 5: 에러 로그 -->
+     <widget class="QWidget" name="tabErrorLog">
+      <attribute name="title">
+       <string>🚨 에러 로그</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vl_log">
+       <property name="spacing"><number>8</number></property>
+       <item>
+        <layout class="QHBoxLayout" name="hl_log_filter">
+         <item>
+          <widget class="QLabel" name="labelLogLevelFilter">
+           <property name="text"><string>로그 레벨 필터:</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboLogLevel">
+           <item><property name="text"><string>ERROR</string></property></item>
+           <item><property name="text"><string>WARNING</string></property></item>
+           <item><property name="text"><string>INFO</string></property></item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="sp_log">
+           <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnExportLog">
+           <property name="text"><string>로그 내보내기</string></property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="tableErrorLog">
+         <property name="alternatingRowColors"><bool>true</bool></property>
+         <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+         <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+         <column><property name="text"><string>타임스탬프</string></property></column>
+         <column><property name="text"><string>레벨</string></property></column>
+         <column><property name="text"><string>메시지</string></property></column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <!-- Tab 6: 서버 설정 -->
+     <widget class="QWidget" name="tabSettings">
+      <attribute name="title">
+       <string>⚙️ 서버 설정</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="vl_settings">
+       <property name="spacing"><number>8</number></property>
+       <item>
+        <widget class="QFrame" name="frameSettings">
+         <property name="frameShape"><enum>QFrame::StyledPanel</enum></property>
+         <layout class="QFormLayout" name="fl_settings">
+          <property name="leftMargin"><number>12</number></property>
+          <property name="topMargin"><number>12</number></property>
+          <property name="rightMargin"><number>12</number></property>
+          <property name="bottomMargin"><number>12</number></property>
+          <property name="horizontalSpacing"><number>16</number></property>
+          <property name="verticalSpacing"><number>10</number></property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelPort">
+            <property name="text"><string>서버 포트</string></property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="spinPort">
+            <property name="minimum"><number>1024</number></property>
+            <property name="maximum"><number>65535</number></property>
+            <property name="value"><number>8000</number></property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelWorkers">
+            <property name="text"><string>워커 수</string></property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="spinWorkers">
+            <property name="minimum"><number>1</number></property>
+            <property name="maximum"><number>64</number></property>
+            <property name="value"><number>4</number></property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelTimeout">
+            <property name="text"><string>타임아웃 (초)</string></property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="spinTimeout">
+            <property name="minimum"><number>1</number></property>
+            <property name="maximum"><number>3600</number></property>
+            <property name="value"><number>30</number></property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelCORS">
+            <property name="text"><string>CORS 허용 출처</string></property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QPlainTextEdit" name="textCORSOrigins">
+            <property name="placeholderText">
+             <string>허용할 출처를 한 줄씩 입력하세요.
+예: http://localhost:3000</string>
+            </property>
+            <property name="maximumHeight">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="sp_settings">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="hl_settings_btn">
+         <item>
+          <spacer name="sp_settings_left">
+           <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnSaveSettings">
+           <property name="text"><string>저장 및 재시작</string></property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+
+    </widget>
+   </item>
+   <!-- Bottom bar -->
+   <item>
+    <layout class="QHBoxLayout" name="hl_bottom">
+     <item>
+      <widget class="QLabel" name="labelLastUpdated">
+       <property name="text"><string>마지막 갱신: -</string></property>
+       <property name="styleSheet"><string notr="true">color: #7f8c8d; font-size: 11px;</string></property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="sp_bottom">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnRefresh">
+       <property name="text"><string>새로 고침</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnClose">
+       <property name="text"><string>닫기</string></property>
+       <property name="styleSheet"><string notr="true">background-color: #7f8c8d;</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SentimentDialog</class>
+ <widget class="QDialog" name="SentimentDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1400</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>뉴스 및 소셜 감성 분석</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="controlGroupBox">
+     <property name="title">
+      <string>데이터 수집 설정</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="sourceLabel">
+        <property name="text">
+         <string>소스 선택:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="newsCheckBox">
+        <property name="text">
+         <string>뉴스</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="twitterCheckBox">
+        <property name="text">
+         <string>트위터</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="redditCheckBox">
+        <property name="text">
+         <string>레딧</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QCheckBox" name="blogCheckBox">
+        <property name="text">
+         <string>블로그</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="keywordLabel">
+        <property name="text">
+         <string>키워드:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="3">
+       <widget class="QLineEdit" name="keywordLineEdit">
+        <property name="placeholderText">
+         <string>비트코인, 이더리움 등 (쉼표로 구분)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QPushButton" name="startButton">
+        <property name="text">
+         <string>수집 시작</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="progressLabel">
+        <property name="text">
+         <string>진행 상황:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="4">
+       <widget class="QProgressBar" name="progressBar">
+        <property name="value">
+         <number>0</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QGroupBox" name="sentimentGroupBox">
+      <property name="title">
+       <string>감성 분석</string>
+      </property>
+      <layout class="QVBoxLayout" name="sentimentLayout">
+       <item>
+        <widget class="QLabel" name="fearGreedLabel">
+         <property name="text">
+          <string>Fear &amp; Greed Index</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="gaugeWidget" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>200</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="trendChart" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>300</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QGroupBox" name="dataGroupBox">
+      <property name="title">
+       <string>뉴스 및 소셜 데이터</string>
+      </property>
+      <layout class="QVBoxLayout" name="dataLayout">
+       <item>
+        <widget class="QTableWidget" name="dataTable">
+         <property name="columnCount">
+          <number>5</number>
+         </property>
+         <column>
+          <property name="text">
+           <string>시간</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>소스</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>제목</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>감성</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>점수</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="buttonLayout">
+         <item>
+          <widget class="QPushButton" name="filterButton">
+           <property name="text">
+            <string>필터</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="exportButton">
+           <property name="text">
+            <string>내보내기</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

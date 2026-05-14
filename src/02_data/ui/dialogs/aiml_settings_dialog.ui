@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AIMLSettingsDialog</class>
+ <widget class="QDialog" name="AIMLSettingsDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>700</width>
+    <height>650</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>🤖 AI/ML 제어 (상세)</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #FFFFFF;
+    color: #2C3E50;
+    font-family: "맑은 고딕", "Segoe UI";
+    font-size: 9pt;
+}
+QPushButton {
+    background-color: #007AFF;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #0055CC;
+}
+QPushButton:disabled {
+    background-color: #BDC3C7;
+    color: #7F8C8D;
+}
+QGroupBox {
+    border: 2px solid #BDC3C7;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: #F8F9FA;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    color: #2C3E50;
+    font-weight: bold;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>8</number>
+   </property>
+   <property name="leftMargin">
+    <number>12</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>12</number>
+   </property>
+   <property name="bottomMargin">
+    <number>12</number>
+   </property>
+   <item>
+    <widget class="QGroupBox" name="groupONNX">
+     <property name="title">
+      <string>🤖 ONNX Runtime 상태</string>
+     </property>
+     <property name="minimumHeight">
+      <number>150</number>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_onnx">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelModel">
+        <property name="text">
+         <string>모델:</string>
+        </property>
+        <property name="minimumWidth">
+         <number>120</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="labelModelValue">
+        <property name="text">
+         <string>gap_predictor_v2.onnx</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelStatus">
+        <property name="text">
+         <string>상태:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="labelStatusValue">
+        <property name="text">
+         <string>⚪ ONNX Runtime 없음</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelQPS">
+        <property name="text">
+         <string>추론 QPS:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="labelQPSValue">
+        <property name="text">
+         <string>-- queries/sec</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelLatency">
+        <property name="text">
+         <string>P95 지연:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="labelLatencyValue">
+        <property name="text">
+         <string>-- ms</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupRedis">
+     <property name="title">
+      <string>🔴 Redis Feature Store</string>
+     </property>
+     <property name="minimumHeight">
+      <number>100</number>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_redis">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelCache">
+        <property name="text">
+         <string>캐시 키:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="labelCacheValue">
+        <property name="text">
+         <string>-- features</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelHitRate">
+        <property name="text">
+         <string>히트율:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="labelHitRateValue">
+        <property name="text">
+         <string>--%</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupGap">
+     <property name="title">
+      <string>🔮 ML 기반 Gap 예측</string>
+     </property>
+     <property name="minimumHeight">
+      <number>120</number>
+     </property>
+     <layout class="QVBoxLayout" name="vl_gap">
+      <item>
+       <widget class="QCheckBox" name="cbGapEnabled">
+        <property name="text">
+         <string>☑ Gap 예측 활성화</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelGapCount">
+        <property name="text">
+         <string>예측된 Gap: -- 건</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnViewGaps">
+        <property name="text">
+         <string>🔍 예측 결과 보기</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBaseline">
+     <property name="title">
+      <string>📊 성능 Baseline</string>
+     </property>
+     <property name="minimumHeight">
+      <number>120</number>
+     </property>
+     <layout class="QVBoxLayout" name="vl_baseline">
+      <item>
+       <widget class="QLabel" name="labelTrainStatus">
+        <property name="text">
+         <string>학습 상태: --</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnRetrain">
+        <property name="text">
+         <string>🔄 재학습</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelAnomaly">
+        <property name="text">
+         <string>이상 탐지: --</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupAIMode">
+     <property name="title">
+      <string>⚙️ AI 모드 설정</string>
+     </property>
+     <layout class="QVBoxLayout" name="vl_aimode">
+      <item>
+       <widget class="QRadioButton" name="radioOFF">
+        <property name="text">
+         <string>OFF (비활성화)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioLIGHT">
+        <property name="text">
+         <string>LIGHT (경량 추론)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioMAX">
+        <property name="text">
+         <string>MAX (풀 AI 파이프라인)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnApply">
+        <property name="text">
+         <string>✅ 적용</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="spacer_bottom">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="hLayout_footer">
+     <item>
+      <spacer name="horizontalSpacer_footer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_close">
+       <property name="text"><string>✅ 닫기 (자동 저장됨)</string></property>
+       <property name="minimumSize">
+        <size><width>200</width><height>40</height></size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: #007AFF; color: white; font-weight: bold;</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

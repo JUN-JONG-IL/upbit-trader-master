@@ -1,0 +1,38 @@
+﻿
+Move log - 2026-03-22T17:39:10.3402091+09:00
+
+
+Moved: .\src\app\core\auto_backfill.py -> .\src\14_orchestrator\auto_backfill.py
+Backup: .\src\app\core\auto_backfill.py.bak
+Shim created at original location.
+
+Moved: .\src\app\core\auto_controller.py -> .\src\14_orchestrator\auto_controller.py
+Backup: .\src\app\core\auto_controller.py.bak
+Shim created at original location.
+
+Moved: .\src\app\core\startup_validator.py -> .\src\14_orchestrator\startup_validator.py
+Backup: .\src\app\core\startup_validator.py.bak
+Shim created at original location.
+
+Name                 Length
+----                 ------
+auto_backfill.py      17714
+auto_controller.py     7404
+startup_validator.py  11489
+__init__.py              65
+
+
+
+
+Shim files at src\app\core:
+
+
+Name                 Length
+----                 ------
+auto_backfill.py        917
+auto_controller.py      923
+startup_validator.py    929
+__init__.py               0
+
+
+

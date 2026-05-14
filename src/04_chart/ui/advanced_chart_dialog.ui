@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AdvancedChartDialog</class>
+ <widget class="QWidget" name="AdvancedChartDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>750</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>고급 차트 도구</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="toolbarLayout">
+     <item>
+      <widget class="QLabel" name="labelSymbol">
+       <property name="text">
+        <string>심볼:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboSymbol">
+       <property name="minimumWidth">
+        <number>150</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelTimeframe">
+       <property name="text">
+        <string>타임프레임:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboTimeframe">
+       <property name="minimumWidth">
+        <number>100</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>1분</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>5분</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>15분</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>30분</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1시간</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4시간</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>일봉</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelChartType">
+       <property name="text">
+        <string>차트 타입:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboChartType">
+       <property name="minimumWidth">
+        <number>120</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>캔들스틱</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>라인</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>바</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>에어리어</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>히트맵</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnIndicators">
+       <property name="text">
+        <string>지표 추가</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnDrawingTools">
+       <property name="text">
+        <string>드로잉 툴</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnHelp">
+       <property name="text">
+        <string>❓ 도움말</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QFrame" name="chartContainer">
+     <property name="minimumSize">
+      <size>
+       <width>800</width>
+       <height>600</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="statusLayout">
+     <item>
+      <widget class="QLabel" name="labelStatus">
+       <property name="text">
+        <string>준비</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelDataPoints">
+       <property name="text">
+        <string>데이터 포인트: 0</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

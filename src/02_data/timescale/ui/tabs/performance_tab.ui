@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PerformanceTab</class>
+ <widget class="QWidget" name="PerformanceTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>성능 지표</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #FFFFFF;
+    color: #2C3E50;
+    font-family: &quot;맑은 고딕&quot;;
+    font-size: 9pt;
+}
+QTableWidget {
+    gridline-color: #BDC3C7;
+    background-color: #FFFFFF;
+    alternate-background-color: #F8F9FA;
+    selection-background-color: #3498DB;
+    selection-color: #FFFFFF;
+}
+QTableWidget::item {
+    padding: 4px;
+    border: none;
+}
+QHeaderView::section {
+    background-color: #ECF0F1;
+    color: #2C3E50;
+    padding: 6px;
+    border: 1px solid #BDC3C7;
+    font-weight: bold;
+}
+QPushButton {
+    background-color: #3498DB;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #2980B9;
+}
+QPushButton:disabled {
+    background-color: #BDC3C7;
+    color: #7F8C8D;
+}
+QGroupBox {
+    border: 2px solid #BDC3C7;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: #F8F9FA;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    color: #2C3E50;
+    font-weight: bold;
+}
+QProgressBar {
+    border: 1px solid #BDC3C7;
+    border-radius: 3px;
+    text-align: center;
+    background-color: #ECF0F1;
+}
+QProgressBar::chunk {
+    background-color: #3498DB;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>8</number>
+   </property>
+   <property name="leftMargin">
+    <number>12</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>12</number>
+   </property>
+   <property name="bottomMargin">
+    <number>12</number>
+   </property>
+   <item>
+    <widget class="QFrame" name="frame_banner">
+     <property name="styleSheet">
+      <string notr="true">QFrame#frame_banner {
+    background-color: #EBF5FB;
+    border-left: 4px solid #3498DB;
+    border-radius: 3px;
+    padding: 4px;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QVBoxLayout" name="vl_banner">
+      <property name="spacing">
+       <number>2</number>
+      </property>
+      <property name="leftMargin">
+       <number>8</number>
+      </property>
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="rightMargin">
+       <number>8</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_banner">
+        <property name="text">
+         <string>TimescaleDB 성능 지표를 실시간 모니터링합니다. (10초 갱신)
+목표: 쿼리 P95 &lt; 15ms | 캐시 히트율 &gt; 99% | 데드락 0건
+이상 지표 발견 시: 인덱스 점검, CAGG 갱신, 연결 풀 설정 확인</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: #2C3E50; font-size: 8pt;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_title">
+     <property name="text">
+      <string>⚡ 성능 지표</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableWidget" name="table_performance">
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <column>
+      <property name="text">
+       <string>메트릭</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>현재값</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>단위</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>목표</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_cache">
+     <property name="title">
+      <string>캐시 히트율</string>
+     </property>
+     <layout class="QVBoxLayout" name="vl_cache">
+      <item>
+       <widget class="QProgressBar" name="progressCache">
+        <property name="value">
+         <number>0</number>
+        </property>
+        <property name="format">
+         <string>%p%</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

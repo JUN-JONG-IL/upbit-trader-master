@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui version="4.0">
+ <class>PrioritySettingsWindow</class>
+ <widget class="QMainWindow" name="PrioritySettingsWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>700</width>
+    <height>820</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>우선순위 설정 (Priority Settings)</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <property name="spacing">
+     <number>10</number>
+    </property>
+    <property name="leftMargin">
+     <number>12</number>
+    </property>
+    <property name="topMargin">
+     <number>12</number>
+    </property>
+    <property name="rightMargin">
+     <number>12</number>
+    </property>
+    <property name="bottomMargin">
+     <number>12</number>
+    </property>
+    <!-- 설정 이름 -->
+    <item>
+     <widget class="QGroupBox" name="grpSettingName">
+      <property name="title">
+       <string>설정 이름</string>
+      </property>
+      <layout class="QHBoxLayout" name="hboxSettingName">
+       <item>
+        <widget class="QLabel" name="lblSettingName">
+         <property name="text">
+          <string>이름:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="txtSettingName">
+         <property name="placeholderText">
+          <string>기본 설정</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <!-- 우선순위 항목 선택 -->
+    <item>
+     <widget class="QGroupBox" name="grpPriorityItems">
+      <property name="title">
+       <string>우선순위 항목 선택 (체크박스)</string>
+      </property>
+      <layout class="QGridLayout" name="gridPriority">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="chkVolume">
+         <property name="text">
+          <string>거래량 (Volume)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="chkMarketCap">
+         <property name="text">
+          <string>시가총액 (Market Cap)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="chkPopularity">
+         <property name="text">
+          <string>인기 (Popularity)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="chkNewListings">
+         <property name="text">
+          <string>신규 상장 (New Listings)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="chkVolatility">
+         <property name="text">
+          <string>변동성 (Volatility)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="chkPriceChange">
+         <property name="text">
+          <string>급등/급락 (Price Change %)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="chkPattern">
+         <property name="text">
+          <string>패턴 감지 (Pattern Detection)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="chkSocial">
+         <property name="text">
+          <string>소셜 멘션 (Social Mentions)</string>
+         </property>
+        </widget>
+       </item>
+       <!-- 전체 선택/해제 버튼 -->
+       <item row="4" column="0">
+        <widget class="QPushButton" name="btnSelectAll">
+         <property name="text">
+          <string>전체 선택</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QPushButton" name="btnDeselectAll">
+         <property name="text">
+          <string>전체 해제</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <!-- 로직 선택 (OR / AND) -->
+    <item>
+     <widget class="QGroupBox" name="grpLogic">
+      <property name="title">
+       <string>로직 선택</string>
+      </property>
+      <layout class="QHBoxLayout" name="hboxLogic">
+       <item>
+        <widget class="QRadioButton" name="radioOR">
+         <property name="text">
+          <string>OR (하나 이상 일치)</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioAND">
+         <property name="text">
+          <string>AND (���두 일치)</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <!-- 드래그앤드롭 우선순위 순서 -->
+    <item>
+     <widget class="QGroupBox" name="grpPriorityOrder">
+      <property name="title">
+       <string>우선순위 순서 (드래그앤드롭으로 조정)</string>
+      </property>
+      <layout class="QVBoxLayout" name="vboxOrder">
+       <item>
+        <widget class="QListWidget" name="listPriorities">
+         <property name="dragDropMode">
+          <enum>QAbstractItemView::InternalMove</enum>
+         </property>
+         <property name="defaultDropAction">
+          <enum>Qt::MoveAction</enum>
+         </property>
+         <property name="minimumHeight">
+          <number>150</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <!-- 요약 라벨 -->
+    <item>
+     <widget class="QLabel" name="lblSummary">
+      <property name="text">
+       <string>활성 항목: 0/8 | 로직: OR</string>
+      </property>
+      <property name="styleSheet">
+       <string>font-weight: bold; color: #2c3e50;</string>
+      </property>
+     </widget>
+    </item>
+    <!-- 버튼 -->
+    <item>
+     <layout class="QHBoxLayout" name="hboxButtons">
+      <item>
+       <widget class="QPushButton" name="btnSave">
+        <property name="text">
+         <string>저장</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnLoad">
+        <property name="text">
+         <string>불러오기</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnCalculate">
+        <property name="text">
+         <string>점수 계산</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

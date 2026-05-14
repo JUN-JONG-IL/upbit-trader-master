@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ScannerTab</class>
+ <widget class="QWidget" name="ScannerTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>스마트 스캐너</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #FFFFFF;
+    color: #2C3E50;
+    font-family: "맑은 고딕", "Segoe UI";
+    font-size: 9pt;
+}
+QPushButton {
+    background-color: #007AFF;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #0055CC;
+}
+QPushButton:pressed {
+    background-color: #003EA3;
+}
+QPushButton:disabled {
+    background-color: #BDC3C7;
+    color: #7F8C8D;
+}
+QTableWidget {
+    gridline-color: #BDC3C7;
+    background-color: #FFFFFF;
+    alternate-background-color: #F8F9FA;
+    selection-background-color: #007AFF;
+    selection-color: #FFFFFF;
+}
+QTableWidget::item {
+    padding: 4px;
+    border: none;
+}
+QHeaderView::section {
+    background-color: #ECF0F1;
+    color: #2C3E50;
+    padding: 6px;
+    border: 1px solid #BDC3C7;
+    font-weight: bold;
+}
+QGroupBox {
+    border: 2px solid #BDC3C7;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: #F8F9FA;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    color: #2C3E50;
+    font-weight: bold;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>8</number>
+   </property>
+   <property name="leftMargin">
+    <number>12</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>12</number>
+   </property>
+   <property name="bottomMargin">
+    <number>12</number>
+   </property>
+   <item>
+    <widget class="QGroupBox" name="groupSummary">
+     <property name="title">
+      <string>🔍 스마트 스캐너 (요약)</string>
+     </property>
+     <layout class="QHBoxLayout" name="hlSummary">
+      <item>
+       <widget class="QLabel" name="labelSummaryMode">
+        <property name="text">
+         <string>조건 모드: AND</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelSummaryConditions">
+        <property name="text">
+         <string>활성 조건: 0개</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="spacerSummary">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_open_filter_detail">
+        <property name="text">
+         <string>⚙️ 상세 조건 설정</string>
+        </property>
+        <property name="minimumSize">
+         <size><width>180</width><height>40</height></size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #007AFF; color: white; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnScan">
+        <property name="text">
+         <string>🔍 스캔 실행</string>
+        </property>
+        <property name="minimumSize">
+         <size><width>140</width><height>40</height></size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #4CAF50; color: white; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupResults">
+     <property name="title">
+      <string>🎯 스캔 결과 (실시간 업데이트)</string>
+     </property>
+     <layout class="QVBoxLayout" name="vl_results">
+      <item>
+       <widget class="QTableWidget" name="tableResults">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="columnCount">
+         <number>7</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>심볼</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>현재가</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>거래량</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>변동률</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>RSI</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>MACD</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>추천</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="hl_result_bottom">
+        <item>
+         <widget class="QLabel" name="labelMatchCount">
+          <property name="text">
+           <string>매칭 종목 수: 0개 / 전체 2,500개</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_last_scan_time">
+          <property name="text">
+           <string>마지막 갱신: --</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacer_result_bottom">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnExportCSV">
+          <property name="text">
+           <string>📄 CSV 내보내기</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
