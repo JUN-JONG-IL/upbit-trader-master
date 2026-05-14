@@ -3,8 +3,8 @@
 """
 collector_manager: server-side orchestrator for collectors
 
-- 기존: UpbitWebSocket 우선 사용
-- 변경: UpbitWebSocket이 없으면 REST 폴링 기반 UpbitRestCollector를 대신 사용하도록 함.
+- 기존: UpbitWebSocket ?�선 ?�용
+- 변�? UpbitWebSocket???�으�?REST ?�링 기반 UpbitRestCollector�??�???�용?�도�???
 """
 from __future__ import annotations
 
@@ -20,10 +20,10 @@ logger = logging.getLogger("collector_manager")
 UpbitWebSocket = None
 UpbitRestCollector = None
 
-# 시도 순서: 패키지명 형태로 import 시도 (환경에 따라 달라짐)
+# ?�도 ?�서: ?�키지�??�태�?import ?�도 (?�경???�라 ?�라�?
 _try_names = [
-    "src.02_data.collectors.upbit_websocket",
-    "02_data.collectors.upbit_websocket",
+    "src.data_01.collectors.upbit_websocket",
+    "data_01.collectors.upbit_websocket",
     "collectors.upbit_websocket",
 ]
 
@@ -37,28 +37,28 @@ for nm in _try_names:
     except Exception:
         continue
 
-# UpbitWebSocket이 없으면 REST 폴링 collector 시도
+# UpbitWebSocket???�으�?REST ?�링 collector ?�도
 if UpbitWebSocket is None:
     try:
-        rc_mod = importlib.import_module("src.02_data.collectors.upbit_rest_collector")
+        rc_mod = importlib.import_module("src.data_01.collectors.upbit_rest_collector")
         UpbitRestCollector = getattr(rc_mod, "UpbitRestCollector", None)
         if UpbitRestCollector:
-            logger.info("Fallback: UpbitRestCollector 사용(REST 폴링)")
+            logger.info("Fallback: UpbitRestCollector ?�용(REST ?�링)")
     except Exception:
         try:
             import importlib.util
             from pathlib import Path
             repo_root = Path(__file__).resolve().parents[3]
-            candidate = repo_root / "02_data" / "collectors" / "upbit_rest_collector.py"
+            candidate = repo_root / "data_01" / "collectors" / "upbit_rest_collector.py"
             if candidate.exists():
                 spec = importlib.util.spec_from_file_location("upbit_rest_collector", str(candidate))
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)  # type: ignore
                 UpbitRestCollector = getattr(module, "UpbitRestCollector", None)
                 if UpbitRestCollector:
-                    logger.info("Fallback file-load: UpbitRestCollector 사용")
+                    logger.info("Fallback file-load: UpbitRestCollector ?�용")
         except Exception:
-            logger.debug("UpbitRestCollector 파일 로드 실패", exc_info=True)
+            logger.debug("UpbitRestCollector ?�일 로드 ?�패", exc_info=True)
 
 class CollectorManager:
     def __init__(self):
@@ -86,7 +86,7 @@ class CollectorManager:
             except Exception as exc:
                 logger.exception("UpbitWebSocket run failed: %s", exc)
 
-        # Fallback: REST 기반 수집기 실행
+        # Fallback: REST 기반 ?�집�??�행
         if UpbitRestCollector is not None:
             try:
                 rc = UpbitRestCollector()
@@ -96,10 +96,10 @@ class CollectorManager:
                     rc.start(symbols)
                 await self._loop.run_in_executor(None, _start_block)
             except Exception as exc:
-                logger.exception("UpbitRestCollector 실행 실패: %s", exc)
+                logger.exception("UpbitRestCollector ?�행 ?�패: %s", exc)
             return
 
-        logger.error("Upbit collector 구현을 찾을 수 없습니다 (UpbitWebSocket/UpbitRestCollector 모두 없음)")
+        logger.error("Upbit collector 구현??찾을 ???�습?�다 (UpbitWebSocket/UpbitRestCollector 모두 ?�음)")
         return
 
     def start_upbit(self, symbols: Optional[List[str]] = None) -> None:
@@ -127,7 +127,7 @@ class CollectorManager:
                 try:
                     client.stop()
                 except Exception:
-                    logger.debug("collector stop() 호출 중 예외", exc_info=True)
+                    logger.debug("collector stop() ?�출 �??�외", exc_info=True)
         except Exception:
             pass
 
