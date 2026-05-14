@@ -1,13 +1,13 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 RealtimeManager module (fixed imports + robust initialization)
 
-- 목적: 실시간 자산(코인) 관리, WebSocket 이벤트 수신/동기화, 계정 동기화 등 런타임 로직 제공
-- 변경: timescale_redis 모듈은 importlib로 동적 로드(식별자에 숫자 포함된 패키지명 안전 처리)
-         WebsocketManager.is_alive 재귀 제거
-         Redis 발행 시 timescale_redis.publish_status 사용(있을 때)
-         server.static import를 레포 구조에 맞게 안전하게 시도하고, 실패 시 경고 대신 디버그로 처리
+- 紐⑹쟻: ?ㅼ떆媛??먯궛(肄붿씤) 愿由? WebSocket ?대깽???섏떊/?숆린?? 怨꾩젙 ?숆린?????고???濡쒖쭅 ?쒓났
+- 蹂寃? timescale_redis 紐⑤뱢? importlib濡??숈쟻 濡쒕뱶(?앸퀎?먯뿉 ?レ옄 ?ы븿???⑦궎吏紐??덉쟾 泥섎━)
+         WebsocketManager.is_alive ?ш? ?쒓굅
+         Redis 諛쒗뻾 ??timescale_redis.publish_status ?ъ슜(?덉쓣 ??
+         server.static import瑜??덊룷 援ъ“??留욊쾶 ?덉쟾?섍쾶 ?쒕룄?섍퀬, ?ㅽ뙣 ??寃쎄퀬 ????붾쾭洹몃줈 泥섎━
 """
 from __future__ import annotations
 
@@ -33,13 +33,13 @@ try:
 except Exception:
     aiopyupbit = None
 
-# --- server.static 로드: 레포 구조를 존중한 견고한 시도 ---
-# 임시 로거(폴백)
+# --- server.static 濡쒕뱶: ?덊룷 援ъ“瑜?議댁쨷??寃ш퀬???쒕룄 ---
+# ?꾩떆 濡쒓굅(?대갚)
 _temp_logger = logging.getLogger("RealtimeManager")
 if not _temp_logger.handlers:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 
-# 후보 모듈명 목록 (레포 구조에 따라 확장)
+# ?꾨낫 紐⑤뱢紐?紐⑸줉 (?덊룷 援ъ“???곕씪 ?뺤옣)
 _static_candidates = [
     "11_server.server.static",
     "src.11_server.server.static",
@@ -80,7 +80,7 @@ if static is None:
 # Try to dynamically import timescale_redis (package name contains digits so avoid direct from-import)
 timescale_redis = None
 _ts_attempts = []
-for name in ("src.02_data.timescale.timescale_redis", "02_data.timescale.timescale_redis", "timescale.timescale_redis", "src.timescale.timescale_redis"):
+for name in ("src.data_01.timescale.timescale_redis", "data_01.timescale.timescale_redis", "timescale.timescale_redis", "src.timescale.timescale_redis"):
     try:
         timescale_redis = importlib.import_module(name)
         log.debug("[component] timescale_redis imported from %s -> %s", name, getattr(timescale_redis, "__file__", None))
@@ -91,7 +91,7 @@ if timescale_redis is None:
     log.debug("[component] timescale_redis not available; attempts=%s", _ts_attempts)
 
 # ============================================
-# Phase 2.1: Redis 클라이언트 import
+# Phase 2.1: Redis ?대씪?댁뼵??import
 # ============================================
 try:
     import redis
@@ -105,8 +105,8 @@ except Exception:
 # ----------------------------
 def _fetch_all_upbit_markets_sync(limit: int = 300) -> List[dict]:
     """
-    Upbit REST /v1/market/all 호출하여 시장 목록(dict list)을 반환합니다.
-    실패 시 빈 리스트 반환. limit으로 결과 수 제한 가능.
+    Upbit REST /v1/market/all ?몄텧?섏뿬 ?쒖옣 紐⑸줉(dict list)??諛섑솚?⑸땲??
+    ?ㅽ뙣 ??鍮?由ъ뒪??諛섑솚. limit?쇰줈 寃곌낵 ???쒗븳 媛??
     """
     try:
         import requests  # local import to avoid mandatory dependency unless helper used
@@ -242,8 +242,8 @@ class Coin:
 # ----------------------------
 class WebsocketManager(Thread):
     """
-    WebSocket 연결 관리 (재연결 지원)
-    - 로그를 과도하게 찍지 않도록 INFO는 상태 중심, DEBUG는 상세(필요 시)로 유지
+    WebSocket ?곌껐 愿由?(?ъ뿰寃?吏??
+    - 濡쒓렇瑜?怨쇰룄?섍쾶 李띿? ?딅룄濡?INFO???곹깭 以묒떖, DEBUG???곸꽭(?꾩슂 ??濡??좎?
     """
 
     def __init__(self, uri: str, request: str, ping_interval: int, queue: Queue, name: str) -> None:
@@ -254,18 +254,18 @@ class WebsocketManager(Thread):
         self._queue = queue
         self._alive = False
 
-        # 재연결 로직 강화
-        self.reconnect_delay = 1  # 초기 1초
-        self.max_reconnect_delay = 60  # 최대 60초
+        # ?ъ뿰寃?濡쒖쭅 媛뺥솕
+        self.reconnect_delay = 1  # 珥덇린 1珥?
+        self.max_reconnect_delay = 60  # 理쒕? 60珥?
         self.reconnect_count = 0
-        self.subscribed_symbols = set()  # 구독 복원용
+        self.subscribed_symbols = set()  # 援щ룆 蹂듭썝??
 
-        # 메트릭스
+        # 硫뷀듃由?뒪
         self.connection_start_time = None
         self.total_messages = 0
 
     def stop(self) -> None:
-        """WebSocket 연결 중지"""
+        """WebSocket ?곌껐 以묒?"""
         log.info(f"[WebSocket] Stopping {self.name}...")
         self._alive = False
 
@@ -277,7 +277,7 @@ class WebsocketManager(Thread):
             return self._alive
 
     def run(self) -> None:
-        """Thread 실행 진입점"""
+        """Thread ?ㅽ뻾 吏꾩엯??""
         log.info(f"[WebSocket] Thread start: {self.name}")
         log.debug(f"[WebSocket] Config: uri={self.uri}, ping_interval={self.ping_interval}")
 
@@ -299,7 +299,7 @@ class WebsocketManager(Thread):
 
     async def _connect_loop(self) -> None:
         """
-        WebSocket 연결 루프 (지수 백오프 재연결 지원)
+        WebSocket ?곌껐 猷⑦봽 (吏??諛깆삤???ъ뿰寃?吏??
         """
         if websockets is None:
             log.error("[WebsocketManager] websockets package not available; cannot connect.")
@@ -377,7 +377,7 @@ class WebsocketManager(Thread):
                     self.reconnect_delay = min(self.reconnect_delay * 2, self.max_reconnect_delay)
 
     async def _restore_subscriptions(self, websocket):
-        """구독 복원 (필요 시 확장)"""
+        """援щ룆 蹂듭썝 (?꾩슂 ???뺤옣)"""
         return
 
 # ----------------------------
@@ -386,29 +386,29 @@ class WebsocketManager(Thread):
 @dataclass
 class RealtimeOptions:
     ping_interval: int = 60
-    redis_enabled: bool = True  # Phase 2.1: Redis 활성화
+    redis_enabled: bool = True  # Phase 2.1: Redis ?쒖꽦??
 
 
 class RealtimeManager:
     """
-    실시간 데이터 관리 (Ticker + Orderbook)
+    ?ㅼ떆媛??곗씠??愿由?(Ticker + Orderbook)
     """
 
     def __init__(self, codes: Optional[list] = None, ping_interval: int = 60, redis_enabled: bool = True) -> None:
-        # 안전망: 입력 codes가 비어있거나 None인 경우 Upbit REST에서 전체 마켓 목록을 조회해 사용
+        # ?덉쟾留? ?낅젰 codes媛 鍮꾩뼱?덇굅??None??寃쎌슦 Upbit REST?먯꽌 ?꾩껜 留덉폆 紐⑸줉??議고쉶???ъ슜
         if not codes:
-            # config_loader 에서 최대 구독 수 읽기 (환경변수 > config.yaml > 기본값 300)
+            # config_loader ?먯꽌 理쒕? 援щ룆 ???쎄린 (?섍꼍蹂??> config.yaml > 湲곕낯媛?300)
             try:
                 import importlib.util as _ilu
                 from pathlib import Path as _Path
-                _cfg_path = _Path(__file__).resolve().parents[3] / "02_data" / "ui" / "utils" / "config_loader.py"
+                _cfg_path = _Path(__file__).resolve().parents[3] / "data_01" / "ui" / "utils" / "config_loader.py"
                 _spec = _ilu.spec_from_file_location("config_loader", str(_cfg_path))
                 if _spec and _spec.loader:
                     _mod = _ilu.module_from_spec(_spec)
                     _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
                     max_sub = _mod.get_ws_max_subscribe()
                 else:
-                    raise ImportError("config_loader spec 없음")
+                    raise ImportError("config_loader spec ?놁쓬")
             except Exception:
                 max_sub = int(os.getenv("UPBIT_WS_MAX_SUBSCRIBE", "300"))
             fetched = _fetch_all_upbit_markets_sync(limit=max_sub)
@@ -420,7 +420,7 @@ class RealtimeManager:
                 codes = []
                 log.warning("[RealtimeManager] No initial codes and Upbit REST returned none; RealtimeManager will initialize with no codes")
 
-        # 기존 기대 형태: codes는 list[dict] with key 'market' OR list[str]
+        # 湲곗〈 湲곕? ?뺥깭: codes??list[dict] with key 'market' OR list[str]
         try:
             if codes and isinstance(codes[0], dict):
                 self.codes: List[str] = [x.get("market", "") for x in codes if x.get("market")]
@@ -454,7 +454,7 @@ class RealtimeManager:
 
         self._consumer_thread: Optional[Thread] = None
 
-        # Phase 2.1: Redis 클라이언트 초기화 (환경변수 우선, URL 우선처리)
+        # Phase 2.1: Redis ?대씪?댁뼵??珥덇린??(?섍꼍蹂???곗꽑, URL ?곗꽑泥섎━)
         self.redis_client = None
         if redis_enabled and REDIS_AVAILABLE:
             try:
@@ -463,7 +463,7 @@ class RealtimeManager:
                     try:
                         self.redis_client = redis.from_url(redis_url, decode_responses=True)
                         self.redis_client.ping()
-                        log.info("[RealtimeManager] ✅ Redis connected via REDIS_URL (publishing enabled)")
+                        log.info("[RealtimeManager] ??Redis connected via REDIS_URL (publishing enabled)")
                     except Exception as e:
                         log.warning("[RealtimeManager] Redis.from_url failed: %s", e)
                         self.redis_client = None
@@ -482,7 +482,7 @@ class RealtimeManager:
                     try:
                         self.redis_client = redis.Redis(**redis_kwargs)
                         self.redis_client.ping()
-                        log.info("[RealtimeManager] ✅ Redis connected (publishing enabled)")
+                        log.info("[RealtimeManager] ??Redis connected (publishing enabled)")
                     except Exception as e:
                         try:
                             auth_exc = redis.exceptions.AuthenticationError
@@ -522,14 +522,14 @@ class RealtimeManager:
         return self.coins.get(code)
 
     def start(self) -> None:
-        """RealtimeManager 시작"""
+        """RealtimeManager ?쒖옉"""
         if self.alive:
             return
 
         log.info("[RealtimeManager] Starting...")
         self.alive = True
 
-        # Ticker WebSocket 시작
+        # Ticker WebSocket ?쒖옉
         log.info("[RealtimeManager] Starting ticker WebSocket (%d coins)", len(self.codes))
         self._ws_ticker = WebsocketManager(
             uri=self.uri,
@@ -540,7 +540,7 @@ class RealtimeManager:
         )
         self._ws_ticker.start()
 
-        # Consumer 스레드 시작
+        # Consumer ?ㅻ젅???쒖옉
         log.debug("[RealtimeManager] Starting message consumer thread")
         self._consumer_thread = Thread(target=self._consume_loop, daemon=True, name="consumer")
         self._consumer_thread.start()
@@ -548,7 +548,7 @@ class RealtimeManager:
         log.info("[RealtimeManager] Started")
 
     def stop(self) -> None:
-        """RealtimeManager 중지"""
+        """RealtimeManager 以묒?"""
         log.info("[RealtimeManager] Stopping...")
         self.alive = False
 
@@ -567,7 +567,7 @@ class RealtimeManager:
 
     def set_orderbook_symbols(self, symbols: List[str]) -> None:
         """
-        Orderbook 구독 종목 변경
+        Orderbook 援щ룆 醫낅ぉ 蹂寃?
         """
         if not symbols:
             return
@@ -603,7 +603,7 @@ class RealtimeManager:
             log.debug("[RealtimeManager] set_orderbook_symbols -> ['%s']", symbol)
 
     def _extract_orderbook_units_raw(self, msg: Dict[str, Any]) -> List[dict]:
-        """Orderbook units 추출 (다양한 키 형태 지원)"""
+        """Orderbook units 異붿텧 (?ㅼ뼇?????뺥깭 吏??"""
         v = msg.get("obu")
         if isinstance(v, list):
             return v
@@ -617,7 +617,7 @@ class RealtimeManager:
 
     def _normalize_obu_units(self, units: List[dict]) -> List[dict]:
         """
-        OrderbookWidget이 기대하는 키(ap/as/bp/bs)로 정규화
+        OrderbookWidget??湲곕??섎뒗 ??ap/as/bp/bs)濡??뺢퇋??
         """
         out: List[dict] = []
         for u in units:
@@ -647,7 +647,7 @@ class RealtimeManager:
 
     def _consume_loop(self) -> None:
         """
-        메시지 소비 루프 (큐 처리)
+        硫붿떆吏 ?뚮퉬 猷⑦봽 (??泥섎━)
         """
         log.info("[RealtimeManager] Message consumer started")
         message_count = 0
@@ -721,7 +721,7 @@ class RealtimeManager:
 # ----------------------------
 class Account(Thread):
     """
-    계정 정보 동기화 (잔고, 수익률 등)
+    怨꾩젙 ?뺣낫 ?숆린??(?붽퀬, ?섏씡瑜???
     """
 
     def __init__(self, access_key: str, secret_key: str) -> None:

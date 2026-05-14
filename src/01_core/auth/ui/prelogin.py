@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 prelogin.py
 
-PreLoginChecker QThread 를 분리한 모듈.
-- TCP 포트 확인 및 optional health_check 모듈 호출
-- UI 스레드로 상태 dict를 emit 합니다.
+PreLoginChecker QThread 瑜?遺꾨━??紐⑤뱢.
+- TCP ?ы듃 ?뺤씤 諛?optional health_check 紐⑤뱢 ?몄텧
+- UI ?ㅻ젅?쒕줈 ?곹깭 dict瑜?emit ?⑸땲??
 """
 from __future__ import annotations
 import os
@@ -43,16 +43,16 @@ class PreLoginChecker(QThread):
 
     def _try_health_module(self, key: str) -> Optional[bool]:
         """
-        optional health 모듈을 찾아 실행합니다. 모듈 함수가 coroutine일 수 있으므로
-        호출자는 필요한 경우 상위에서 async-safe하게 호출하도록 구현해야 합니다.
-        여기서는 단순 동기 호출(호출자에서 안전화)으로 두어 책임 분리합니다.
+        optional health 紐⑤뱢??李얠븘 ?ㅽ뻾?⑸땲?? 紐⑤뱢 ?⑥닔媛 coroutine?????덉쑝誘濡?
+        ?몄텧?먮뒗 ?꾩슂??寃쎌슦 ?곸쐞?먯꽌 async-safe?섍쾶 ?몄텧?섎룄濡?援ы쁽?댁빞 ?⑸땲??
+        ?ш린?쒕뒗 ?⑥닚 ?숆린 ?몄텧(?몄텧?먯뿉???덉쟾???쇰줈 ?먯뼱 梨낆엫 遺꾨━?⑸땲??
         """
         candidates = {
-            "redis": ["src.02_data.redis.health_check", "src.redis.health_check", "redis.health_check"],
-            "mongodb": ["src.02_data.mongodb.health_check", "src.mongodb.health_check", "mongodb.health_check"],
-            "mongo": ["src.02_data.mongodb.health_check", "src.mongodb.health_check", "mongodb.health_check"],
-            "timescale": ["src.02_data.timescale.health_check", "src.timescale.health_check", "timescale.health_check"],
-            "kafka": ["src.02_data.kafka.health_check", "src.kafka.health_check", "kafka.health_check"],
+            "redis": ["src.data_01.redis.health_check", "src.redis.health_check", "redis.health_check"],
+            "mongodb": ["src.data_01.mongodb.health_check", "src.mongodb.health_check", "mongodb.health_check"],
+            "mongo": ["src.data_01.mongodb.health_check", "src.mongodb.health_check", "mongodb.health_check"],
+            "timescale": ["src.data_01.timescale.health_check", "src.timescale.health_check", "timescale.health_check"],
+            "kafka": ["src.data_01.kafka.health_check", "src.kafka.health_check", "kafka.health_check"],
         }.get(key, [])
         for modname in candidates:
             try:
@@ -100,9 +100,9 @@ class PreLoginChecker(QThread):
                 pass
             time.sleep(0.08)
 
-        # 가벼운 gap 힌트 검사 (부작용 최소화)
+        # 媛踰쇱슫 gap ?뚰듃 寃??(遺?묒슜 理쒖냼??
         try:
-            gf_mod = importlib.import_module("src.02_data.timescale.operations.gap_finder")
+            gf_mod = importlib.import_module("src.data_01.timescale.operations.gap_finder")
             gap_hint = False
             if hasattr(gf_mod, "find_gaps"):
                 try:

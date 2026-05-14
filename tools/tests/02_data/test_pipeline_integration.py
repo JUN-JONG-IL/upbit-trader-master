@@ -1,12 +1,12 @@
-"""
-파이프라인 통합 테스트
+﻿"""
+?뚯씠?꾨씪???듯빀 ?뚯뒪??
 
-테스트 범위:
-    - DataCollector.receive() → staging 저장 → Redis 갱신 → Kafka 전송
+?뚯뒪??踰붿쐞:
+    - DataCollector.receive() ??staging ?????Redis 媛깆떊 ??Kafka ?꾩넚
     - EventStore.append() / load() / load_by_type()
-    - GapFiller.backfill() — pool=None 안전 동작
-    - KafkaProducer 도메인 메서드 (send_candle, send_ticker 등)
-    - KafkaConsumer.consume_batch() — aiokafka 미설치 시 안전 동작
+    - GapFiller.backfill() ??pool=None ?덉쟾 ?숈옉
+    - KafkaProducer ?꾨찓??硫붿꽌??(send_candle, send_ticker ??
+    - KafkaConsumer.consume_batch() ??aiokafka 誘몄꽕移????덉쟾 ?숈옉
     - MetadataManager.upsert_symbol() / get_active_symbols()
     - EventToMongo.project_event()
 """
@@ -24,11 +24,11 @@ from unittest.mock import AsyncMock, MagicMock, patch, call
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "02_data"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "data_01"))
 
 
 # ---------------------------------------------------------------------------
-# 픽스처 헬퍼
+# ?쎌뒪泥??ы띁
 # ---------------------------------------------------------------------------
 
 def _candle(**kw) -> Dict[str, Any]:
@@ -86,13 +86,13 @@ def _make_redis():
 
 
 # ---------------------------------------------------------------------------
-# DataCollector 통합 테스트
+# DataCollector ?듯빀 ?뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestDataCollector:
     @pytest.mark.asyncio
     async def test_receive_normalizes_upbit_format(self):
-        """Upbit 형식의 원시 데이터를 표준 캔들로 변환"""
+        """Upbit ?뺤떇???먯떆 ?곗씠?곕? ?쒖? 罹붾뱾濡?蹂??""
         from pipeline.collector import DataCollector
 
         pool, conn = _make_pool()
@@ -114,7 +114,7 @@ class TestDataCollector:
 
     @pytest.mark.asyncio
     async def test_receive_triggers_flush_on_batch_size(self):
-        """배치 크기 도달 시 자동 플러시"""
+        """諛곗튂 ?ш린 ?꾨떖 ???먮룞 ?뚮윭??""
         from pipeline.collector import DataCollector
 
         pool, conn = _make_pool()
@@ -123,12 +123,12 @@ class TestDataCollector:
         for _ in range(3):
             await collector.receive(_candle())
 
-        # 플러시 후 버퍼가 비워짐
+        # ?뚮윭????踰꾪띁媛 鍮꾩썙吏?
         assert len(collector._buffer) == 0
 
     @pytest.mark.asyncio
     async def test_receive_callback_invoked(self):
-        """on_candle 콜백이 호출됨"""
+        """on_candle 肄쒕갚???몄텧??""
         from pipeline.collector import DataCollector
 
         received = []
@@ -143,7 +143,7 @@ class TestDataCollector:
 
     @pytest.mark.asyncio
     async def test_flush_returns_count(self):
-        """flush()는 처리된 캔들 수를 반환"""
+        """flush()??泥섎━??罹붾뱾 ?섎? 諛섑솚"""
         from pipeline.collector import DataCollector
 
         collector = DataCollector(pool=None, redis_client=None, batch_size=100)
@@ -154,7 +154,7 @@ class TestDataCollector:
 
     @pytest.mark.asyncio
     async def test_normalize_aliases(self):
-        """code/interval 별칭 정상 처리"""
+        """code/interval 蹂꾩묶 ?뺤긽 泥섎━"""
         from pipeline.collector import DataCollector
 
         collector = DataCollector(pool=None, redis_client=None)
@@ -166,13 +166,13 @@ class TestDataCollector:
 
 
 # ---------------------------------------------------------------------------
-# EventStore 단위 테스트
+# EventStore ?⑥쐞 ?뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestEventStore:
     @pytest.mark.asyncio
     async def test_append_calls_execute(self):
-        """append()는 conn.execute를 호출"""
+        """append()??conn.execute瑜??몄텧"""
         from postgres.event_store import EventStore
 
         pool, conn = _make_pool()
@@ -182,7 +182,7 @@ class TestEventStore:
 
     @pytest.mark.asyncio
     async def test_append_returns_stored_event(self):
-        """append()는 StoredEvent를 반환"""
+        """append()??StoredEvent瑜?諛섑솚"""
         from postgres.event_store import EventStore, StoredEvent
 
         pool, conn = _make_pool()
@@ -194,7 +194,7 @@ class TestEventStore:
 
     @pytest.mark.asyncio
     async def test_append_no_pool_raises(self):
-        """pool=None이면 RuntimeError"""
+        """pool=None?대㈃ RuntimeError"""
         from postgres.event_store import EventStore
 
         store = EventStore(None)
@@ -203,7 +203,7 @@ class TestEventStore:
 
     @pytest.mark.asyncio
     async def test_load_no_pool_returns_empty(self):
-        """pool=None이면 빈 목록 반환"""
+        """pool=None?대㈃ 鍮?紐⑸줉 諛섑솚"""
         from postgres.event_store import EventStore
 
         store = EventStore(None)
@@ -212,7 +212,7 @@ class TestEventStore:
 
     @pytest.mark.asyncio
     async def test_load_by_type_no_pool(self):
-        """pool=None이면 빈 목록 반환"""
+        """pool=None?대㈃ 鍮?紐⑸줉 諛섑솚"""
         from postgres.event_store import EventStore
 
         store = EventStore(None)
@@ -221,7 +221,7 @@ class TestEventStore:
 
     @pytest.mark.asyncio
     async def test_append_batch(self):
-        """append_batch()는 여러 이벤트를 순서대로 저장"""
+        """append_batch()???щ윭 ?대깽?몃? ?쒖꽌?濡????""
         from postgres.event_store import EventStore
 
         pool, conn = _make_pool()
@@ -235,7 +235,7 @@ class TestEventStore:
         assert conn.execute.call_count == 3
 
     def test_event_types_coverage(self):
-        """EVENT_TYPES에 핵심 이벤트 유형 포함"""
+        """EVENT_TYPES???듭떖 ?대깽???좏삎 ?ы븿"""
         from postgres.event_store import EVENT_TYPES
 
         for et in ("OrderCreated", "OrderFilled", "TradeExecuted", "BalanceUpdated"):
@@ -243,13 +243,13 @@ class TestEventStore:
 
 
 # ---------------------------------------------------------------------------
-# GapFiller 단위 테스트
+# GapFiller ?⑥쐞 ?뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestGapFiller:
     @pytest.mark.asyncio
     async def test_backfill_no_pool(self):
-        """pool=None이면 0 반환"""
+        """pool=None?대㈃ 0 諛섑솚"""
         from pipeline.gap_filler import GapFiller
 
         filler = GapFiller(pool=None, redis_client=None)
@@ -261,7 +261,7 @@ class TestGapFiller:
 
     @pytest.mark.asyncio
     async def test_process_one_empty_queue(self):
-        """큐가 비어있으면 False 반환"""
+        """?먭? 鍮꾩뼱?덉쑝硫?False 諛섑솚"""
         from pipeline.gap_filler import GapFiller
 
         redis = _make_redis()
@@ -271,7 +271,7 @@ class TestGapFiller:
 
     @pytest.mark.asyncio
     async def test_process_one_no_redis(self):
-        """redis=None이면 False 반환"""
+        """redis=None?대㈃ False 諛섑솚"""
         from pipeline.gap_filler import GapFiller
 
         filler = GapFiller(pool=None, redis_client=None)
@@ -280,7 +280,7 @@ class TestGapFiller:
 
     @pytest.mark.asyncio
     async def test_start_stop(self):
-        """start/stop이 예외 없이 동작"""
+        """start/stop???덉쇅 ?놁씠 ?숈옉"""
         from pipeline.gap_filler import GapFiller
 
         filler = GapFiller()
@@ -290,7 +290,7 @@ class TestGapFiller:
         assert filler._running is False
 
     def test_parse_upbit_candle(self):
-        """_parse_upbit_candle()는 표준 형식으로 변환"""
+        """_parse_upbit_candle()???쒖? ?뺤떇?쇰줈 蹂??""
         from pipeline.gap_filler import GapFiller
 
         item = {
@@ -309,7 +309,7 @@ class TestGapFiller:
 
 
 # ---------------------------------------------------------------------------
-# MetadataManager 단위 테스트
+# MetadataManager ?⑥쐞 ?뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestMetadataManager:
@@ -327,18 +327,18 @@ class TestMetadataManager:
 
     @pytest.mark.asyncio
     async def test_upsert_symbol_calls_update_one(self):
-        """upsert_symbol()은 update_one을 호출"""
+        """upsert_symbol()? update_one???몄텧"""
         from mongodb.metadata_manager import MetadataManager
 
         db, col = self._make_db()
         mgr = MetadataManager(db)
-        result = await mgr.upsert_symbol("KRW-BTC", korean_name="비트코인")
+        result = await mgr.upsert_symbol("KRW-BTC", korean_name="鍮꾪듃肄붿씤")
         assert result is True
         col.update_one.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_upsert_symbol_no_db(self):
-        """db=None이면 False 반환"""
+        """db=None?대㈃ False 諛섑솚"""
         from mongodb.metadata_manager import MetadataManager
 
         mgr = MetadataManager(None)
@@ -347,7 +347,7 @@ class TestMetadataManager:
 
     @pytest.mark.asyncio
     async def test_get_active_symbols_empty(self):
-        """to_list가 빈 목록이면 [] 반환"""
+        """to_list媛 鍮?紐⑸줉?대㈃ [] 諛섑솚"""
         from mongodb.metadata_manager import MetadataManager
 
         db, _ = self._make_db()
@@ -357,7 +357,7 @@ class TestMetadataManager:
 
     @pytest.mark.asyncio
     async def test_get_symbol_no_db(self):
-        """db=None이면 None 반환"""
+        """db=None?대㈃ None 諛섑솚"""
         from mongodb.metadata_manager import MetadataManager
 
         mgr = MetadataManager(None)
@@ -366,7 +366,7 @@ class TestMetadataManager:
 
     @pytest.mark.asyncio
     async def test_update_snapshot(self):
-        """update_snapshot()은 update_one을 호출"""
+        """update_snapshot()? update_one???몄텧"""
         from mongodb.metadata_manager import MetadataManager
 
         db, col = self._make_db()
@@ -378,7 +378,7 @@ class TestMetadataManager:
 
     @pytest.mark.asyncio
     async def test_get_snapshot_none(self):
-        """스냅샷 없으면 None 반환"""
+        """?ㅻ깄???놁쑝硫?None 諛섑솚"""
         from mongodb.metadata_manager import MetadataManager
 
         db, _ = self._make_db()
@@ -388,7 +388,7 @@ class TestMetadataManager:
 
     @pytest.mark.asyncio
     async def test_set_favorites(self):
-        """set_favorites()는 update_one 호출"""
+        """set_favorites()??update_one ?몄텧"""
         from mongodb.metadata_manager import MetadataManager
 
         db, col = self._make_db()
@@ -398,7 +398,7 @@ class TestMetadataManager:
 
     @pytest.mark.asyncio
     async def test_get_favorites_no_db(self):
-        """db=None이면 빈 목록 반환"""
+        """db=None?대㈃ 鍮?紐⑸줉 諛섑솚"""
         from mongodb.metadata_manager import MetadataManager
 
         mgr = MetadataManager(None)
@@ -407,7 +407,7 @@ class TestMetadataManager:
 
 
 # ---------------------------------------------------------------------------
-# EventToMongo 단위 테스트
+# EventToMongo ?⑥쐞 ?뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestEventToMongo:
@@ -420,7 +420,7 @@ class TestEventToMongo:
 
     @pytest.mark.asyncio
     async def test_project_order_created(self):
-        """OrderCreated → orders_view update_one 호출"""
+        """OrderCreated ??orders_view update_one ?몄텧"""
         from pipeline.event_to_mongo import EventToMongo
 
         db, col = self._make_db()
@@ -434,7 +434,7 @@ class TestEventToMongo:
 
     @pytest.mark.asyncio
     async def test_project_order_filled(self):
-        """OrderFilled → orders_view update_one 호출"""
+        """OrderFilled ??orders_view update_one ?몄텧"""
         from pipeline.event_to_mongo import EventToMongo
 
         db, col = self._make_db()
@@ -447,7 +447,7 @@ class TestEventToMongo:
 
     @pytest.mark.asyncio
     async def test_project_trade_executed(self):
-        """TradeExecuted → trades_view update_one 호출"""
+        """TradeExecuted ??trades_view update_one ?몄텧"""
         from pipeline.event_to_mongo import EventToMongo
 
         db, col = self._make_db()
@@ -460,7 +460,7 @@ class TestEventToMongo:
 
     @pytest.mark.asyncio
     async def test_project_unknown_event(self):
-        """알 수 없는 이벤트는 True 반환 (무시)"""
+        """?????녿뒗 ?대깽?몃뒗 True 諛섑솚 (臾댁떆)"""
         from pipeline.event_to_mongo import EventToMongo
 
         db, col = self._make_db()
@@ -470,9 +470,10 @@ class TestEventToMongo:
 
     @pytest.mark.asyncio
     async def test_project_no_db(self):
-        """db=None이면 True 반환 (핸들러 내부에서 스킵)"""
+        """db=None?대㈃ True 諛섑솚 (?몃뱾???대??먯꽌 ?ㅽ궢)"""
         from pipeline.event_to_mongo import EventToMongo
 
         builder = EventToMongo(db=None)
         result = await builder.project_event("OrderCreated", {"order_id": "x"})
         assert result is True
+

@@ -41,7 +41,7 @@ def _restore_env(key: str, prev: Optional[str]) -> None:
 def load_pool_by_path(pool_path: Optional[str] = None):
     """
     pool.py 파일을 동적 로드하여 모듈 객체를 반환합니다.
-    기본 경로는 repo_root/src/02_data/timescale/pool.py 입니다.
+    기본 경로는 repo_root/src/data_01/timescale/pool.py 입니다.
     """
     # 현재 파일(스크립트) 위치를 기준으로 repo_root를 계산
     repo_root = Path(__file__).resolve().parent
@@ -49,7 +49,7 @@ def load_pool_by_path(pool_path: Optional[str] = None):
     if pool_path:
         pool_path = Path(pool_path)
     else:
-        pool_path = repo_root / "src" / "02_data" / "timescale" / "pool.py"
+        pool_path = repo_root / "src" / "data_01" / "timescale" / "pool.py"
 
     pool_path = pool_path.resolve()
     if not pool_path.exists():

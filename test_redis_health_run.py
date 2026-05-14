@@ -5,8 +5,8 @@ if src not in sys.path:
     sys.path.insert(0, src)
 
 candidates = [
-    "src.02_data.redis.health_check",
-    "02_data.redis.health_check",
+    "src.data_01.redis.health_check",
+    "data_01.redis.health_check",
     "redis.health_check",
 ]
 
@@ -32,3 +32,4 @@ else:
     except Exception as e:
         print("check_redis_connection() 호출 실패:", type(e).__name__, e)
     print("impl_name:", getattr(rh, "_impl_name", "<없음>"))
+

@@ -13,7 +13,7 @@ load_env()
 
 # 레포의 src를 import 가능하게 경로 추가 (tools에서 실행할 때 상대경로 보장)
 ROOT = str(Path(__file__).parents[2])
-SRC = os.path.join(ROOT, "src", "02_data", "timescale", "ui")
+SRC = os.path.join(ROOT, "src", "data_01", "timescale", "ui")
 if SRC not in sys.path:
     sys.path.insert(0, SRC)
 

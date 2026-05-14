@@ -1,77 +1,78 @@
-# tools/ — 테스트 및 스크립트 통합 디렉토리
+﻿# tools/ ???뚯뒪??諛??ㅽ겕由쏀듃 ?듯빀 ?붾젆?좊━
 
-## 개요
+## 媛쒖슂
 
-`tools/` 디렉토리는 프로젝트의 테스트 및 유지보수 스크립트를 통합 관리합니다.
-이전에 루트에 분산되어 있던 `tests/`와 `scripts/` 폴더를 이 디렉토리로 통합하였습니다.
+`tools/` ?붾젆?좊━???꾨줈?앺듃???뚯뒪??諛??좎?蹂댁닔 ?ㅽ겕由쏀듃瑜??듯빀 愿由ы빀?덈떎.
+?댁쟾??猷⑦듃??遺꾩궛?섏뼱 ?덈뜕 `tests/`? `scripts/` ?대뜑瑜????붾젆?좊━濡??듯빀?섏??듬땲??
 
-## 디렉토리 구조
+## ?붾젆?좊━ 援ъ“
 
 ```
 tools/
-├── tests/                   # 단위·통합·E2E 테스트 (이전 루트 tests/)
-│   ├── 01_core/             # 핵심 모듈 테스트 (DI 컨테이너, 이벤트 버스)
-│   ├── 02_data/             # 데이터 모듈 테스트 (MongoDB URI 등)
-│   ├── app/                 # 앱 UI 테스트 (headless PyQt5 스텁 사용)
-│   ├── unit/                # 기타 단위 테스트
-│   ├── integration/         # 통합 테스트
-│   ├── e2e/                 # E2E 테스트
-│   └── test_pipeline.py     # 데이터 파이프라인 단위 테스트
-└── scripts/                 # 유지보수·배포 스크립트 (이전 루트 scripts/)
-    ├── automation/          # 자동화 워크플로우 스크립트
-    ├── deployment/          # 배포 스크립트
-    └── tools/               # 검증 및 진단 도구
+?쒋?? tests/                   # ?⑥쐞쨌?듯빀쨌E2E ?뚯뒪??(?댁쟾 猷⑦듃 tests/)
+??  ?쒋?? 01_core/             # ?듭떖 紐⑤뱢 ?뚯뒪??(DI 而⑦뀒?대꼫, ?대깽??踰꾩뒪)
+??  ?쒋?? data_01/             # ?곗씠??紐⑤뱢 ?뚯뒪??(MongoDB URI ??
+??  ?쒋?? app/                 # ??UI ?뚯뒪??(headless PyQt5 ?ㅽ뀅 ?ъ슜)
+??  ?쒋?? unit/                # 湲고? ?⑥쐞 ?뚯뒪??
+??  ?쒋?? integration/         # ?듯빀 ?뚯뒪??
+??  ?쒋?? e2e/                 # E2E ?뚯뒪??
+??  ?붴?? test_pipeline.py     # ?곗씠???뚯씠?꾨씪???⑥쐞 ?뚯뒪??
+?붴?? scripts/                 # ?좎?蹂댁닔쨌諛고룷 ?ㅽ겕由쏀듃 (?댁쟾 猷⑦듃 scripts/)
+    ?쒋?? automation/          # ?먮룞???뚰겕?뚮줈???ㅽ겕由쏀듃
+    ?쒋?? deployment/          # 諛고룷 ?ㅽ겕由쏀듃
+    ?붴?? tools/               # 寃利?諛?吏꾨떒 ?꾧뎄
 ```
 
-## 테스트 실행
+## ?뚯뒪???ㅽ뻾
 
-### 전체 테스트 실행
+### ?꾩껜 ?뚯뒪???ㅽ뻾
 ```bash
-# 프로젝트 루트에서 실행
+# ?꾨줈?앺듃 猷⑦듃?먯꽌 ?ㅽ뻾
 python -m pytest tools/tests/ -v
 
-# 앱 UI 테스트 제외 (headless 환경)
+# ??UI ?뚯뒪???쒖쇅 (headless ?섍꼍)
 python -m pytest tools/tests/ --ignore=tools/tests/app -v
 ```
 
-### 모듈별 테스트 실행
+### 紐⑤뱢蹂??뚯뒪???ㅽ뻾
 ```bash
-# 핵심 모듈 테스트
+# ?듭떖 紐⑤뱢 ?뚯뒪??
 python -m pytest tools/tests/01_core/ -v
 
-# 데이터 모듈 테스트
-python -m pytest tools/tests/02_data/ -v
+# ?곗씠??紐⑤뱢 ?뚯뒪??
+python -m pytest tools/tests/data_01/ -v
 
-# 파이프라인 테스트
+# ?뚯씠?꾨씪???뚯뒪??
 python -m pytest tools/tests/test_pipeline.py -v
 ```
 
-## 스크립트 실행
+## ?ㅽ겕由쏀듃 ?ㅽ뻾
 
-### 자동화 스크립트
+### ?먮룞???ㅽ겕由쏀듃
 ```bash
-# N단계 워크플로우 실행 (예: 2단계)
+# N?④퀎 ?뚰겕?뚮줈???ㅽ뻾 (?? 2?④퀎)
 python tools/scripts/automation/auto_workflow.py --stage 2
 
-# 환경 점검
+# ?섍꼍 ?먭?
 python tools/scripts/automation/env_check.py
 
-# Import 오류 점검
+# Import ?ㅻ쪟 ?먭?
 python tools/scripts/check_imports.py
 ```
 
-### 배포 스크립트
+### 諛고룷 ?ㅽ겕由쏀듃
 ```bash
-# 스테이징 배포 (Linux/macOS)
+# ?ㅽ뀒?댁쭠 諛고룷 (Linux/macOS)
 bash tools/scripts/deployment/deploy_stage.sh
 
-# 스테이징 배포 (Windows)
+# ?ㅽ뀒?댁쭠 諛고룷 (Windows)
 tools/scripts/deployment/deploy_start.bat
 ```
 
-## 주의사항
+## 二쇱쓽?ы빆
 
-1. **테스트 경로**: 루트의 `conftest.py`는 pytest rootdir에서 자동 로드됩니다.
-2. **상대 경로**: 각 테스트의 conftest.py는 `tools/tests/` 기준 상대 경로를 사용합니다.
-3. **PyQt5 의존성**: `tests/app/` 테스트는 headless 스텁을 사용하므로 PyQt5 미설치 환경에서도 실행 가능합니다.
-4. **환경변수**: DB 연결 테스트는 `.env` 또는 환경변수 설정이 필요합니다.
+1. **?뚯뒪??寃쎈줈**: 猷⑦듃??`conftest.py`??pytest rootdir?먯꽌 ?먮룞 濡쒕뱶?⑸땲??
+2. **?곷? 寃쎈줈**: 媛??뚯뒪?몄쓽 conftest.py??`tools/tests/` 湲곗? ?곷? 寃쎈줈瑜??ъ슜?⑸땲??
+3. **PyQt5 ?섏〈??*: `tests/app/` ?뚯뒪?몃뒗 headless ?ㅽ뀅???ъ슜?섎?濡?PyQt5 誘몄꽕移??섍꼍?먯꽌???ㅽ뻾 媛?ν빀?덈떎.
+4. **?섍꼍蹂??*: DB ?곌껐 ?뚯뒪?몃뒗 `.env` ?먮뒗 ?섍꼍蹂???ㅼ젙???꾩슂?⑸땲??
+

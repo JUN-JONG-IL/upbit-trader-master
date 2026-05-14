@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 from __future__ import annotations
 
 import os
@@ -7,7 +7,7 @@ import sys
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "src"))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "src", "02_data"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "src", "data_01"))
 
 gap_finder = pytest.importorskip("timescale.operations.gap_finder")
 
@@ -41,3 +41,4 @@ def test_detect_all_and_enqueue_uses_collection_policy(monkeypatch) -> None:
 
     assert gap_finder.detect_all_and_enqueue() is True
     assert calls == [("1m", 2, None), ("5m", 10, None)]
+

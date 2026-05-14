@@ -1,13 +1,13 @@
-"""
-Gap Detection 단위 테스트
+﻿"""
+Gap Detection ?⑥쐞 ?뚯뒪??
 
-테스트 범위:
-    - GapDetector.detect() — 갭 있음/없음 판정
-    - GapDetector._calc_priority() — 우선순위 계산
-    - GapDetector.enqueue() — Redis 큐 등록
-    - GapDetector.get_queue_length() — 큐 길이 조회
-    - GapRange.to_dict() — 직렬화
-    - pool/redis = None일 때 안전 동작
+?뚯뒪??踰붿쐞:
+    - GapDetector.detect() ??媛??덉쓬/?놁쓬 ?먯젙
+    - GapDetector._calc_priority() ???곗꽑?쒖쐞 怨꾩궛
+    - GapDetector.enqueue() ??Redis ???깅줉
+    - GapDetector.get_queue_length() ????湲몄씠 議고쉶
+    - GapRange.to_dict() ??吏곷젹??
+    - pool/redis = None?????덉쟾 ?숈옉
 """
 
 from __future__ import annotations
@@ -22,13 +22,13 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "02_data"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "data_01"))
 
 from timescale.operations.gap_detector import GapDetector, GapRange, _GAP_FACTOR, _TF_SECONDS
 
 
 # ---------------------------------------------------------------------------
-# 픽스처
+# ?쎌뒪泥?
 # ---------------------------------------------------------------------------
 
 def _now() -> datetime:
@@ -36,7 +36,7 @@ def _now() -> datetime:
 
 
 def _make_pool(last_time: Optional[datetime] = None):
-    """asyncpg Mock — latest_snapshot 쿼리 반환값 설정"""
+    """asyncpg Mock ??latest_snapshot 荑쇰━ 諛섑솚媛??ㅼ젙"""
     pool = MagicMock()
     conn = AsyncMock()
     if last_time is not None:
@@ -61,19 +61,19 @@ def _make_redis(queue_length: int = 0):
 
 
 # ---------------------------------------------------------------------------
-# GapRange 테스트
+# GapRange ?뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestGapRange:
     def test_gap_seconds(self):
-        """gap_seconds()는 start~end 차이(초)를 반환"""
+        """gap_seconds()??start~end 李⑥씠(珥?瑜?諛섑솚"""
         start = datetime(2024, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
         end = datetime(2024, 1, 1, 0, 5, 0, tzinfo=timezone.utc)
         gap = GapRange("KRW-BTC", "1m", start, end)
         assert gap.gap_seconds == 300.0
 
     def test_to_dict_keys(self):
-        """to_dict()는 필수 키를 모두 포함"""
+        """to_dict()???꾩닔 ?ㅻ? 紐⑤몢 ?ы븿"""
         start = datetime(2024, 1, 1, tzinfo=timezone.utc)
         end = datetime(2024, 1, 2, tzinfo=timezone.utc)
         gap = GapRange("KRW-ETH", "5m", start, end, priority=2)
@@ -82,7 +82,7 @@ class TestGapRange:
             assert key in d
 
     def test_to_dict_values(self):
-        """to_dict() 값 검증"""
+        """to_dict() 媛?寃利?""
         start = datetime(2024, 1, 1, tzinfo=timezone.utc)
         end = datetime(2024, 1, 1, 1, 0, tzinfo=timezone.utc)
         gap = GapRange("KRW-BTC", "1h", start, end, priority=3)
@@ -93,56 +93,56 @@ class TestGapRange:
         assert d["gap_seconds"] == 3600.0
 
     def test_default_priority(self):
-        """priority 기본값은 5"""
+        """priority 湲곕낯媛믪? 5"""
         start = datetime(2024, 1, 1, tzinfo=timezone.utc)
         gap = GapRange("KRW-BTC", "1m", start, start)
         assert gap.priority == 5
 
 
 # ---------------------------------------------------------------------------
-# GapDetector._calc_priority() 테스트
+# GapDetector._calc_priority() ?뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestCalcPriority:
     def test_priority_1_over_one_day(self):
-        """1일 이상 갭 → 우선순위 1 (최고)"""
+        """1???댁긽 媛????곗꽑?쒖쐞 1 (理쒓퀬)"""
         delta = timedelta(days=2)
         p = GapDetector._calc_priority(delta, interval_sec=60)
         assert p == 1
 
     def test_priority_2_over_5h(self):
-        """5시간 이상 갭 → 우선순위 2"""
+        """5?쒓컙 ?댁긽 媛????곗꽑?쒖쐞 2"""
         delta = timedelta(hours=6)
         p = GapDetector._calc_priority(delta, interval_sec=60)
         assert p == 2
 
     def test_priority_3_over_1h(self):
-        """1시간 이상 갭 → 우선순위 3"""
+        """1?쒓컙 ?댁긽 媛????곗꽑?쒖쐞 3"""
         delta = timedelta(hours=2)
         p = GapDetector._calc_priority(delta, interval_sec=60)
         assert p == 3
 
     def test_priority_4_over_12m(self):
-        """12분 이상 갭 → 우선순위 4"""
+        """12遺??댁긽 媛????곗꽑?쒖쐞 4"""
         delta = timedelta(minutes=15)
         p = GapDetector._calc_priority(delta, interval_sec=60)
         assert p == 4
 
     def test_priority_5_small_gap(self):
-        """소규모 갭 → 우선순위 5 (최저)"""
+        """?뚭퇋紐?媛????곗꽑?쒖쐞 5 (理쒖?)"""
         delta = timedelta(minutes=3)
         p = GapDetector._calc_priority(delta, interval_sec=60)
         assert p == 5
 
 
 # ---------------------------------------------------------------------------
-# GapDetector.detect() 테스트
+# GapDetector.detect() ?뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestGapDetectorDetect:
     @pytest.mark.asyncio
     async def test_no_snapshot_returns_empty(self):
-        """스냅샷이 없으면 빈 목록 반환"""
+        """?ㅻ깄?룹씠 ?놁쑝硫?鍮?紐⑸줉 諛섑솚"""
         pool = _make_pool(last_time=None)
         detector = GapDetector(pool, None)
         result = await detector.detect("KRW-BTC", "1m")
@@ -150,8 +150,8 @@ class TestGapDetectorDetect:
 
     @pytest.mark.asyncio
     async def test_no_gap_returns_empty(self):
-        """갭이 없으면 빈 목록 반환 (최근 데이터)"""
-        recent = _now() - timedelta(seconds=30)  # 30초 전 — 1m 타임프레임, gap_factor=10 기준 미달
+        """媛?씠 ?놁쑝硫?鍮?紐⑸줉 諛섑솚 (理쒓렐 ?곗씠??"""
+        recent = _now() - timedelta(seconds=30)  # 30珥?????1m ??꾪봽?덉엫, gap_factor=10 湲곗? 誘몃떖
         pool = _make_pool(last_time=recent)
         detector = GapDetector(pool, None)
         result = await detector.detect("KRW-BTC", "1m")
@@ -159,8 +159,8 @@ class TestGapDetectorDetect:
 
     @pytest.mark.asyncio
     async def test_gap_detected(self):
-        """오래된 스냅샷이면 갭 감지"""
-        old_time = _now() - timedelta(hours=2)  # 2시간 전
+        """?ㅻ옒???ㅻ깄?룹씠硫?媛?媛먯?"""
+        old_time = _now() - timedelta(hours=2)  # 2?쒓컙 ??
         pool = _make_pool(last_time=old_time)
         detector = GapDetector(pool, None)
         result = await detector.detect("KRW-BTC", "1m")
@@ -171,7 +171,7 @@ class TestGapDetectorDetect:
 
     @pytest.mark.asyncio
     async def test_gap_priority_set(self):
-        """감지된 갭의 priority는 1~5 범위"""
+        """媛먯???媛?쓽 priority??1~5 踰붿쐞"""
         old_time = _now() - timedelta(days=3)
         pool = _make_pool(last_time=old_time)
         detector = GapDetector(pool, None)
@@ -180,11 +180,11 @@ class TestGapDetectorDetect:
 
     @pytest.mark.asyncio
     async def test_detect_all(self):
-        """detect_all() — 여러 심볼/타임프레임 조합 처리.
+        """detect_all() ???щ윭 ?щ낵/??꾪봽?덉엫 議고빀 泥섎━.
 
-        1m 타임프레임 threshold: 10 * 60s = 10분
-        1h 타임프레임 threshold: 10 * 3600s = 10시간
-        → 2일 전 스냅샷이면 두 타임프레임 모두 갭 감지 → 4 조합
+        1m ??꾪봽?덉엫 threshold: 10 * 60s = 10遺?
+        1h ??꾪봽?덉엫 threshold: 10 * 3600s = 10?쒓컙
+        ??2?????ㅻ깄?룹씠硫?????꾪봽?덉엫 紐⑤몢 媛?媛먯? ??4 議고빀
         """
         old_time = _now() - timedelta(days=2)
         pool = _make_pool(last_time=old_time)
@@ -193,25 +193,25 @@ class TestGapDetectorDetect:
             symbols=["KRW-BTC", "KRW-ETH"],
             timeframes=["1m", "1h"],
         )
-        # 4 조합 (2 심볼 × 2 타임프레임), 각 갭 1개
+        # 4 議고빀 (2 ?щ낵 횞 2 ??꾪봽?덉엫), 媛?媛?1媛?
         assert len(result) == 4
 
     @pytest.mark.asyncio
     async def test_no_pool_returns_empty(self):
-        """pool=None이면 빈 목록 반환"""
+        """pool=None?대㈃ 鍮?紐⑸줉 諛섑솚"""
         detector = GapDetector(None, None)
         result = await detector.detect("KRW-BTC", "1m")
         assert result == []
 
 
 # ---------------------------------------------------------------------------
-# GapDetector.enqueue() / get_queue_length() 테스트
+# GapDetector.enqueue() / get_queue_length() ?뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestGapDetectorEnqueue:
     @pytest.mark.asyncio
     async def test_enqueue_calls_zadd(self):
-        """enqueue()는 Redis zadd를 호출"""
+        """enqueue()??Redis zadd瑜??몄텧"""
         redis = _make_redis()
         detector = GapDetector(None, redis)
         start = datetime(2024, 1, 1, tzinfo=timezone.utc)
@@ -223,7 +223,7 @@ class TestGapDetectorEnqueue:
 
     @pytest.mark.asyncio
     async def test_enqueue_no_redis_returns_false(self):
-        """redis=None이면 False 반환"""
+        """redis=None?대㈃ False 諛섑솚"""
         detector = GapDetector(None, None)
         start = datetime(2024, 1, 1, tzinfo=timezone.utc)
         gap = GapRange("KRW-BTC", "1m", start, start)
@@ -232,7 +232,7 @@ class TestGapDetectorEnqueue:
 
     @pytest.mark.asyncio
     async def test_enqueue_all_returns_count(self):
-        """enqueue_all()은 성공 수를 반환"""
+        """enqueue_all()? ?깃났 ?섎? 諛섑솚"""
         redis = _make_redis()
         detector = GapDetector(None, redis)
         start = datetime(2024, 1, 1, tzinfo=timezone.utc)
@@ -242,7 +242,7 @@ class TestGapDetectorEnqueue:
 
     @pytest.mark.asyncio
     async def test_get_queue_length(self):
-        """get_queue_length()는 zcard 결과를 반환"""
+        """get_queue_length()??zcard 寃곌낵瑜?諛섑솚"""
         redis = _make_redis(queue_length=7)
         detector = GapDetector(None, redis)
         length = await detector.get_queue_length()
@@ -250,14 +250,14 @@ class TestGapDetectorEnqueue:
 
     @pytest.mark.asyncio
     async def test_get_queue_length_no_redis(self):
-        """redis=None이면 0 반환"""
+        """redis=None?대㈃ 0 諛섑솚"""
         detector = GapDetector(None, None)
         length = await detector.get_queue_length()
         assert length == 0
 
     @pytest.mark.asyncio
     async def test_zadd_score_is_priority(self):
-        """zadd의 score 값은 gap.priority와 일치"""
+        """zadd??score 媛믪? gap.priority? ?쇱튂"""
         redis = _make_redis()
         detector = GapDetector(None, redis)
         start = datetime(2024, 1, 1, tzinfo=timezone.utc)
@@ -269,3 +269,4 @@ class TestGapDetectorEnqueue:
         mapping = call_args[0][1]
         scores = list(mapping.values())
         assert scores[0] == 3.0
+

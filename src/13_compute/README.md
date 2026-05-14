@@ -1,65 +1,65 @@
-# src/13_compute — 계산 엔진
+﻿# src/13_compute ??怨꾩궛 ?붿쭊
 
-## 개요
+## 媛쒖슂
 
-GUI와 분리된 전용 계산 프로세스 모듈입니다. 캔들 집계, 지표 증분 계산(O(1) 복잡도), 스캐너 실행을 담당합니다.
+GUI? 遺꾨━???꾩슜 怨꾩궛 ?꾨줈?몄뒪 紐⑤뱢?낅땲?? 罹붾뱾 吏묎퀎, 吏??利앸텇 怨꾩궛(O(1) 蹂듭옟??, ?ㅼ틦???ㅽ뻾???대떦?⑸땲??
 
-`backup/compute/` 디렉토리에서 핵심 파일들을 통합하였습니다.
+`backup/compute/` ?붾젆?좊━?먯꽌 ?듭떖 ?뚯씪?ㅼ쓣 ?듯빀?섏??듬땲??
 
-## 디렉토리 구조
+## ?붾젆?좊━ 援ъ“
 
 ```
 src/13_compute/
-├── __init__.py            # 패키지 진입점 (ComputeProcess re-export)
-├── README.md              # 이 파일
-├── engine/                # 핵심 계산 엔진
-│   ├── __init__.py
-│   ├── README.md
-│   ├── compute_main.py    # 계산 프로세스 메인 (backup/compute에서 통합)
-│   ├── candle_aggregator.py  # 캔들 집계기
-│   ├── indicator_engine.py   # 지표 계산 엔진
-│   └── scanner_executor.py   # 스캐너 실행기
-├── aggregation/           # 데이터 집계 (틱→초→분→일 롤업)
-│   ├── __init__.py
-│   └── README.md
-└── workers/               # 백그라운드 계산 워커
-    ├── __init__.py
-    └── README.md
+?쒋?? __init__.py            # ?⑦궎吏 吏꾩엯??(ComputeProcess re-export)
+?쒋?? README.md              # ???뚯씪
+?쒋?? engine/                # ?듭떖 怨꾩궛 ?붿쭊
+??  ?쒋?? __init__.py
+??  ?쒋?? README.md
+??  ?쒋?? compute_main.py    # 怨꾩궛 ?꾨줈?몄뒪 硫붿씤 (backup/compute?먯꽌 ?듯빀)
+??  ?쒋?? candle_aggregator.py  # 罹붾뱾 吏묎퀎湲?
+??  ?쒋?? indicator_engine.py   # 吏??怨꾩궛 ?붿쭊
+??  ?붴?? scanner_executor.py   # ?ㅼ틦???ㅽ뻾湲?
+?쒋?? aggregation/           # ?곗씠??吏묎퀎 (?기넂珥댿넂遺꾟넂??濡ㅼ뾽)
+??  ?쒋?? __init__.py
+??  ?붴?? README.md
+?붴?? workers/               # 諛깃렇?쇱슫??怨꾩궛 ?뚯빱
+    ?쒋?? __init__.py
+    ?붴?? README.md
 ```
 
-## 하위 모듈 설명
+## ?섏쐞 紐⑤뱢 ?ㅻ챸
 
-### engine/ — 핵심 계산 엔진
+### engine/ ???듭떖 怨꾩궛 ?붿쭊
 
-캔들 집계, 지표 계산, 스캐너 실행의 핵심 로직을 포함합니다.
+罹붾뱾 吏묎퀎, 吏??怨꾩궛, ?ㅼ틦???ㅽ뻾???듭떖 濡쒖쭅???ы븿?⑸땲??
 
-**통합 내역**: `backup/compute/` → `src/13_compute/engine/`
+**?듯빀 ?댁뿭**: `backup/compute/` ??`src/13_compute/engine/`
 
-**주요 클래스**:
-- `ComputeProcess` : 계산 프로세스 메인 (GUI 분리 아키텍처)
-- `CandleAggregator` : 틱/초/분/일/주/월/년 캔들 집계
-- `IndicatorEngine` : O(1) 증분 계산 기반 지표 엔진
-- `ScannerExecutor` : 스캐너 조건 실행기
+**二쇱슂 ?대옒??*:
+- `ComputeProcess` : 怨꾩궛 ?꾨줈?몄뒪 硫붿씤 (GUI 遺꾨━ ?꾪궎?띿쿂)
+- `CandleAggregator` : ??珥?遺???二?????罹붾뱾 吏묎퀎
+- `IndicatorEngine` : O(1) 利앸텇 怨꾩궛 湲곕컲 吏???붿쭊
+- `ScannerExecutor` : ?ㅼ틦??議곌굔 ?ㅽ뻾湲?
 
-### aggregation/ — 데이터 집계
+### aggregation/ ???곗씠??吏묎퀎
 
-틱 데이터를 상위 시간 단위 캔들로 롤업하는 집계 로직입니다.
+???곗씠?곕? ?곸쐞 ?쒓컙 ?⑥쐞 罹붾뱾濡?濡ㅼ뾽?섎뒗 吏묎퀎 濡쒖쭅?낅땲??
 
-**주요 클래스**:
-- `TickAggregator` : 틱 → 초 단위 캔들 변환
-- `OHLCVAggregator` : OHLCV 상위 단위 롤업
-- `VolumeAggregator` : 거래량 집계
+**二쇱슂 ?대옒??*:
+- `TickAggregator` : ????珥??⑥쐞 罹붾뱾 蹂??
+- `OHLCVAggregator` : OHLCV ?곸쐞 ?⑥쐞 濡ㅼ뾽
+- `VolumeAggregator` : 嫄곕옒??吏묎퀎
 
-### workers/ — 백그라운드 계산 워커
+### workers/ ??諛깃렇?쇱슫??怨꾩궛 ?뚯빱
 
-백그라운드에서 지속적으로 계산 작업을 처리하는 워커 클래스입니다.
+諛깃렇?쇱슫?쒖뿉??吏?띿쟻?쇰줈 怨꾩궛 ?묒뾽??泥섎━?섎뒗 ?뚯빱 ?대옒?ㅼ엯?덈떎.
 
-**주요 클래스**:
-- `ComputeWorker` : 계산 프로세스 백그라운드 워커
-- `AggregationWorker` : 집계 작업 워커
-- `SchedulerWorker` : 주기적 계산 스케줄러
+**二쇱슂 ?대옒??*:
+- `ComputeWorker` : 怨꾩궛 ?꾨줈?몄뒪 諛깃렇?쇱슫???뚯빱
+- `AggregationWorker` : 吏묎퀎 ?묒뾽 ?뚯빱
+- `SchedulerWorker` : 二쇨린??怨꾩궛 ?ㅼ?以꾨윭
 
-## 사용 예시
+## ?ъ슜 ?덉떆
 
 ```python
 from src.13_compute import ComputeProcess
@@ -68,14 +68,15 @@ process = ComputeProcess()
 process.start()
 ```
 
-## 의존성
+## ?섏〈??
 
-- `src/01_core/` : 기본 설정, 이벤트 버스
-- `src/02_data/` : TimescaleDB, Redis (집계 데이터 저장/조회)
-- `src/07_scanner/` : 스캐너 조건 DSL
+- `src/01_core/` : 湲곕낯 ?ㅼ젙, ?대깽??踰꾩뒪
+- `src/data_01/` : TimescaleDB, Redis (吏묎퀎 ?곗씠?????議고쉶)
+- `src/07_scanner/` : ?ㅼ틦??議곌굔 DSL
 
-## 참고 문서
+## 李멸퀬 臾몄꽌
 
-- [`work_order/4_단계_Compute_프로세스_데이터_집계.md`](../../work_order/4_단계_Compute_프로세스_데이터_집계.md)
-- [`work_order/DB설계.md`](../../work_order/DB설계.md) — TimescaleDB 집계 테이블 스키마
-- [`work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md`](../../work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md)
+- [`work_order/4_?④퀎_Compute_?꾨줈?몄뒪_?곗씠??吏묎퀎.md`](../../work_order/4_?④퀎_Compute_?꾨줈?몄뒪_?곗씠??吏묎퀎.md)
+- [`work_order/DB?ㅺ퀎.md`](../../work_order/DB?ㅺ퀎.md) ??TimescaleDB 吏묎퀎 ?뚯씠釉??ㅽ궎留?
+- [`work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md`](../../work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md)
+

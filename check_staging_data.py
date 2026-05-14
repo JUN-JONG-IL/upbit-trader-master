@@ -24,8 +24,8 @@ if not logger.handlers:
 # 풀 우선 import 시도 (권장)
 connection_from_pool = None
 try:
-    from src.02_data.timescale.pool import connection_from_pool  # type: ignore
-    logger.debug("connection_from_pool imported from src.02_data.timescale.pool")
+    from src.data_01.timescale.pool import connection_from_pool  # type: ignore
+    logger.debug("connection_from_pool imported from src.data_01.timescale.pool")
 except Exception:
     connection_from_pool = None
     logger.debug("connection_from_pool not available; will fallback to psycopg2.connect")

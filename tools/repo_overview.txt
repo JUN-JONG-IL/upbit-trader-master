@@ -21,7 +21,7 @@ __pycache__ : 2
 SRC TOP-LEVEL (name : item_count)
 .vscode : 1
 01_core : 100
-02_data : 352
+data_01 : 352
 03_market : 87
 04_chart : 133
 05_strategy : 71
@@ -105,13 +105,13 @@ C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\config
 C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\README.md
 C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\utils\compute\README.md
 C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\utils\README.md
-C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\features\README.md
-C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\mongodb\README.md
-C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\README.md
-C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\redis\README.md
-C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\timescale\README.md
-C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\timescale\scripts\README.md
-C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\timescale\timescale_redis.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\data_01\features\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\data_01\mongodb\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\data_01\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\data_01\redis\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\data_01\timescale\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\data_01\timescale\scripts\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\data_01\timescale\timescale_redis.py
 C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\03_market\coinlist\README.md
 C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\03_market\coinlist\ui\README.md
 C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\03_market\orderbook\README.md
@@ -696,3 +696,4 @@ Current Stage: TBD
 STAG
 
 END OF OVERVIEW
+

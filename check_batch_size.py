@@ -12,7 +12,7 @@ print("🔍 CandleStager 설정 확인")
 print("="*60)
 
 # stager.py 파일 읽기
-stager_path = Path("src/02_data/pipeline/stager.py")
+stager_path = Path("src/data_01/pipeline/stager.py")
 
 with open(stager_path, "r", encoding="utf-8") as f:
     content = f.read()

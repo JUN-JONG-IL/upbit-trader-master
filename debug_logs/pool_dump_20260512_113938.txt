@@ -7,7 +7,7 @@ pbit-trader-master\src
     + FullyQualifiedErrorId : NativeCommandError
  
 2026-05-12 11:39:38,929 INFO: pool 紐⑤뱢???깃났?곸쑝濡?濡쒕뱶?덉뒿?덈떎: C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-maste
-r\src\02_data\timescale\pool.py
+r\src\data_01\timescale\pool.py
 2026-05-12 11:39:38,929 DEBUG: sys.path 蹂듦뎄 ?꾨즺
 2026-05-12 11:39:38,929 DEBUG: ?붾쾭洹?媛뺤젣 ??ぉ??state??異붽??덉뒿?덈떎: debug-force-1778553578
 2026-05-12 11:39:38,930 WARNING: [Pool.MON] pool snapshot dumped to C:\Users\Public\Documents\ESTsoft\CreatorTemp\times
@@ -32,3 +32,4 @@ reatorTemp\timescale_pool_status.json
   ]
 }
 ===== timescale_pool_status.json ?댁슜 ??=====
+

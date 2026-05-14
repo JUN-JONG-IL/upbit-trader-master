@@ -1,100 +1,101 @@
-# CHANGELOG
-# 2026-03-16 | Copilot | 업그레이드: 09_sentiment README v4.0. 버전 통일.
-# 2026-03-13 | Copilot | 업그레이드: 09_sentiment README v2.0. 전체 템플릿(개요/구조/기능/예시/의존성/참고) 추가.
-# 2026-03-06 | Copilot | 생성: 09_sentiment README 초안
+﻿# CHANGELOG
+# 2026-03-16 | Copilot | ?낃렇?덉씠?? 09_sentiment README v4.0. 踰꾩쟾 ?듭씪.
+# 2026-03-13 | Copilot | ?낃렇?덉씠?? 09_sentiment README v2.0. ?꾩껜 ?쒗뵆由?媛쒖슂/援ъ“/湲곕뒫/?덉떆/?섏〈??李멸퀬) 異붽?.
+# 2026-03-06 | Copilot | ?앹꽦: 09_sentiment README 珥덉븞
 
 Version: v4.0
 Last Modified: 2026-03-16
 References:
-  - work_order/13_단계_뉴스_소셜_감성_분석_시스템.md
-  - work_order/DB설계.md
+  - work_order/13_?④퀎_?댁뒪_?뚯뀥_媛먯꽦_遺꾩꽍_?쒖뒪??md
+  - work_order/DB?ㅺ퀎.md
 
-# src/09_sentiment — 뉴스 및 소셜 감성 분석
+# src/09_sentiment ???댁뒪 諛??뚯뀥 媛먯꽦 遺꾩꽍
 
-## 개요
+## 媛쒖슂
 
-뉴스(Bloomberg, Reuters, 네이버 등), 트위터/X, Reddit 등 **다중 소스에서 암호화폐 감성 데이터를 수집·분석**하여 거래 신호를 생성하는 모듈입니다.
-FinBERT/KoBERT 기반 감성 점수 산출과 영향력 가중치(팔로워 수, 리트윗 등)를 활용하여 뉴스 급등/급락 시 알림 신호를 발행합니다.
+?댁뒪(Bloomberg, Reuters, ?ㅼ씠踰???, ?몄쐞??X, Reddit ??**?ㅼ쨷 ?뚯뒪?먯꽌 ?뷀샇?뷀룓 媛먯꽦 ?곗씠?곕? ?섏쭛쨌遺꾩꽍**?섏뿬 嫄곕옒 ?좏샇瑜??앹꽦?섎뒗 紐⑤뱢?낅땲??
+FinBERT/KoBERT 湲곕컲 媛먯꽦 ?먯닔 ?곗텧怨??곹뼢??媛以묒튂(?붾줈???? 由ы듃????瑜??쒖슜?섏뿬 ?댁뒪 湲됰벑/湲됰씫 ???뚮┝ ?좏샇瑜?諛쒗뻾?⑸땲??
 
-## 디렉토리 구조
+## ?붾젆?좊━ 援ъ“
 
 ```
 src/09_sentiment/
-├── __init__.py                    # 모듈 진입점
-├── README.md                      # 이 파일
-└── analysis/
-    ├── __init__.py
-    ├── ui/                        # 감성 분석 PyQt5 위젯
-    │   ├── __init__.py
-    │   ├── widget_sentiment.py    # 메인 감성 분석 위젯
-    │   └── widget_wordcloud.py   # 워드클라우드 위젯
-    ├── core/                      # 데이터 수집 및 분석 엔진
-    │   ├── __init__.py
-    │   ├── news_collector.py      # 뉴스 수집기
-    │   ├── social_collector.py   # 소셜 데이터 수집기
-    │   └── sentiment_engine.py   # 감성 분석 엔진
-    ├── models/                    # NLP 모델
-    │   ├── __init__.py
-    │   ├── finbert_model.py       # FinBERT (금융 감성)
-    │   ├── kobert_model.py        # KoBERT (한국어 감성)
-    │   └── summarizer.py         # 텍스트 요약 모델
-    ├── preprocessing/             # 텍스트 전처리
-    │   ├── __init__.py
-    │   ├── text_cleaner.py        # 텍스트 정제
-    │   └── tokenizer.py          # 토큰화
-    ├── analytics/                 # 고급 분석 ✅ (analysis/ → analytics/ 변경)
-    │   ├── __init__.py
-    │   ├── correlation_analysis.py # 감성-가격 상관관계 분석
-    │   ├── influence_score.py      # 영향력 점수 계산
-    │   └── topic_modeling.py      # 토픽 모델링
-    └── workers/                   # 백그라운드 수집 워커
-        ├── __init__.py
-        ├── news_worker.py         # 뉴스 수집 워커
-        └── social_worker.py      # 소셜 수집 워커
+?쒋?? __init__.py                    # 紐⑤뱢 吏꾩엯??
+?쒋?? README.md                      # ???뚯씪
+?붴?? analysis/
+    ?쒋?? __init__.py
+    ?쒋?? ui/                        # 媛먯꽦 遺꾩꽍 PyQt5 ?꾩젽
+    ??  ?쒋?? __init__.py
+    ??  ?쒋?? widget_sentiment.py    # 硫붿씤 媛먯꽦 遺꾩꽍 ?꾩젽
+    ??  ?붴?? widget_wordcloud.py   # ?뚮뱶?대씪?곕뱶 ?꾩젽
+    ?쒋?? core/                      # ?곗씠???섏쭛 諛?遺꾩꽍 ?붿쭊
+    ??  ?쒋?? __init__.py
+    ??  ?쒋?? news_collector.py      # ?댁뒪 ?섏쭛湲?
+    ??  ?쒋?? social_collector.py   # ?뚯뀥 ?곗씠???섏쭛湲?
+    ??  ?붴?? sentiment_engine.py   # 媛먯꽦 遺꾩꽍 ?붿쭊
+    ?쒋?? models/                    # NLP 紐⑤뜽
+    ??  ?쒋?? __init__.py
+    ??  ?쒋?? finbert_model.py       # FinBERT (湲덉쑖 媛먯꽦)
+    ??  ?쒋?? kobert_model.py        # KoBERT (?쒓뎅??媛먯꽦)
+    ??  ?붴?? summarizer.py         # ?띿뒪???붿빟 紐⑤뜽
+    ?쒋?? preprocessing/             # ?띿뒪???꾩쿂由?
+    ??  ?쒋?? __init__.py
+    ??  ?쒋?? text_cleaner.py        # ?띿뒪???뺤젣
+    ??  ?붴?? tokenizer.py          # ?좏겙??
+    ?쒋?? analytics/                 # 怨좉툒 遺꾩꽍 ??(analysis/ ??analytics/ 蹂寃?
+    ??  ?쒋?? __init__.py
+    ??  ?쒋?? correlation_analysis.py # 媛먯꽦-媛寃??곴?愿怨?遺꾩꽍
+    ??  ?쒋?? influence_score.py      # ?곹뼢???먯닔 怨꾩궛
+    ??  ?붴?? topic_modeling.py      # ?좏뵿 紐⑤뜽留?
+    ?붴?? workers/                   # 諛깃렇?쇱슫???섏쭛 ?뚯빱
+        ?쒋?? __init__.py
+        ?쒋?? news_worker.py         # ?댁뒪 ?섏쭛 ?뚯빱
+        ?붴?? social_worker.py      # ?뚯뀥 ?섏쭛 ?뚯빱
 ```
 
-## 주요 기능
+## 二쇱슂 湲곕뒫
 
-- **다중 소스 수집**: 뉴스(Bloomberg, Reuters, 네이버), 트위터/X, Reddit 실시간 수집
-- **감성 분석**: FinBERT(영문), KoBERT(한국어) 기반 긍정/부정/중립 점수 산출
-- **영향력 가중치**: 팔로워 수, 리트윗, 조회수 기반 가중치 적용
-- **감성 시각화**: 워드클라우드, 시계열 감성 차트, 분포 파이차트
-- **소스 필터링**: 소스별·키워드별 필터링
-- **신호 생성**: 감성 급등/급락 탐지 → `01_core/events/` 이벤트 버스 발행
-- **MongoDB 저장**: 감성 데이터 및 원본 텍스트 영구 저장
+- **?ㅼ쨷 ?뚯뒪 ?섏쭛**: ?댁뒪(Bloomberg, Reuters, ?ㅼ씠踰?, ?몄쐞??X, Reddit ?ㅼ떆媛??섏쭛
+- **媛먯꽦 遺꾩꽍**: FinBERT(?곷Ц), KoBERT(?쒓뎅?? 湲곕컲 湲띿젙/遺??以묐┰ ?먯닔 ?곗텧
+- **?곹뼢??媛以묒튂**: ?붾줈???? 由ы듃?? 議고쉶??湲곕컲 媛以묒튂 ?곸슜
+- **媛먯꽦 ?쒓컖??*: ?뚮뱶?대씪?곕뱶, ?쒓퀎??媛먯꽦 李⑦듃, 遺꾪룷 ?뚯씠李⑦듃
+- **?뚯뒪 ?꾪꽣留?*: ?뚯뒪蹂꽷룻궎?뚮뱶蹂??꾪꽣留?
+- **?좏샇 ?앹꽦**: 媛먯꽦 湲됰벑/湲됰씫 ?먯? ??`01_core/events/` ?대깽??踰꾩뒪 諛쒗뻾
+- **MongoDB ???*: 媛먯꽦 ?곗씠??諛??먮낯 ?띿뒪???곴뎄 ???
 
-## 사용 예시
+## ?ъ슜 ?덉떆
 
 ```python
 from src._09_sentiment import SentimentWidget, SentimentEngine
 
-# UI 위젯
+# UI ?꾩젽
 widget = SentimentWidget()
 widget.show()
 
-# 감성 분석 엔진 직접 사용
+# 媛먯꽦 遺꾩꽍 ?붿쭊 吏곸젒 ?ъ슜
 engine = SentimentEngine()
-score = engine.analyze("비트코인 급등 예상, 기관 매수 증가")
+score = engine.analyze("鍮꾪듃肄붿씤 湲됰벑 ?덉긽, 湲곌? 留ㅼ닔 利앷?")
 print(score)  # SentimentScore(positive=0.85, negative=0.05, neutral=0.10)
 
-# 뉴스 수집 워커
+# ?댁뒪 ?섏쭛 ?뚯빱
 from src._09_sentiment.analysis.workers import NewsWorker
 worker = NewsWorker(config)
 worker.start()
 ```
 
-## 의존성
+## ?섏〈??
 
-- `src/01_core/` : 이벤트 버스 (신호 발행), 설정 관리
-- `src/02_data/mongodb/` : 감성 데이터 저장 (MongoDB)
-- `src/02_data/redis/` : 실시간 감성 캐시
-- transformers : FinBERT, KoBERT 모델
-- torch : 딥러닝 추론
-- aiohttp, httpx : 비동기 뉴스/소셜 수집
-- PyQt5 : UI 위젯
+- `src/01_core/` : ?대깽??踰꾩뒪 (?좏샇 諛쒗뻾), ?ㅼ젙 愿由?
+- `src/data_01/mongodb/` : 媛먯꽦 ?곗씠?????(MongoDB)
+- `src/data_01/redis/` : ?ㅼ떆媛?媛먯꽦 罹먯떆
+- transformers : FinBERT, KoBERT 紐⑤뜽
+- torch : ?λ윭??異붾줎
+- aiohttp, httpx : 鍮꾨룞湲??댁뒪/?뚯뀥 ?섏쭛
+- PyQt5 : UI ?꾩젽
 
-## 참고 문서
+## 李멸퀬 臾몄꽌
 
-- [`work_order/13_단계_뉴스_소셜_감성_분석_시스템.md`](../../work_order/13_단계_뉴스_소셜_감성_분석_시스템.md)
-- [`work_order/DB설계.md`](../../work_order/DB설계.md) — MongoDB 감성 데이터 스키마
-- [`work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md`](../../work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md) § 21장
+- [`work_order/13_?④퀎_?댁뒪_?뚯뀥_媛먯꽦_遺꾩꽍_?쒖뒪??md`](../../work_order/13_?④퀎_?댁뒪_?뚯뀥_媛먯꽦_遺꾩꽍_?쒖뒪??md)
+- [`work_order/DB?ㅺ퀎.md`](../../work_order/DB?ㅺ퀎.md) ??MongoDB 媛먯꽦 ?곗씠???ㅽ궎留?
+- [`work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md`](../../work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md) 짠 21??
+

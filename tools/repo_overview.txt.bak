@@ -1,0 +1,698 @@
+﻿
+REPO TOP-LEVEL (name : item_count)
+.vscode : 3
+assets : 6
+backup : 1046
+backup_redis_files : 14
+base : 3
+config : 1
+database : 2
+docker : 18
+docs : 198
+feast_repo : 2
+logs : 0
+scheduler : 2
+sql : 2
+src : 2156
+tools : 96
+work_order : 40
+__pycache__ : 2
+
+SRC TOP-LEVEL (name : item_count)
+.vscode : 1
+01_core : 100
+02_data : 352
+03_market : 87
+04_chart : 133
+05_strategy : 71
+06_ai : 216
+07_scanner : 93
+08_portfolio : 66
+09_sentiment : 58
+10_trade : 95
+11_server : 120
+12_realtime : 11
+13_compute : 15
+app : 82
+resources : 3
+styles : 632
+__pycache__ : 1
+
+KEY FILES (matching patterns)
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\.vscode\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\assets\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup_redis_files\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\ai_engine\auto_retraining.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\ai_engine\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\ai\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\app\auto_backfill.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\app\auto_controller.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\app\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\chart\ai\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\chart\multi\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\chart\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\coinlist\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\component\component.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\component\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\compute\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\config\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\data\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\data\timescale\scripts\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\data\timescale\timescale_redis.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\db\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\detailholdinglist\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\holdinglist\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\login\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\models\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\nlp\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\orderbook\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\prediction\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\prompt\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\rl\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\scanner\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\scanner\README_ADVANCED_SCANNER_UI.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\sentiment\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\server\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\settings\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\signals\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\static\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\strategy\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\styles\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\trade\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\userinfo\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\utils\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\base\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docker\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\api\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\architecture\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\automation\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\backups\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\development\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\getting-started\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\guides\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\phases\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\previous_stages\README_작성_가이드-orig-2026-01-30.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\previous_stages\README_작성_가이드-updated-2026-01-30.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\previous_stages\README-orig-2026-01-30.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\previous_stages\README-updated-2026-01-30.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\docs\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\auth\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\auth\ui\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\base\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\config\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\utils\compute\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\01_core\utils\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\features\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\mongodb\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\redis\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\timescale\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\timescale\scripts\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\02_data\timescale\timescale_redis.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\03_market\coinlist\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\03_market\coinlist\ui\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\03_market\orderbook\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\03_market\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\03_market\trades\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\04_chart\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\05_strategy\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\ai_engine\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\ai_engine\training\automation\auto_retraining.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\ai_engine\ui\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\core\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\detection\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\models\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\prediction\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\prediction\ui\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\prompt\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\rl\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\sentiment\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\strategy\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\training\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\ui\ai_engine\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\ui\prediction\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\06_ai\utils\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\07_scanner\engine\indicators\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\07_scanner\engine\logic\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\07_scanner\engine\patterns\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\07_scanner\engine\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\07_scanner\engine\README_ADVANCED_SCANNER_UI.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\07_scanner\engine\ui\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\07_scanner\engine\workers\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\07_scanner\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\08_portfolio\holdings\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\08_portfolio\holdings\ui\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\08_portfolio\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\08_portfolio\userinfo\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\08_portfolio\userinfo\ui\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\09_sentiment\analysis\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\09_sentiment\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\10_trade\orders\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\10_trade\orders\ui\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\10_trade\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\10_trade\signals\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\10_trade\ui\auto\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\10_trade\ui\auto\ui\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\11_server\app\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\11_server\component\component.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\11_server\component\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\11_server\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\12_realtime\component\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\12_realtime\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\12_realtime\ui\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\12_realtime\workers\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\13_compute\aggregation\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\13_compute\engine\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\13_compute\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\13_compute\workers\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\app\core\auto_backfill.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\app\core\auto_controller.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\app\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\styles\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\tools\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\tools\scripts\auto_complete_v3.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\tools\scripts\automation\auto_workflow.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\tools\scripts\automation\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\work_order\README.md
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\work_order\README_작성_가이드.md
+
+SEARCH: app/core and app location
+app/core not found at repo-root\app\core
+
+SEARCH: auto_backfill related files
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\backup\app\auto_backfill.py
+C:\Users\jji24\anaconda3\envs\py311\trade\upbit-trader-master\src\app\core\auto_backfill.py
+
+WORK_ORDER & DB docs (if present) - first 200 chars
+
+--- 10_단계_알림_시스템.md ---
+Current Stage: 10
+STAGE_10_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 10
+STAGE_1
+
+--- 11_단계_AI_엔진_통합.md ---
+Current Stage: 11
+STAGE_11_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 11
+STAGE_1
+
+--- 12_단계_예측_모델.md ---
+Current Stage: 12
+STAGE_12_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 12
+STAGE_1
+
+--- 13_단계_뉴스_소셜_감성_분석_시스템.md ---
+Current Stage: 13
+STAGE_13_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 13
+STAGE_1
+
+--- 14_단계_자동매매_엔진.md ---
+Current Stage: 14
+STAGE_14_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 14
+STAGE_1
+
+--- 15_고급_차트_도구.md ---
+Current Stage: 15
+STAGE_15_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 15
+STAGE_1
+
+--- 15_고급_차트_도구_v0.md ---
+# 15?④퀎: 怨좉툒 李⑦듃 ?꾧뎄 ?꾩쟾 援ы쁽
+
+**Current Stage**: 15  
+**Version**: v2.0  
+**Last Modified**: 2026-02-08 | GitHub Copilot  
+**References**:
+- work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+--- 15_고급_차트_도구_v2.md ---
+Current Stage: 15
+STAGE_15_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+---
+Current Stage: 15
+ST
+
+--- 16_단계_포트폴리오_분석.md ---
+Current Stage: 16
+STAGE_16_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 16
+STAGE_1
+
+--- 17_단계_소셜_트레이딩.md ---
+Current Stage: 17
+STAGE_17_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 17
+STAGE_1
+
+--- 18_단계_UI_UX_고도화.md ---
+Current Stage: 18
+STAGE_18_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 18
+STAGE_1
+
+--- 19_단계_확장_연동.md ---
+Current Stage: 19
+STAGE_19_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 19
+STAGE_1
+
+--- 1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md ---
+Current Stage: 1
+STAGE_1_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 1
+STAGE_1_LO
+
+--- 20_단계_안정화_및_운영.md ---
+Current Stage: 20
+STAGE_20_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 20
+STAGE_2
+
+--- 21_단계_확장_연동.md ---
+Current Stage: 21
+STAGE_21_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 21
+STAGE_2
+
+--- 22_단계_안정화_및_운영.md ---
+Current Stage: 22
+STAGE_22_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 22
+STAGE_2
+
+--- 23_단계_제품화_및_거버넌스.md ---
+Current Stage: 23
+STAGE_23_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 23
+STAGE_2
+
+--- 2_단계_환경_구축_및_사전_준비.md ---
+Current Stage: 2
+STAGE_2_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 2
+STAGE_2_LO
+
+--- 3_단계_MONITOR_모드_안정화.md ---
+Current Stage: 3
+STAGE_3_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 3
+STAGE_3_LO
+
+--- 4_단계_Compute_프로세스_데이터_집계.md ---
+Current Stage: 4
+STAGE_4_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 4
+STAGE_4_LO
+
+--- 4_단계_Compute_프로세스_데이터_집계_OLD.md ---
+Current Stage: 4
+STAGE_4_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 4
+STAGE_4_LO
+
+--- 5_단계_Scanner_Search_엔진.md ---
+Current Stage: 5
+STAGE_5_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 5
+STAGE_5_LO
+
+--- 5_단계_완료_체크리스트.md ---
+Current Stage: 5
+STAGE_5_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 5
+STAGE_5_LO
+
+--- 6_단계_PAPER_모드_구현.md ---
+Current Stage: 6
+STAGE_6_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 6
+STAGE_6_LO
+
+--- 7_단계_LIVE_모드_구현.md ---
+Current Stage: 7
+STAGE_7_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 7
+STAGE_7_LO
+
+--- 8_단계_멀티차트_레이아웃.md ---
+Current Stage: 8
+STAGE_8_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 8
+STAGE_8_LO
+
+--- 8_단계_멀티차트_레이아웃_v0.md ---
+# 8?④퀎: 硫?곗감???덉씠?꾩썐 ?꾩쟾 援ы쁽
+
+**Current Stage**: 8  
+**Version**: v2.0  
+**Last Modified**: 2026-02-08 | GitHub Copilot  
+**References**:
+- work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+--- 8_단계_멀티차트_레이아웃_v2.md ---
+Current Stage: 8
+STAGE_8_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+---
+Current Stage: 8
+STAGE
+
+--- 9_단계_단축키_시스템.md ---
+Current Stage: 9
+STAGE_9_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: 9
+STAGE_9_LO
+
+--- COPILOT_INSTRUCTIONS.md ---
+Current Stage: TBD
+STAGE_<N>_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+# ?뱲 Copilot ?묒뾽 吏?쒖꽌 (
+
+--- DB설계.md ---
+?덊룷??work_oder/DB?ㅺ퀎.md瑜???긽 以?섑븯???묒뾽?댁＜?몄슂.
+湲곗〈 *.ui 遺덈윭?ㅺ린,李⑦듃,醫낅ぉ?뚯씠釉??멸?李쎈벑 ui/ux 蹂寃쏀븯硫??덈맗?덈떎.
+?꾩젣 DB?ㅺ퀎??吏묒쨷?섍퀬 洹??곗씠?곕줈 ?섏쨷??李⑦듃,醫낅ぉ?뚯씠釉??멸?李?吏???ㅼ틦??AI/ML?깆뿉 ?ъ슜???덉젙?낅땲??
+?묒뾽????긽 ?쇨??
+
+--- README.md ---
+Current Stage: TBD
+STAGE_<N>_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: TBD
+STAG
+
+--- README_작성_가이드.md ---
+Current Stage: TBD
+STAGE_<N>_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: TBD
+STAG
+
+--- 규칙.md ---
+Current Stage: TBD
+STAGE_<N>_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+# ?뵦 ?듯빀 ?몃젅?대뵫 ?뚮옯??媛쒕컻
+
+--- 규칙_backup_20260209.md ---
+Current Stage: TBD
+STAGE_<N>_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: TBD
+STAG
+
+--- 규칙_old.md ---
+Current Stage: TBD
+STAGE_<N>_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: TBD
+STAG
+
+--- 규칙_원본.md ---
+Current Stage: TBD
+STAGE_<N>_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: TBD
+STAG
+
+--- 문서_업데이트_프로세스.md ---
+Current Stage: TBD
+STAGE_<N>_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: TBD
+STAG
+
+--- 완전_자동화_가이드.md ---
+Current Stage: TBD
+STAGE_<N>_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: TBD
+STAG
+
+--- 통합_개발_가이드.md ---
+Current Stage: TBD
+STAGE_<N>_LOCKED: true
+Version: v1.0
+Last Modified: 2026-01-30 | Copilot
+References:
+  - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
+
+---
+
+Current Stage: TBD
+STAG
+
+END OF OVERVIEW

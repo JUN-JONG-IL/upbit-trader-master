@@ -1,12 +1,12 @@
-"""
-Redis CacheManager 단위 테스트
+﻿"""
+Redis CacheManager ?⑥쐞 ?뚯뒪??
 
-테스트 범위:
+?뚯뒪??踰붿쐞:
     - CacheManager.push_candle() / get_candles()
     - CacheManager.set_orderbook() / get_orderbook()
     - CacheManager.push_trade() / get_trades()
-    - client=None일 때 안전 동작
-    - Pipeline 배치 전송 (push_candle_batch)
+    - client=None?????덉쟾 ?숈옉
+    - Pipeline 諛곗튂 ?꾩넚 (push_candle_batch)
     - invalidate()
 """
 
@@ -22,7 +22,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "02_data"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "data_01"))
 
 from redis.cache_manager import (
     CacheManager,
@@ -39,7 +39,7 @@ from redis.cache_manager import (
 
 
 # ---------------------------------------------------------------------------
-# 픽스처
+# ?쎌뒪泥?
 # ---------------------------------------------------------------------------
 
 def _candle(symbol: str = "KRW-BTC", tf: str = "1m", ts: float = 1700000000.0) -> Dict[str, Any]:
@@ -56,7 +56,7 @@ def _candle(symbol: str = "KRW-BTC", tf: str = "1m", ts: float = 1700000000.0) -
 
 
 def _make_redis_mock():
-    """Redis Pipeline 포함 asyncio Mock"""
+    """Redis Pipeline ?ы븿 asyncio Mock"""
     client = AsyncMock()
     pipe = AsyncMock()
     pipe.zadd = AsyncMock()
@@ -76,7 +76,7 @@ def _make_redis_mock():
 
 
 # ---------------------------------------------------------------------------
-# 키 패턴 테스트
+# ???⑦꽩 ?뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestKeyPatterns:
@@ -91,7 +91,7 @@ class TestKeyPatterns:
 
 
 # ---------------------------------------------------------------------------
-# 직렬화 테스트
+# 吏곷젹???뚯뒪??
 # ---------------------------------------------------------------------------
 
 class TestSerialization:
@@ -105,7 +105,7 @@ class TestSerialization:
 
 
 # ---------------------------------------------------------------------------
-# CacheManager — None client
+# CacheManager ??None client
 # ---------------------------------------------------------------------------
 
 class TestCacheManagerNullClient:
@@ -147,13 +147,13 @@ class TestCacheManagerNullClient:
 
 
 # ---------------------------------------------------------------------------
-# CacheManager — 캔들 캐시
+# CacheManager ??罹붾뱾 罹먯떆
 # ---------------------------------------------------------------------------
 
 class TestCandleCache:
     @pytest.mark.asyncio
     async def test_push_candle_uses_pipeline(self):
-        """push_candle()은 pipeline zadd + zremrangebyrank + expire 호출"""
+        """push_candle()? pipeline zadd + zremrangebyrank + expire ?몄텧"""
         client, pipe = _make_redis_mock()
         cm = CacheManager(client)
         result = await cm.push_candle("KRW-BTC", "1m", _candle())
@@ -165,7 +165,7 @@ class TestCandleCache:
 
     @pytest.mark.asyncio
     async def test_push_candle_expire_value(self):
-        """expire는 _CANDLE_TTL 값으로 호출"""
+        """expire??_CANDLE_TTL 媛믪쑝濡??몄텧"""
         client, pipe = _make_redis_mock()
         cm = CacheManager(client)
         await cm.push_candle("KRW-BTC", "1m", _candle())
@@ -174,7 +174,7 @@ class TestCandleCache:
 
     @pytest.mark.asyncio
     async def test_push_candle_batch(self):
-        """push_candle_batch()는 여러 캔들을 파이프라인으로 처리"""
+        """push_candle_batch()???щ윭 罹붾뱾???뚯씠?꾨씪?몄쑝濡?泥섎━"""
         client, pipe = _make_redis_mock()
         cm = CacheManager(client)
         candles = [_candle(ts=float(i)) for i in range(5)]
@@ -184,7 +184,7 @@ class TestCandleCache:
 
     @pytest.mark.asyncio
     async def test_push_candle_batch_empty(self):
-        """빈 목록은 0 반환"""
+        """鍮?紐⑸줉? 0 諛섑솚"""
         client, _ = _make_redis_mock()
         cm = CacheManager(client)
         count = await cm.push_candle_batch("KRW-BTC", "1m", [])
@@ -192,7 +192,7 @@ class TestCandleCache:
 
     @pytest.mark.asyncio
     async def test_get_candles_deserializes(self):
-        """get_candles()는 zrevrange 결과를 역직렬화"""
+        """get_candles()??zrevrange 寃곌낵瑜???쭅?ы솕"""
         client, _ = _make_redis_mock()
         serialized = [_dumps(_candle())]
         client.zrevrange = AsyncMock(return_value=serialized)
@@ -203,7 +203,7 @@ class TestCandleCache:
 
     @pytest.mark.asyncio
     async def test_get_candles_limit(self):
-        """limit 파라미터가 zrevrange stop에 반영됨"""
+        """limit ?뚮씪誘명꽣媛 zrevrange stop??諛섏쁺??""
         client, _ = _make_redis_mock()
         cm = CacheManager(client)
         await cm.get_candles("KRW-BTC", "1m", limit=50)
@@ -211,13 +211,13 @@ class TestCandleCache:
 
 
 # ---------------------------------------------------------------------------
-# CacheManager — 호가 캐시
+# CacheManager ???멸? 罹먯떆
 # ---------------------------------------------------------------------------
 
 class TestOrderbookCache:
     @pytest.mark.asyncio
     async def test_set_orderbook_uses_pipeline(self):
-        """set_orderbook()은 pipeline hset + expire 호출"""
+        """set_orderbook()? pipeline hset + expire ?몄텧"""
         client, pipe = _make_redis_mock()
         cm = CacheManager(client)
         result = await cm.set_orderbook("KRW-BTC", {"bid": "50000000", "ask": "50100000"})
@@ -227,7 +227,7 @@ class TestOrderbookCache:
 
     @pytest.mark.asyncio
     async def test_set_orderbook_ttl(self):
-        """expire는 _ORDERBOOK_TTL(5초)로 호출"""
+        """expire??_ORDERBOOK_TTL(5珥?濡??몄텧"""
         client, pipe = _make_redis_mock()
         cm = CacheManager(client)
         await cm.set_orderbook("KRW-BTC", {"bid": "1"})
@@ -236,7 +236,7 @@ class TestOrderbookCache:
 
     @pytest.mark.asyncio
     async def test_get_orderbook_returns_dict(self):
-        """get_orderbook()은 hgetall 결과 반환"""
+        """get_orderbook()? hgetall 寃곌낵 諛섑솚"""
         client, _ = _make_redis_mock()
         client.hgetall = AsyncMock(return_value={"bid": "50000000"})
         cm = CacheManager(client)
@@ -245,7 +245,7 @@ class TestOrderbookCache:
 
     @pytest.mark.asyncio
     async def test_get_orderbook_empty_returns_none(self):
-        """hgetall이 빈 dict 반환하면 None"""
+        """hgetall??鍮?dict 諛섑솚?섎㈃ None"""
         client, _ = _make_redis_mock()
         client.hgetall = AsyncMock(return_value={})
         cm = CacheManager(client)
@@ -254,13 +254,13 @@ class TestOrderbookCache:
 
 
 # ---------------------------------------------------------------------------
-# CacheManager — 체결 캐시
+# CacheManager ??泥닿껐 罹먯떆
 # ---------------------------------------------------------------------------
 
 class TestTradeCache:
     @pytest.mark.asyncio
     async def test_push_trade_uses_pipeline(self):
-        """push_trade()는 lpush + ltrim + expire 호출"""
+        """push_trade()??lpush + ltrim + expire ?몄텧"""
         client, pipe = _make_redis_mock()
         cm = CacheManager(client)
         result = await cm.push_trade("KRW-BTC", {"price": 50000000, "volume": 0.1})
@@ -271,7 +271,7 @@ class TestTradeCache:
 
     @pytest.mark.asyncio
     async def test_push_trade_ttl(self):
-        """expire는 _TRADE_TTL(300초)로 호출"""
+        """expire??_TRADE_TTL(300珥?濡??몄텧"""
         client, pipe = _make_redis_mock()
         cm = CacheManager(client)
         await cm.push_trade("KRW-BTC", {"price": 1})
@@ -280,7 +280,7 @@ class TestTradeCache:
 
     @pytest.mark.asyncio
     async def test_get_trades_deserializes(self):
-        """get_trades()는 lrange 결과를 역직렬화"""
+        """get_trades()??lrange 寃곌낵瑜???쭅?ы솕"""
         client, _ = _make_redis_mock()
         trade = {"price": 50000000, "volume": 0.5}
         client.lrange = AsyncMock(return_value=[_dumps(trade)])
@@ -291,13 +291,13 @@ class TestTradeCache:
 
 
 # ---------------------------------------------------------------------------
-# CacheManager — invalidate
+# CacheManager ??invalidate
 # ---------------------------------------------------------------------------
 
 class TestInvalidate:
     @pytest.mark.asyncio
     async def test_invalidate_orderbook_and_trade(self):
-        """timeframe 없이 호출하면 orderbook + trade 키 삭제"""
+        """timeframe ?놁씠 ?몄텧?섎㈃ orderbook + trade ????젣"""
         client, _ = _make_redis_mock()
         cm = CacheManager(client)
         await cm.invalidate("KRW-BTC")
@@ -308,7 +308,7 @@ class TestInvalidate:
 
     @pytest.mark.asyncio
     async def test_invalidate_candle_key(self):
-        """timeframe 지정 시 캔들 키만 삭제"""
+        """timeframe 吏????罹붾뱾 ?ㅻ쭔 ??젣"""
         client, _ = _make_redis_mock()
         cm = CacheManager(client)
         await cm.invalidate("KRW-BTC", "1m")
@@ -316,6 +316,7 @@ class TestInvalidate:
 
     @pytest.mark.asyncio
     async def test_invalidate_no_client(self):
-        """client=None이면 아무 동작 없음"""
+        """client=None?대㈃ ?꾨Т ?숈옉 ?놁쓬"""
         cm = CacheManager(None)
-        await cm.invalidate("KRW-BTC")  # 예외 없이 통과
+        await cm.invalidate("KRW-BTC")  # ?덉쇅 ?놁씠 ?듦낵
+

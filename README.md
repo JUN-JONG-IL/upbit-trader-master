@@ -1,274 +1,274 @@
-# CHANGELOG
-# 2026-01-31 | Copilot | 변경: 루트 README.md 재작성 — 파일/폴더별 목적, 사용법, 실행방법 및 주의사항을 README_작성_가이드.md 기준으로 상세 기술. 영향: 루트 문서. 테스트: 로컬 문서 검토.
+﻿# CHANGELOG
+# 2026-01-31 | Copilot | 蹂寃? 猷⑦듃 README.md ?ъ옉?????뚯씪/?대뜑蹂?紐⑹쟻, ?ъ슜踰? ?ㅽ뻾諛⑸쾿 諛?二쇱쓽?ы빆??README_?묒꽦_媛?대뱶.md 湲곗??쇰줈 ?곸꽭 湲곗닠. ?곹뼢: 猷⑦듃 臾몄꽌. ?뚯뒪?? 濡쒖뺄 臾몄꽌 寃??
 
 Version: v2.0
 Last Modified: 2026-01-31 | Copilot
 References:
- - work_order/README_작성_가이드.md
- - work_order/규칙.md
- - work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md
+ - work_order/README_?묒꽦_媛?대뱶.md
+ - work_order/洹쒖튃.md
+ - work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md
 
-요약 (한 줄)
-- 이 파일은 프로젝트 루트의 파일과 폴더를 대상으로 한 상세 README 입니다. 각 항목에 대해 목적, 즉시 사용할 수 있는 사용 예(명령어/코드), 그리고 주의사항(민감정보, STAGE_LOCKED, LIVE 모드 관련)을 빠짐없이 기술합니다. 하위 폴더 내부 파일 목록은 포함하지 않습니다.
+?붿빟 (??以?
+- ???뚯씪? ?꾨줈?앺듃 猷⑦듃???뚯씪怨??대뜑瑜???곸쑝濡????곸꽭 README ?낅땲?? 媛???ぉ?????紐⑹쟻, 利됱떆 ?ъ슜?????덈뒗 ?ъ슜 ??紐낅졊??肄붾뱶), 洹몃━怨?二쇱쓽?ы빆(誘쇨컧?뺣낫, STAGE_LOCKED, LIVE 紐⑤뱶 愿????鍮좎쭚?놁씠 湲곗닠?⑸땲?? ?섏쐞 ?대뜑 ?대? ?뚯씪 紐⑸줉? ?ы븿?섏? ?딆뒿?덈떎.
 
-중요 안내 (먼저 읽을 것)
-1. work_order/규칙.md 및 work_order/README_작성_가이드.md를 먼저 읽으십시오. 이 문서의 형식과 변경 규칙을 따릅니다.
-2. "앱 기능 변질 금지(P1)" 원칙을 준수하십시오. 기존 파일/스크립트의 입출력, 데이터 포맷, API 계약을 변경하지 마십시오.
-3. 민감한 인증정보(API 키 등)는 환경변수 또는 OS별 시크릿 매니저에 보관하고 절대 리포지토리에 하드코딩하지 마십시오.
+以묒슂 ?덈궡 (癒쇱? ?쎌쓣 寃?
+1. work_order/洹쒖튃.md 諛?work_order/README_?묒꽦_媛?대뱶.md瑜?癒쇱? ?쎌쑝??떆?? ??臾몄꽌???뺤떇怨?蹂寃?洹쒖튃???곕쫭?덈떎.
+2. "??湲곕뒫 蹂吏?湲덉?(P1)" ?먯튃??以?섑븯??떆?? 湲곗〈 ?뚯씪/?ㅽ겕由쏀듃???낆텧?? ?곗씠???щ㎎, API 怨꾩빟??蹂寃쏀븯吏 留덉떗?쒖삤.
+3. 誘쇨컧???몄쬆?뺣낫(API ???????섍꼍蹂???먮뒗 OS蹂??쒗겕由?留ㅻ땲???蹂닿??섍퀬 ?덈? 由ы룷吏?좊━???섎뱶肄붾뵫?섏? 留덉떗?쒖삤.
 
-목차
-- 문서 구조
-- 개요
-- 루트 파일/폴더 상세 설명 (각 파일별 목적, 사용법, 주의사항)
-- 개발 환경 설정 및 실행방법 (로컬 / Docker)
-- 테스트 및 린트 명령
-- 자동화 도구(문서 검사) 사용법
-- 배포/실거래(주의)
-- 변경 이력 및 롤백
-- 다음 작업 제안
+紐⑹감
+- 臾몄꽌 援ъ“
+- 媛쒖슂
+- 猷⑦듃 ?뚯씪/?대뜑 ?곸꽭 ?ㅻ챸 (媛??뚯씪蹂?紐⑹쟻, ?ъ슜踰? 二쇱쓽?ы빆)
+- 媛쒕컻 ?섍꼍 ?ㅼ젙 諛??ㅽ뻾諛⑸쾿 (濡쒖뺄 / Docker)
+- ?뚯뒪??諛?由고듃 紐낅졊
+- ?먮룞???꾧뎄(臾몄꽌 寃?? ?ъ슜踰?
+- 諛고룷/?ㅺ굅??二쇱쓽)
+- 蹂寃??대젰 諛?濡ㅻ갚
+- ?ㅼ쓬 ?묒뾽 ?쒖븞
 
-## 📚 문서 구조
+## ?뱴 臾몄꽌 援ъ“
 
-### 핵심 문서
-- **[work_order/](./work_order/)** - 단계별 작업 지시서 및 핵심 규칙
-  - [규칙.md](./work_order/규칙.md) - 절대 규칙 (필독) ⭐
-  - [통합_개발_가이드.md](./work_order/통합_개발_가이드.md) - 통합 개발 가이드
+### ?듭떖 臾몄꽌
+- **[work_order/](./work_order/)** - ?④퀎蹂??묒뾽 吏?쒖꽌 諛??듭떖 洹쒖튃
+  - [洹쒖튃.md](./work_order/洹쒖튃.md) - ?덈? 洹쒖튃 (?꾨룆) 狩?
+  - [?듯빀_媛쒕컻_媛?대뱶.md](./work_order/?듯빀_媛쒕컻_媛?대뱶.md) - ?듯빀 媛쒕컻 媛?대뱶
   
-### 개발자 가이드
-- **[docs/development/](./docs/development/)** - 개발 표준 및 가이드
-  - [코딩 표준](./docs/development/CODING_STANDARDS.md) - DRY, 네이밍, 타입힌트 등
-  - [파일 구조](./docs/development/FILE_STRUCTURE.md) - 폴더 구조, 파일명 규칙
-  - [프로세스 아키텍처](./docs/development/PROCESS_ARCHITECTURE.md) - GUI/WS/Compute 프로세스 구조
-  - [로깅 가이드](./docs/development/LOGGING_GUIDE.md) - 로그 레벨, 에러 처리
-  - [UI/UX 가이드라인](./docs/development/UI_UX_GUIDELINES.md) - Qt Designer 사용, 디자인 원칙
-  - [임포트 규칙](./docs/development/IMPORT_GUIDELINES.md) - 임포트 경로 규칙 ⚠️
+### 媛쒕컻??媛?대뱶
+- **[docs/development/](./docs/development/)** - 媛쒕컻 ?쒖? 諛?媛?대뱶
+  - [肄붾뵫 ?쒖?](./docs/development/CODING_STANDARDS.md) - DRY, ?ㅼ씠諛? ??낇엺????
+  - [?뚯씪 援ъ“](./docs/development/FILE_STRUCTURE.md) - ?대뜑 援ъ“, ?뚯씪紐?洹쒖튃
+  - [?꾨줈?몄뒪 ?꾪궎?띿쿂](./docs/development/PROCESS_ARCHITECTURE.md) - GUI/WS/Compute ?꾨줈?몄뒪 援ъ“
+  - [濡쒓퉭 媛?대뱶](./docs/development/LOGGING_GUIDE.md) - 濡쒓렇 ?덈꺼, ?먮윭 泥섎━
+  - [UI/UX 媛?대뱶?쇱씤](./docs/development/UI_UX_GUIDELINES.md) - Qt Designer ?ъ슜, ?붿옄???먯튃
+  - [?꾪룷??洹쒖튃](./docs/development/IMPORT_GUIDELINES.md) - ?꾪룷??寃쎈줈 洹쒖튃 ?좑툘
   
-### 임포트 규칙 ⚠️
-- **`src.` 접두사 사용 금지**
-- 모든 `src/` 내부 모듈은 직접 임포트
-- 예: `from ai.model_registry import ModelRegistry`
-- 자동 검증: `python tools/scripts/check_imports.py`
-- 상세: [docs/development/IMPORT_GUIDELINES.md](./docs/development/IMPORT_GUIDELINES.md)
+### ?꾪룷??洹쒖튃 ?좑툘
+- **`src.` ?묐몢???ъ슜 湲덉?**
+- 紐⑤뱺 `src/` ?대? 紐⑤뱢? 吏곸젒 ?꾪룷??
+- ?? `from ai.model_registry import ModelRegistry`
+- ?먮룞 寃利? `python tools/scripts/check_imports.py`
+- ?곸꽭: [docs/development/IMPORT_GUIDELINES.md](./docs/development/IMPORT_GUIDELINES.md)
   
-### 인프라 가이드
-- **[docs/infrastructure/](./docs/infrastructure/)** - 시스템 인프라 가이드
-  - [데이터베이스](./docs/infrastructure/DATABASE.md) - MongoDB 사용, 스키마 규칙
-  - [WebSocket](./docs/infrastructure/WEBSOCKET.md) - 실시간 통신 규칙
-  - [API 통신](./docs/infrastructure/API.md) - REST API 호출 규칙
-  - [캔들 집계](./docs/infrastructure/CANDLE_AGGREGATION.md) - 캔들 데이터 처리
+### ?명봽??媛?대뱶
+- **[docs/infrastructure/](./docs/infrastructure/)** - ?쒖뒪???명봽??媛?대뱶
+  - [?곗씠?곕쿋?댁뒪](./docs/infrastructure/DATABASE.md) - MongoDB ?ъ슜, ?ㅽ궎留?洹쒖튃
+  - [WebSocket](./docs/infrastructure/WEBSOCKET.md) - ?ㅼ떆媛??듭떊 洹쒖튃
+  - [API ?듭떊](./docs/infrastructure/API.md) - REST API ?몄텧 洹쒖튃
+  - [罹붾뱾 吏묎퀎](./docs/infrastructure/CANDLE_AGGREGATION.md) - 罹붾뱾 ?곗씠??泥섎━
   
-### 운영 가이드
-- **[docs/operations/](./docs/operations/)** - 운영 및 배포 가이드
-  - [주문 처리](./docs/operations/ORDER_PROCESSING.md) - 주문 로직, 리스크 관리
-  - [운영 모드](./docs/operations/OPERATING_MODES.md) - MONITOR/PAPER/LIVE 모드
-  - [테스트](./docs/operations/TESTING.md) - 테스트 전략 및 커버리지
-  - [배포](./docs/operations/DEPLOYMENT.md) - 배포 절차 및 체크리스트
-  - [보안](./docs/operations/SECURITY.md) - 보안 규칙 및 민감정보 관리
+### ?댁쁺 媛?대뱶
+- **[docs/operations/](./docs/operations/)** - ?댁쁺 諛?諛고룷 媛?대뱶
+  - [二쇰Ц 泥섎━](./docs/operations/ORDER_PROCESSING.md) - 二쇰Ц 濡쒖쭅, 由ъ뒪??愿由?
+  - [?댁쁺 紐⑤뱶](./docs/operations/OPERATING_MODES.md) - MONITOR/PAPER/LIVE 紐⑤뱶
+  - [?뚯뒪??(./docs/operations/TESTING.md) - ?뚯뒪???꾨왂 諛?而ㅻ쾭由ъ?
+  - [諛고룷](./docs/operations/DEPLOYMENT.md) - 諛고룷 ?덉감 諛?泥댄겕由ъ뒪??
+  - [蹂댁븞](./docs/operations/SECURITY.md) - 蹂댁븞 洹쒖튃 諛?誘쇨컧?뺣낫 愿由?
   
-### 자동화 도구
-- **[automation/](./automation/)** - 자동화 스크립트 및 가이드
-  - [워크플로우 완전 가이드](./automation/WORKFLOW_COMPLETE_GUIDE.md) - N단계 자동화
-  - [테스트 가이드](./automation/TEST_GUIDE.md) - 자동 테스트 실행
-  - [자동화 규칙](./docs/automation/AUTOMATION_RULES.md) - 자동화 워크플로우 규칙
+### ?먮룞???꾧뎄
+- **[automation/](./automation/)** - ?먮룞???ㅽ겕由쏀듃 諛?媛?대뱶
+  - [?뚰겕?뚮줈???꾩쟾 媛?대뱶](./automation/WORKFLOW_COMPLETE_GUIDE.md) - N?④퀎 ?먮룞??
+  - [?뚯뒪??媛?대뱶](./automation/TEST_GUIDE.md) - ?먮룞 ?뚯뒪???ㅽ뻾
+  - [?먮룞??洹쒖튃](./docs/automation/AUTOMATION_RULES.md) - ?먮룞???뚰겕?뚮줈??洹쒖튃
 
-### 자동 수정 시스템
-- **[docs/AUTO_FIX_GUIDE.md](./docs/AUTO_FIX_GUIDE.md)** - 자동 오류 수정 가이드
-  - Git hooks를 통한 자동 문서 수정
-  - 깨진 참조 자동 수정
-  - 누락된 메타데이터 자동 추가
-  - Missing 모듈 자동 생성
-  - GitHub Actions 자동 수정 워크플로우
+### ?먮룞 ?섏젙 ?쒖뒪??
+- **[docs/AUTO_FIX_GUIDE.md](./docs/AUTO_FIX_GUIDE.md)** - ?먮룞 ?ㅻ쪟 ?섏젙 媛?대뱶
+  - Git hooks瑜??듯븳 ?먮룞 臾몄꽌 ?섏젙
+  - 源⑥쭊 李몄“ ?먮룞 ?섏젙
+  - ?꾨씫??硫뷀??곗씠???먮룞 異붽?
+  - Missing 紐⑤뱢 ?먮룞 ?앹꽦
+  - GitHub Actions ?먮룞 ?섏젙 ?뚰겕?뚮줈??
 
-## 🚀 빠른 시작
+## ?? 鍮좊Ⅸ ?쒖옉
 
-### 규칙 확인 (필수)
-작업 시작 전 반드시 읽어야 할 문서:
+### 洹쒖튃 ?뺤씤 (?꾩닔)
+?묒뾽 ?쒖옉 ??諛섎뱶???쎌뼱????臾몄꽌:
 ```bash
-# 핵심 규칙 (필독)
-cat work_order/규칙.md
+# ?듭떖 洹쒖튃 (?꾨룆)
+cat work_order/洹쒖튃.md
 ```
 
-### 자동화 워크플로우
+### ?먮룞???뚰겕?뚮줈??
 ```bash
-# N단계 작업 시작 (예: 2단계)
+# N?④퀎 ?묒뾽 ?쒖옉 (?? 2?④퀎)
 ./start_stage.sh 2
 
-# 또는 Python으로 직접 실행
+# ?먮뒗 Python?쇰줈 吏곸젒 ?ㅽ뻾
 python automation/auto_workflow.py --stage 2
 ```
 
-### Git Hooks 설치 (권장)
-자동 문서 오류 수정을 위한 Git hooks 설치:
+### Git Hooks ?ㅼ튂 (沅뚯옣)
+?먮룞 臾몄꽌 ?ㅻ쪟 ?섏젙???꾪븳 Git hooks ?ㅼ튂:
 ```bash
-# 자동 수정 hooks 설치
+# ?먮룞 ?섏젙 hooks ?ㅼ튂
 bash tools/scripts/install_hooks.sh
 
-# 또는 기존 hooks 설치 (호환성)
+# ?먮뒗 湲곗〈 hooks ?ㅼ튂 (?명솚??
 bash tools/scripts/setup_hooks.sh
 ```
 
-개요
-- 본 레포지토리는 Upbit 거래용 트레이더 프레임워크(연구/검증/모니터/페이퍼/라이브 전환을 지원)를 포함합니다. 루트에는 CI/실행 스크립트, 문서(Phase2 관련 리포트), 핵심 실행 진입점(src 폴더), 자동 검증 스크립트 및 work_order(작업 지침)가 위치합니다.
+媛쒖슂
+- 蹂??덊룷吏?좊━??Upbit 嫄곕옒???몃젅?대뜑 ?꾨젅?꾩썙???곌뎄/寃利?紐⑤땲???섏씠???쇱씠釉??꾪솚??吏??瑜??ы븿?⑸땲?? 猷⑦듃?먮뒗 CI/?ㅽ뻾 ?ㅽ겕由쏀듃, 臾몄꽌(Phase2 愿??由ы룷??, ?듭떖 ?ㅽ뻾 吏꾩엯??src ?대뜑), ?먮룞 寃利??ㅽ겕由쏀듃 諛?work_order(?묒뾽 吏移?媛 ?꾩튂?⑸땲??
 
-루트 파일/폴더 상세 설명
+猷⑦듃 ?뚯씪/?대뜑 ?곸꽭 ?ㅻ챸
 - .dockerignore
-  - 목적: Docker 빌드 컨텍스트에서 제외할 파일/폴더 목록. 빌드 속도 및 이미지 크기 최적화.
-  - 사용법: Docker 이미지를 빌드할 때 Docker 데몬이 자동으로 참조합니다. (예: docker build -t upbit-trader:latest .)
-  - 주의사항: 민감정보(예: .env)를 포함하지 않도록 구성되어 있는지 확인.
+  - 紐⑹쟻: Docker 鍮뚮뱶 而⑦뀓?ㅽ듃?먯꽌 ?쒖쇅???뚯씪/?대뜑 紐⑸줉. 鍮뚮뱶 ?띾룄 諛??대?吏 ?ш린 理쒖쟻??
+  - ?ъ슜踰? Docker ?대?吏瑜?鍮뚮뱶????Docker ?곕が???먮룞?쇰줈 李몄“?⑸땲?? (?? docker build -t upbit-trader:latest .)
+  - 二쇱쓽?ы빆: 誘쇨컧?뺣낫(?? .env)瑜??ы븿?섏? ?딅룄濡?援ъ꽦?섏뼱 ?덈뒗吏 ?뺤씤.
 
 - .gitattributes
-  - 목적: Git에서 파일별 속성(라이트엔딩, diff 등) 설정.
-  - 사용법: 기본적으로 Git이 자동으로 사용. 수정 시 팀 합의 필요.
-  - 주의사항: 라인엔딩 변경은 많은 파일에 영향을 미치므로 신중히 변경하십시오.
+  - 紐⑹쟻: Git?먯꽌 ?뚯씪蹂??띿꽦(?쇱씠?몄뿏?? diff ?? ?ㅼ젙.
+  - ?ъ슜踰? 湲곕낯?곸쑝濡?Git???먮룞?쇰줈 ?ъ슜. ?섏젙 ??? ?⑹쓽 ?꾩슂.
+  - 二쇱쓽?ы빆: ?쇱씤?붾뵫 蹂寃쎌? 留롮? ?뚯씪???곹뼢??誘몄튂誘濡??좎쨷??蹂寃쏀븯??떆??
 
 - .gitignore
-  - 목적: 버전관리에서 제외할 파일/패턴 명시(가상환경, 빌드 아티팩트 등).
-  - 사용법: git이 자동으로 적용. 새 항목 추가 시 팀 정책에 따라 커밋 전 리뷰 권장.
-  - 주의사항: API 키/시크릿이 .gitignore에 포함되어 있더라도 이미 커밋된 경우 제거 절차 필요.
+  - 紐⑹쟻: 踰꾩쟾愿由ъ뿉???쒖쇅???뚯씪/?⑦꽩 紐낆떆(媛?곹솚寃? 鍮뚮뱶 ?꾪떚?⑺듃 ??.
+  - ?ъ슜踰? git???먮룞?쇰줈 ?곸슜. ????ぉ 異붽? ??? ?뺤콉???곕씪 而ㅻ컠 ??由щ럭 沅뚯옣.
+  - 二쇱쓽?ы빆: API ???쒗겕由우씠 .gitignore???ы븿?섏뼱 ?덈뜑?쇰룄 ?대? 而ㅻ컠??寃쎌슦 ?쒓굅 ?덉감 ?꾩슂.
 
-- .vscode/ (폴더)
-  - 목적: 권장 VS Code 설정(런처, 확장, 작업 등).
-  - 사용법: 개발자가 VS Code 사용 시 해당 설정을 자동으로 로드합니다.
-  - 주의사항: 개인 설정과 충돌할 수 있으므로 커밋 전 검토하십시오.
+- .vscode/ (?대뜑)
+  - 紐⑹쟻: 沅뚯옣 VS Code ?ㅼ젙(?곗쿂, ?뺤옣, ?묒뾽 ??.
+  - ?ъ슜踰? 媛쒕컻?먭? VS Code ?ъ슜 ???대떦 ?ㅼ젙???먮룞?쇰줈 濡쒕뱶?⑸땲??
+  - 二쇱쓽?ы빆: 媛쒖씤 ?ㅼ젙怨?異⑸룎?????덉쑝誘濡?而ㅻ컠 ??寃?좏븯??떆??
 
 - 2.0.2
-  - 목적: 릴리스 태그/버전 정보를 간단히 표기한 파일(레포 관리용).
-  - 사용법: 사람이 읽는 용도, 배포 스크립트에서 참조하지 않음(필요 시 스크립트에서 읽도록 변경).
-  - 주의사항: 수동 변경 시 버전 정책을 준수하십시오.
+  - 紐⑹쟻: 由대━???쒓렇/踰꾩쟾 ?뺣낫瑜?媛꾨떒???쒓린???뚯씪(?덊룷 愿由ъ슜).
+  - ?ъ슜踰? ?щ엺???쎈뒗 ?⑸룄, 諛고룷 ?ㅽ겕由쏀듃?먯꽌 李몄“?섏? ?딆쓬(?꾩슂 ???ㅽ겕由쏀듃?먯꽌 ?쎈룄濡?蹂寃?.
+  - 二쇱쓽?ы빆: ?섎룞 蹂寃???踰꾩쟾 ?뺤콉??以?섑븯??떆??
 
 - Dockerfile
-  - 목적: Docker 이미지를 빌드하기 위한 정의 파일.
-  - 사용법: docker build -t upbit-trader:2.0.2 .
-  - 주의사항: 빌드 과정에서 민감정보를 --build-arg로 전달하지 마십시오. 실행 시 환경변수로 주입하십시오.
+  - 紐⑹쟻: Docker ?대?吏瑜?鍮뚮뱶?섍린 ?꾪븳 ?뺤쓽 ?뚯씪.
+  - ?ъ슜踰? docker build -t upbit-trader:2.0.2 .
+  - 二쇱쓽?ы빆: 鍮뚮뱶 怨쇱젙?먯꽌 誘쇨컧?뺣낫瑜?--build-arg濡??꾨떖?섏? 留덉떗?쒖삤. ?ㅽ뻾 ???섍꼍蹂?섎줈 二쇱엯?섏떗?쒖삤.
 
 - LICENSE
-  - 목적: 프로젝트 사용/배포에 관한 라이선스 명시.
-  - 사용법: 프로젝트 사용 전 라이선스 내용을 숙지하십시오.
-  - 주의사항: 라이선스 요구사항을 위반하지 않도록 외부 재배포 전 검토하십시오.
+  - 紐⑹쟻: ?꾨줈?앺듃 ?ъ슜/諛고룷??愿???쇱씠?좎뒪 紐낆떆.
+  - ?ъ슜踰? ?꾨줈?앺듃 ?ъ슜 ???쇱씠?좎뒪 ?댁슜???숈??섏떗?쒖삤.
+  - 二쇱쓽?ы빆: ?쇱씠?좎뒪 ?붽뎄?ы빆???꾨컲?섏? ?딅룄濡??몃? ?щ같????寃?좏븯??떆??
 
 - PHASE2_COMPLETION_REPORT.md
-  - 목적: Phase2 개발 완료 보고서 — 구현 범위, 주요 결정사항, 테스트 결과 요약을 포함.
-  - 사용법: 프로젝트 상태 파악 및 리뷰용으로 열람.
-  - 주의사항: 운영환경 전환 관련 결정사항이 포함되어 있을 수 있으니 실거래 전 반드시 확인하십시오.
+  - 紐⑹쟻: Phase2 媛쒕컻 ?꾨즺 蹂닿퀬????援ы쁽 踰붿쐞, 二쇱슂 寃곗젙?ы빆, ?뚯뒪??寃곌낵 ?붿빟???ы븿.
+  - ?ъ슜踰? ?꾨줈?앺듃 ?곹깭 ?뚯븙 諛?由щ럭?⑹쑝濡??대엺.
+  - 二쇱쓽?ы빆: ?댁쁺?섍꼍 ?꾪솚 愿??寃곗젙?ы빆???ы븿?섏뼱 ?덉쓣 ???덉쑝???ㅺ굅????諛섎뱶???뺤씤?섏떗?쒖삤.
 
 - PHASE2_IMPLEMENTATION_GUIDE.md
-  - 목적: Phase2의 세부 구현 가이드(설계도, 데이터 흐름, 설정 방법).
-  - 사용법: 구현/배포/테스트 시 참고 매뉴얼로 사용.
-  - 주의사항: 이 문서에서 제시하는 설정은 코드와 일치해야 합니다. 문서와 코드 불일치 시 우선순위를 문서화하고 수정절차를 따르십시오.
+  - 紐⑹쟻: Phase2???몃? 援ы쁽 媛?대뱶(?ㅺ퀎?? ?곗씠???먮쫫, ?ㅼ젙 諛⑸쾿).
+  - ?ъ슜踰? 援ы쁽/諛고룷/?뚯뒪????李멸퀬 留ㅻ돱?쇰줈 ?ъ슜.
+  - 二쇱쓽?ы빆: ??臾몄꽌?먯꽌 ?쒖떆?섎뒗 ?ㅼ젙? 肄붾뱶? ?쇱튂?댁빞 ?⑸땲?? 臾몄꽌? 肄붾뱶 遺덉씪移????곗꽑?쒖쐞瑜?臾몄꽌?뷀븯怨??섏젙?덉감瑜??곕Ⅴ??떆??
 
-- README.md (현재 파일)
-  - 목적: 레포지토리 최상단 요약 및 루트 항목 설명(이 문서).
-  - 사용법: 프로젝트 진입 시 첫 참조 문서로 사용.
-  - 주의사항: 이 파일은 work_order/README_작성_가이드.md 규격을 따릅니다. 구조 변경 시 가이드에 맞춰 업데이트하십시오.
+- README.md (?꾩옱 ?뚯씪)
+  - 紐⑹쟻: ?덊룷吏?좊━ 理쒖긽???붿빟 諛?猷⑦듃 ??ぉ ?ㅻ챸(??臾몄꽌).
+  - ?ъ슜踰? ?꾨줈?앺듃 吏꾩엯 ??泥?李몄“ 臾몄꽌濡??ъ슜.
+  - 二쇱쓽?ы빆: ???뚯씪? work_order/README_?묒꽦_媛?대뱶.md 洹쒓꺽???곕쫭?덈떎. 援ъ“ 蹂寃???媛?대뱶??留욎떠 ?낅뜲?댄듃?섏떗?쒖삤.
 
 - SECURITY_SUMMARY.md
-  - 목적: 보안 관련 요약(리스크, 민감정보 관리, 권장 설정).
-  - 사용법: 배포 전 및 보안 검토 시 참고.
-  - 주의사항: 실거래 모드(LIVE)로 전환 전 보안 체크리스트를 반드시 통과하십시오.
+  - 紐⑹쟻: 蹂댁븞 愿???붿빟(由ъ뒪?? 誘쇨컧?뺣낫 愿由? 沅뚯옣 ?ㅼ젙).
+  - ?ъ슜踰? 諛고룷 ??諛?蹂댁븞 寃????李멸퀬.
+  - 二쇱쓽?ы빆: ?ㅺ굅??紐⑤뱶(LIVE)濡??꾪솚 ??蹂댁븞 泥댄겕由ъ뒪?몃? 諛섎뱶???듦낵?섏떗?쒖삤.
 
-- assets/ (폴더)
-  - 목적: 문서/대시보드에 사용되는 이미지, 아이콘, 샘플 리소스 보관.
-  - 사용법: 문서 또는 UI에서 사용.
-  - 주의사항: 큰 파일은 CI 빌드에 부정적 영향을 줄 수 있으니 관리요망.
+- assets/ (?대뜑)
+  - 紐⑹쟻: 臾몄꽌/??쒕낫?쒖뿉 ?ъ슜?섎뒗 ?대?吏, ?꾩씠肄? ?섑뵆 由ъ냼??蹂닿?.
+  - ?ъ슜踰? 臾몄꽌 ?먮뒗 UI?먯꽌 ?ъ슜.
+  - 二쇱쓽?ы빆: ???뚯씪? CI 鍮뚮뱶??遺?뺤쟻 ?곹뼢??以????덉쑝??愿由ъ슂留?
 
-- base/ (폴더)
-  - 목적: 베이스 템플릿, 공통 설정 또는 샘플 구성 파일 보관(프로젝트 전반 재사용).
-  - 사용법: 새로운 서비스/이미지 구성 시 템플릿으로 사용.
-  - 주의사항: 템플릿 수정 시 다른 구성에 영향이 있으므로 변경 로그 기록 필요.
+- base/ (?대뜑)
+  - 紐⑹쟻: 踰좎씠???쒗뵆由? 怨듯넻 ?ㅼ젙 ?먮뒗 ?섑뵆 援ъ꽦 ?뚯씪 蹂닿?(?꾨줈?앺듃 ?꾨컲 ?ъ궗??.
+  - ?ъ슜踰? ?덈줈???쒕퉬???대?吏 援ъ꽦 ???쒗뵆由우쑝濡??ъ슜.
+  - 二쇱쓽?ы빆: ?쒗뵆由??섏젙 ???ㅻⅨ 援ъ꽦???곹뼢???덉쑝誘濡?蹂寃?濡쒓렇 湲곕줉 ?꾩슂.
 
 - docker-compose.yml
-  - 목적: Docker Compose로 개발/통합 테스트용 서비스를 띄우기 위한 구성.
-  - 사용법:
+  - 紐⑹쟻: Docker Compose濡?媛쒕컻/?듯빀 ?뚯뒪?몄슜 ?쒕퉬?ㅻ? ?꾩슦湲??꾪븳 援ъ꽦.
+  - ?ъ슜踰?
     - docker compose up --build -d
-    - 서비스별 로그: docker compose logs -f <service>
-  - 주의사항: 환경변수 파일(.env)을 사용해 민감정보를 주입하십시오. 로컬 테스트용 구성과 프로덕션 구성을 분리하십시오.
+    - ?쒕퉬?ㅻ퀎 濡쒓렇: docker compose logs -f <service>
+  - 二쇱쓽?ы빆: ?섍꼍蹂???뚯씪(.env)???ъ슜??誘쇨컧?뺣낫瑜?二쇱엯?섏떗?쒖삤. 濡쒖뺄 ?뚯뒪?몄슜 援ъ꽦怨??꾨줈?뺤뀡 援ъ꽦??遺꾨━?섏떗?쒖삤.
 
 - requirements.txt
-  - 목적: 런타임 의존 패키지 ��록.
-  - 사용법: pip install -r requirements.txt
-  - 주의사항: 개발용 의존성은 requirements-dev.txt로 분리되어 있어야 합니다. 버전 고정을 권장합니다.
+  - 紐⑹쟻: ?고????섏〈 ?⑦궎吏 占쏙옙濡?
+  - ?ъ슜踰? pip install -r requirements.txt
+  - 二쇱쓽?ы빆: 媛쒕컻???섏〈?깆? requirements-dev.txt濡?遺꾨━?섏뼱 ?덉뼱???⑸땲?? 踰꾩쟾 怨좎젙??沅뚯옣?⑸땲??
 
-- tools/ (폴더)
-  - 목적: 도구 스크립트(문서 검사, 자동화 지원 스크립트 등) 및 테스트 통합.
-  - 사용법: 예: python tools/scripts/automation/doc_updater.py (레포 문서 검사, 드라이런)
-  - 주의사항: tools 내부 스크립트는 일반적으로 로컬에서 직접 실행됩니다. 실행 전 가상환경을 활성화하고 필요 권한을 확인하십시오.
+- tools/ (?대뜑)
+  - 紐⑹쟻: ?꾧뎄 ?ㅽ겕由쏀듃(臾몄꽌 寃?? ?먮룞??吏???ㅽ겕由쏀듃 ?? 諛??뚯뒪???듯빀.
+  - ?ъ슜踰? ?? python tools/scripts/automation/doc_updater.py (?덊룷 臾몄꽌 寃?? ?쒕씪?대윴)
+  - 二쇱쓽?ы빆: tools ?대? ?ㅽ겕由쏀듃???쇰컲?곸쑝濡?濡쒖뺄?먯꽌 吏곸젒 ?ㅽ뻾?⑸땲?? ?ㅽ뻾 ??媛?곹솚寃쎌쓣 ?쒖꽦?뷀븯怨??꾩슂 沅뚰븳???뺤씤?섏떗?쒖삤.
 
 - scripts_doc_check_report_2026-01-30.json
-  - 목적: scripts/doc_check.py 실행 결과 리포트(2026-01-30 시점).
-  - 사용법: 결과 분석용(변경 필요/권장 사항 확인).
-  - 주의사항: 오래된 리포트일 수 있으니 최신 실행을 권장합니다.
+  - 紐⑹쟻: scripts/doc_check.py ?ㅽ뻾 寃곌낵 由ы룷??2026-01-30 ?쒖젏).
+  - ?ъ슜踰? 寃곌낵 遺꾩꽍??蹂寃??꾩슂/沅뚯옣 ?ы빆 ?뺤씤).
+  - 二쇱쓽?ы빆: ?ㅻ옒??由ы룷?몄씪 ???덉쑝??理쒖떊 ?ㅽ뻾??沅뚯옣?⑸땲??
 
 - setup.py
-  - 목적: 패키지 메타데이터 및 설치 스크립트(파이썬 패키지화 지원).
-  - 사용법: pip install . 또는 python setup.py sdist bdist_wheel (비권장: 현재 pip 방식 권장)
-  - 주의사항: 배포 패키지의 의존성은 requirements.txt와 일치해야 합니다.
+  - 紐⑹쟻: ?⑦궎吏 硫뷀??곗씠??諛??ㅼ튂 ?ㅽ겕由쏀듃(?뚯씠???⑦궎吏??吏??.
+  - ?ъ슜踰? pip install . ?먮뒗 python setup.py sdist bdist_wheel (鍮꾧텒?? ?꾩옱 pip 諛⑹떇 沅뚯옣)
+  - 二쇱쓽?ы빆: 諛고룷 ?⑦궎吏???섏〈?깆? requirements.txt? ?쇱튂?댁빞 ?⑸땲??
 
-- src/ (폴더) — v3.0 번호 카테고리 구조
-  - 목적: 애플리케이션 소스코드의 루트(트레이딩 엔진, 데이터 파이프라인, API 클라이언트 등).
-  - v3.0 구조:
-    - src/01_core/   — auth, config, utils, base
-    - src/02_data/   — data, db, features
-    - src/03_market/ — market, orderbook
-    - src/04_chart/  — chart
-    - src/05_strategy/ — strategy
-    - src/06_ai/     — ai_engine, prediction, models, rl, detection, prompt
-    - src/07_scanner/ — scanner
-    - src/08_portfolio/ — portfolio, userinfo
-    - src/09_sentiment/ — sentiment
-    - src/10_trade/  — trade, signals
-    - src/11_server/ — server, settings, ui, component
-    - src/12_realtime/ — 실시간 데이터 스트리밍 (component, workers, ui)
-    - src/13_compute/ — 계산 엔진 (compute, aggregation, workers)
-    - src/app/       — 진입점 (변경 없음)
-    - src/styles/    — QSS 스타일 (변경 없음)
-  - 임포트: src/app/main.py가 sys.path에 번호 디렉토리를 모두 추가하므로 기존 임포트 변경 불필요.
-  - 마이그레이션 안내: docs/MIGRATION_V3_FINAL.md 참조.
-  - 주의사항: 비즈니스 로직/화면/UI 분리는 work_order 규칙(P2)을 준수하십시오. src 내부 파일은 변경 시 테스트와 타입체크를 반드시 수행하십시오.
+- src/ (?대뜑) ??v3.0 踰덊샇 移댄뀒怨좊━ 援ъ“
+  - 紐⑹쟻: ?좏뵆由ъ??댁뀡 ?뚯뒪肄붾뱶??猷⑦듃(?몃젅?대뵫 ?붿쭊, ?곗씠???뚯씠?꾨씪?? API ?대씪?댁뼵????.
+  - v3.0 援ъ“:
+    - src/01_core/   ??auth, config, utils, base
+    - src/data_01/   ??data, db, features
+    - src/03_market/ ??market, orderbook
+    - src/04_chart/  ??chart
+    - src/05_strategy/ ??strategy
+    - src/06_ai/     ??ai_engine, prediction, models, rl, detection, prompt
+    - src/07_scanner/ ??scanner
+    - src/08_portfolio/ ??portfolio, userinfo
+    - src/09_sentiment/ ??sentiment
+    - src/10_trade/  ??trade, signals
+    - src/11_server/ ??server, settings, ui, component
+    - src/12_realtime/ ???ㅼ떆媛??곗씠???ㅽ듃由щ컢 (component, workers, ui)
+    - src/13_compute/ ??怨꾩궛 ?붿쭊 (compute, aggregation, workers)
+    - src/app/       ??吏꾩엯??(蹂寃??놁쓬)
+    - src/styles/    ??QSS ?ㅽ???(蹂寃??놁쓬)
+  - ?꾪룷?? src/app/main.py媛 sys.path??踰덊샇 ?붾젆?좊━瑜?紐⑤몢 異붽??섎?濡?湲곗〈 ?꾪룷??蹂寃?遺덊븘??
+  - 留덉씠洹몃젅?댁뀡 ?덈궡: docs/MIGRATION_V3_FINAL.md 李몄“.
+  - 二쇱쓽?ы빆: 鍮꾩쫰?덉뒪 濡쒖쭅/?붾㈃/UI 遺꾨━??work_order 洹쒖튃(P2)??以?섑븯??떆?? src ?대? ?뚯씪? 蹂寃????뚯뒪?몄? ??낆껜?щ? 諛섎뱶???섑뻾?섏떗?쒖삤.
 
-## 📁 프로젝트 구조
+## ?뱚 ?꾨줈?앺듃 援ъ“
 
-### 핵심 모듈 (src/)
-- `01_core/` - 인증, 설정, 유틸리티
-- `02_data/` - TimescaleDB, Redis, MongoDB 연동
-- `03_market/` - 시장 데이터 (코인리스트, 호가창, 체결)
-- `04_chart/` - 차트 엔진, AI 차트
-- `05_strategy/` - 전략, 백테스트
-- `06_ai/` - AI 엔진, 예측 모델
-- `07_scanner/` - 조건 스캐너
-- `08_portfolio/` - 포트폴리오, 사용자정보
-- `09_sentiment/` - 감성 분석
+### ?듭떖 紐⑤뱢 (src/)
+- `01_core/` - ?몄쬆, ?ㅼ젙, ?좏떥由ы떚
+- `data_01/` - TimescaleDB, Redis, MongoDB ?곕룞
+- `03_market/` - ?쒖옣 ?곗씠??(肄붿씤由ъ뒪?? ?멸?李? 泥닿껐)
+- `04_chart/` - 李⑦듃 ?붿쭊, AI 李⑦듃
+- `05_strategy/` - ?꾨왂, 諛깊뀒?ㅽ듃
+- `06_ai/` - AI ?붿쭊, ?덉륫 紐⑤뜽
+- `07_scanner/` - 議곌굔 ?ㅼ틦??
+- `08_portfolio/` - ?ы듃?대━?? ?ъ슜?먯젙蹂?
+- `09_sentiment/` - 媛먯꽦 遺꾩꽍
 
-### 데이터베이스 설계
-자세한 내용은 [work_order/DB설계.md](work_order/DB설계.md) 참조.
+### ?곗씠?곕쿋?댁뒪 ?ㅺ퀎
+?먯꽭???댁슜? [work_order/DB?ㅺ퀎.md](work_order/DB?ㅺ퀎.md) 李몄“.
 
-### 📊 포트 매핑 (4-Tier 아키텍처)
+### ?뱤 ?ы듃 留ㅽ븨 (4-Tier ?꾪궎?띿쿂)
 
-| Tier | 서비스 | 컨테이너 포트 | 호스트 포트 | 용도 |
+| Tier | ?쒕퉬??| 而⑦뀒?대꼫 ?ы듃 | ?몄뒪???ы듃 | ?⑸룄 |
 |------|--------|:------------:|:-----------:|------|
-| 🔴 Tier 1 | Redis | 6379 | **58530** | 실시간 캐시 |
-| 🟡 Tier 2 | TimescaleDB | 5432 | **58529** | 시계열 DB |
-| 🟠 Tier 3 | MongoDB | 27017 | 27017 | 메타데이터 |
-| 🟠 Tier 3 | PostgreSQL Primary | 5432 | 5433 | CQRS 쓰기 |
-| 🟠 Tier 3 | PostgreSQL Replica | 5432 | 5434 | CQRS 읽기 |
-| 🔵 Tier 4 | Zookeeper | 2181 | 2181 | Kafka 코디네이터 |
-| 🔵 Tier 4 | Kafka | 9092 | 9092 | 이벤트 스트림 |
-| 🔵 Tier 4 | ClickHouse HTTP | 8123 | 8123 | OLAP HTTP |
-| 🔵 Tier 4 | ClickHouse Native | 9000 | 9000 | OLAP TCP |
+| ?뵶 Tier 1 | Redis | 6379 | **58530** | ?ㅼ떆媛?罹먯떆 |
+| ?윞 Tier 2 | TimescaleDB | 5432 | **58529** | ?쒓퀎??DB |
+| ?윝 Tier 3 | MongoDB | 27017 | 27017 | 硫뷀??곗씠??|
+| ?윝 Tier 3 | PostgreSQL Primary | 5432 | 5433 | CQRS ?곌린 |
+| ?윝 Tier 3 | PostgreSQL Replica | 5432 | 5434 | CQRS ?쎄린 |
+| ?뵷 Tier 4 | Zookeeper | 2181 | 2181 | Kafka 肄붾뵒?ㅼ씠??|
+| ?뵷 Tier 4 | Kafka | 9092 | 9092 | ?대깽???ㅽ듃由?|
+| ?뵷 Tier 4 | ClickHouse HTTP | 8123 | 8123 | OLAP HTTP |
+| ?뵷 Tier 4 | ClickHouse Native | 9000 | 9000 | OLAP TCP |
 
-## 🖥️ 서버 (FastAPI)
+## ?뼢截??쒕쾭 (FastAPI)
 
-Upbit Trader 플랫폼은 FastAPI 기반 REST API·WebSocket 서버를 제공합니다.
+Upbit Trader ?뚮옯?쇱? FastAPI 湲곕컲 REST API쨌WebSocket ?쒕쾭瑜??쒓났?⑸땲??
 
-### 서버 기능 개요
-- REST API: 캔들, 심볼, 주문 조회·생성 (`/api/v1/`)
-- WebSocket: 실시간 캔들·호가창 스트리밍
-- JWT 인증 + Redis Rate Limit
+### ?쒕쾭 湲곕뒫 媛쒖슂
+- REST API: 罹붾뱾, ?щ낵, 二쇰Ц 議고쉶쨌?앹꽦 (`/api/v1/`)
+- WebSocket: ?ㅼ떆媛?罹붾뱾쨌?멸?李??ㅽ듃由щ컢
+- JWT ?몄쬆 + Redis Rate Limit
 - Prometheus metrics (`/metrics`)
 
-### 서버 실행 방법
+### ?쒕쾭 ?ㅽ뻾 諛⑸쾿
 
 ```bash
-# 개발 모드 (핫 리로드)
+# 媛쒕컻 紐⑤뱶 (??由щ줈??
 uvicorn src.11_server.core.fastapi_app:create_app --factory \
     --host 0.0.0.0 --port 8000 --reload
 
@@ -276,7 +276,7 @@ uvicorn src.11_server.core.fastapi_app:create_app --factory \
 # http://localhost:8000/docs
 ```
 
-### 주요 설정 (환경 변수)
+### 二쇱슂 ?ㅼ젙 (?섍꼍 蹂??
 
 ```env
 SERVER_HOST=0.0.0.0
@@ -286,41 +286,41 @@ REDIS_HOST=localhost
 TIMESCALE_DSN=postgresql+asyncpg://user:pass@localhost:5432/upbit_trader
 ```
 
-> 📖 상세 문서: **[src/11_server/README.md](src/11_server/README.md)**
+> ?뱰 ?곸꽭 臾몄꽌: **[src/11_server/README.md](src/11_server/README.md)**
 
-- tools/ (폴더)
-  - 목적: 테스트 및 유지보수 스크립트 통합 디렉토리 (구 tests/, scripts/ 통합).
-  - 사용법: 자세한 내용은 tools/README.md 참조.
-  - tools/tests/    — pytest 기반의 단위/통합 테스트 (구 루트 tests/)
-  - tools/scripts/  — 유지보수·배포·자동화 스크립트 (구 루트 scripts/)
+- tools/ (?대뜑)
+  - 紐⑹쟻: ?뚯뒪??諛??좎?蹂댁닔 ?ㅽ겕由쏀듃 ?듯빀 ?붾젆?좊━ (援?tests/, scripts/ ?듯빀).
+  - ?ъ슜踰? ?먯꽭???댁슜? tools/README.md 李몄“.
+  - tools/tests/    ??pytest 湲곕컲???⑥쐞/?듯빀 ?뚯뒪??(援?猷⑦듃 tests/)
+  - tools/scripts/  ???좎?蹂댁닔쨌諛고룷쨌?먮룞???ㅽ겕由쏀듃 (援?猷⑦듃 scripts/)
 
-- tests/ (폴더)
-  - 목적: pytest 기반의 단위/통합 테스트 소스 보관.
-  - 사용법: python -m pytest tools/tests/ -q
-  - 주의사항: 테스트는 실제 거래소 API 호출을 하지 않도록 모킹 또는 페이퍼 모드 환경을 사용하십시오.
+- tests/ (?대뜑)
+  - 紐⑹쟻: pytest 湲곕컲???⑥쐞/?듯빀 ?뚯뒪???뚯뒪 蹂닿?.
+  - ?ъ슜踰? python -m pytest tools/tests/ -q
+  - 二쇱쓽?ы빆: ?뚯뒪?몃뒗 ?ㅼ젣 嫄곕옒??API ?몄텧???섏? ?딅룄濡?紐⑦궧 ?먮뒗 ?섏씠??紐⑤뱶 ?섍꼍???ъ슜?섏떗?쒖삤.
 
 - verify_phase2.py
-  - 목적: Phase2 구현 검증 리포트 생성 스크립트(레포 전반 검사).
-  - 사용법: python verify_phase2.py
-  - 주의사항: 실행 시 의존성(requirements-dev.txt)을 설치하고, 스크립트가 로컬 환경 파일을 수정하는지 확인하십시오.
+  - 紐⑹쟻: Phase2 援ы쁽 寃利?由ы룷???앹꽦 ?ㅽ겕由쏀듃(?덊룷 ?꾨컲 寃??.
+  - ?ъ슜踰? python verify_phase2.py
+  - 二쇱쓽?ы빆: ?ㅽ뻾 ???섏〈??requirements-dev.txt)???ㅼ튂?섍퀬, ?ㅽ겕由쏀듃媛 濡쒖뺄 ?섍꼍 ?뚯씪???섏젙?섎뒗吏 ?뺤씤?섏떗?쒖삤.
 
 - verify_phase2_implementation.py
-  - 목적: Phase2 특정 구현 세부 검증 및 체크리스트 스크립트.
-  - 사용법: python verify_phase2_implementation.py
-  - 주의사항: 스크립트가 변경 가능한 파일을 자동으로 수정하지 않는지(드라이런 기본), 수정 시 백업이 생성되는지 확인하십시오.
+  - 紐⑹쟻: Phase2 ?뱀젙 援ы쁽 ?몃? 寃利?諛?泥댄겕由ъ뒪???ㅽ겕由쏀듃.
+  - ?ъ슜踰? python verify_phase2_implementation.py
+  - 二쇱쓽?ы빆: ?ㅽ겕由쏀듃媛 蹂寃?媛?ν븳 ?뚯씪???먮룞?쇰줈 ?섏젙?섏? ?딅뒗吏(?쒕씪?대윴 湲곕낯), ?섏젙 ??諛깆뾽???앹꽦?섎뒗吏 ?뺤씤?섏떗?쒖삤.
 
 - verify_phase2_report.json
-  - 목적: verify_phase2.py의 결과물(검증 리포트).
-  - 사용법: 사람이 읽거나 자동 파싱용.
-  - 주의사항: 최신 리포트가 아닐 수 있으니 필요 시 재생성하십시오.
+  - 紐⑹쟻: verify_phase2.py??寃곌낵臾?寃利?由ы룷??.
+  - ?ъ슜踰? ?щ엺???쎄굅???먮룞 ?뚯떛??
+  - 二쇱쓽?ы빆: 理쒖떊 由ы룷?멸? ?꾨땺 ???덉쑝???꾩슂 ???ъ깮?깊븯??떆??
 
-- work_order/ (폴더)
-  - 목적: 단계별(1~23) 개발·배포 가이드와 README_작성_가이드.md 및 규칙.md 등 운영 문서 보관.
-  - 사용법: 단계별 작업/검증 순서와 STAGE_LOCKED 정책을 따르며 문서를 참조해 작업을 진행하십시오.
-  - 주의사항: work_order 내부 문서는 자동화 규칙과 STAGE_LOCKED 정책을 포함합니다. 전 단계 파일을 무단 변경하지 마십시오.
+- work_order/ (?대뜑)
+  - 紐⑹쟻: ?④퀎蹂?1~23) 媛쒕컻쨌諛고룷 媛?대뱶? README_?묒꽦_媛?대뱶.md 諛?洹쒖튃.md ???댁쁺 臾몄꽌 蹂닿?.
+  - ?ъ슜踰? ?④퀎蹂??묒뾽/寃利??쒖꽌? STAGE_LOCKED ?뺤콉???곕Ⅴ硫?臾몄꽌瑜?李몄“???묒뾽??吏꾪뻾?섏떗?쒖삤.
+  - 二쇱쓽?ы빆: work_order ?대? 臾몄꽌???먮룞??洹쒖튃怨?STAGE_LOCKED ?뺤콉???ы븿?⑸땲?? ???④퀎 ?뚯씪??臾대떒 蹂寃쏀븯吏 留덉떗?쒖삤.
 
-개발 환경 설정 (로컬 권장)
-1. Python 가상환경 생성 및 활성화
+媛쒕컻 ?섍꼍 ?ㅼ젙 (濡쒖뺄 沅뚯옣)
+1. Python 媛?곹솚寃??앹꽦 諛??쒖꽦??
    - Windows (PowerShell):
      - python -m venv .venv
      - .\.venv\Scripts\Activate.ps1
@@ -328,90 +328,90 @@ TIMESCALE_DSN=postgresql+asyncpg://user:pass@localhost:5432/upbit_trader
      - python3 -m venv .venv
      - source .venv/bin/activate
 
-2. 의존성 설치
+2. ?섏〈???ㅼ튂
    - pip install -r requirements.txt
-   - (개발용) pip install -r requirements-dev.txt
+   - (媛쒕컻?? pip install -r requirements-dev.txt
 
-3. 코드 스타일/타입/보안 검사
+3. 肄붾뱶 ?ㅽ??????蹂댁븞 寃??
    - black --check .
    - flake8
    - mypy .
    - bandit -r .
 
-4. 테스트 실행
+4. ?뚯뒪???ㅽ뻾
    - python -m pytest tools/tests/ -q
 
-Docker 사용 (개발/통합 테스트)
-- 이미지 빌드
+Docker ?ъ슜 (媛쒕컻/?듯빀 ?뚯뒪??
+- ?대?吏 鍮뚮뱶
   - docker build -t jun-jong-il/upbit-trader:latest .
-- Compose 기반 서비스 실행(예: 로컬 통합)
+- Compose 湲곕컲 ?쒕퉬???ㅽ뻾(?? 濡쒖뺄 ?듯빀)
   - docker compose up --build -d
-- 주의사항: Compose 파일 내 환경변수(.env)로 API 키를 주입하십시오. 이미지에 키를 직접 포함시키지 마십시오.
+- 二쇱쓽?ы빆: Compose ?뚯씪 ???섍꼍蹂??.env)濡?API ?ㅻ? 二쇱엯?섏떗?쒖삤. ?대?吏???ㅻ? 吏곸젒 ?ы븿?쒗궎吏 留덉떗?쒖삤.
 
-스크립트(문서 검사 및 자동 보완)
-- 문서 검사(드라이런)
+?ㅽ겕由쏀듃(臾몄꽌 寃??諛??먮룞 蹂댁셿)
+- 臾몄꽌 寃???쒕씪?대윴)
   - python tools/scripts/doc_check.py
-- 문서 검사(적용)
+- 臾몄꽌 寃???곸슜)
   - python tools/scripts/doc_check.py --apply
-- 권장: CI에서 scripts/doc_check.py를 dry-run으로 먼저 실행하고, 합격 시 apply 단계는 일괄 PR로 처리하십시오.
+- 沅뚯옣: CI?먯꽌 scripts/doc_check.py瑜?dry-run?쇰줈 癒쇱? ?ㅽ뻾?섍퀬, ?⑷꺽 ??apply ?④퀎???쇨큵 PR濡?泥섎━?섏떗?쒖삤.
 
-실거래(LIVE) 모드 관련 주의사항
-- 실거래 전 필수 체크리스트:
-  - work_order/규칙.md 확인 및 변경 로그 기록
-  - SECURITY_SUMMARY.md의 권장 보안 항목 충족
-  - 테스트(단위/통합) 모두 통과
-  - STAGE_LOCKED 토큰이 설정된 파일이 있는지 확인(해제 필요 시 문서화 + 승인)
-- 민감정보 관리:
-  - API 키는 OS 시크릿 매니저 또는 CI/CD 시크릿으로 관리하세요.
-  - 절대 리포지토리(심지어 테스트 브랜치)에도 커밋하지 마십시오.
+?ㅺ굅??LIVE) 紐⑤뱶 愿??二쇱쓽?ы빆
+- ?ㅺ굅?????꾩닔 泥댄겕由ъ뒪??
+  - work_order/洹쒖튃.md ?뺤씤 諛?蹂寃?濡쒓렇 湲곕줉
+  - SECURITY_SUMMARY.md??沅뚯옣 蹂댁븞 ??ぉ 異⑹”
+  - ?뚯뒪???⑥쐞/?듯빀) 紐⑤몢 ?듦낵
+  - STAGE_LOCKED ?좏겙???ㅼ젙???뚯씪???덈뒗吏 ?뺤씤(?댁젣 ?꾩슂 ??臾몄꽌??+ ?뱀씤)
+- 誘쇨컧?뺣낫 愿由?
+  - API ?ㅻ뒗 OS ?쒗겕由?留ㅻ땲? ?먮뒗 CI/CD ?쒗겕由우쑝濡?愿由ы븯?몄슂.
+  - ?덈? 由ы룷吏?좊━(?ъ????뚯뒪??釉뚮옖移??먮룄 而ㅻ컠?섏? 留덉떗?쒖삤.
 
-변경 이력 및 롤백
-- 자동 변경 시:
-  - 원본과 변경본은 docs/previous_stages/ 에 저장됩니다.
-  - work_order/규칙.md에 changelog 항목이 추가됩니다.
-- 롤백 방법:
-  - git checkout <원본 SHA> -- <파일 경로>
-  - 또는 docs/previous_stages/에 저장된 원본 사용
-- 권장: 변경 전 반드시 git rev-parse --short HEAD로 체크포인트 SHA를 캡처하십시오.
+蹂寃??대젰 諛?濡ㅻ갚
+- ?먮룞 蹂寃???
+  - ?먮낯怨?蹂寃쎈낯? docs/previous_stages/ ????λ맗?덈떎.
+  - work_order/洹쒖튃.md??changelog ??ぉ??異붽??⑸땲??
+- 濡ㅻ갚 諛⑸쾿:
+  - git checkout <?먮낯 SHA> -- <?뚯씪 寃쎈줈>
+  - ?먮뒗 docs/previous_stages/????λ맂 ?먮낯 ?ъ슜
+- 沅뚯옣: 蹂寃???諛섎뱶??git rev-parse --short HEAD濡?泥댄겕?ъ씤??SHA瑜?罹≪쿂?섏떗?쒖삤.
 
-빠른 명령 모음
-- 리포지토 클론:
+鍮좊Ⅸ 紐낅졊 紐⑥쓬
+- 由ы룷吏???대줎:
   - git clone https://github.com/JUN-JONG-IL/upbit-trader-master.git
-- 가상환경 및 의존성:
+- 媛?곹솚寃?諛??섏〈??
   - python -m venv .venv
   - source .venv/bin/activate
   - pip install -r requirements.txt
-- 코드 포맷 / 타입 / 보안 / 테스트:
+- 肄붾뱶 ?щ㎎ / ???/ 蹂댁븞 / ?뚯뒪??
   - black --check .
   - flake8
   - mypy .
   - bandit -r .
   - python -m pytest tools/tests/ -q
-- 문서 검사:
+- 臾몄꽌 寃??
   - python tools/scripts/doc_check.py
   - python tools/scripts/doc_check.py --apply
 
-추가 권장 CI (복사하여 사용)
-- .github/workflows/validate-and-upgrade.yml (권장)
-  - docs-validate → tests → prev-stage-upgrade 순서로 검증을 자동화하십시오.
-  - GitHub Actions에서 GITHUB_TOKEN을 사용해 docs 자동 적용 단계 권한을 부여할 수 있습니다.
+異붽? 沅뚯옣 CI (蹂듭궗?섏뿬 ?ъ슜)
+- .github/workflows/validate-and-upgrade.yml (沅뚯옣)
+  - docs-validate ??tests ??prev-stage-upgrade ?쒖꽌濡?寃利앹쓣 ?먮룞?뷀븯??떆??
+  - GitHub Actions?먯꽌 GITHUB_TOKEN???ъ슜??docs ?먮룞 ?곸슜 ?④퀎 沅뚰븳??遺?ы븷 ???덉뒿?덈떎.
 
-자주 묻는 질문 (간단)
-- Q: API 키는 어디에 저장하나요?
-  - A: 환경변수 또는 OS의 시크릿 매니저를 사용하세요. CI는 Secrets를 사용합니다.
-- Q: scripts/doc_check.py가 파일을 변경하나요?
-  - A: 기본은 드라이런입니다. --apply 플래그로 실제 변경이 적용됩니다. 변경 시 docs/previous_stages에 백업이 생성됩니다.
-- Q: 실거래 전 어떤 검증을 해야 하나요?
-  - A: SECURITY_SUMMARY.md, work_order/규칙.md의 체크리스트, 테스트 통과(테스트 환경이 라이브 API 호출하지 않도록 모킹 필요).
+?먯＜ 臾삳뒗 吏덈Ц (媛꾨떒)
+- Q: API ?ㅻ뒗 ?대뵒????ν븯?섏슂?
+  - A: ?섍꼍蹂???먮뒗 OS???쒗겕由?留ㅻ땲?瑜??ъ슜?섏꽭?? CI??Secrets瑜??ъ슜?⑸땲??
+- Q: scripts/doc_check.py媛 ?뚯씪??蹂寃쏀븯?섏슂?
+  - A: 湲곕낯? ?쒕씪?대윴?낅땲?? --apply ?뚮옒洹몃줈 ?ㅼ젣 蹂寃쎌씠 ?곸슜?⑸땲?? 蹂寃???docs/previous_stages??諛깆뾽???앹꽦?⑸땲??
+- Q: ?ㅺ굅?????대뼡 寃利앹쓣 ?댁빞 ?섎굹??
+  - A: SECURITY_SUMMARY.md, work_order/洹쒖튃.md??泥댄겕由ъ뒪?? ?뚯뒪???듦낵(?뚯뒪???섍꼍???쇱씠釉?API ?몄텧?섏? ?딅룄濡?紐⑦궧 ?꾩슂).
 
-마무리 — 권장 다음 단계
-- 우선 순위로 작성해야 할 README.md (다음 작업 제안):
-  1) work_order/README.md — work_order 폴더의 목적, 단계별 요약, 상단 헤더 템플릿 및 STAGE_LOCKED 규칙을 포함한 상세 README
-  2) src/README.md — 소스 구조 설명, 주요 모듈/진입점, 개발자 작업 흐름
-  3) tools/README.md — 테스트 및 스크립트 통합 내용 설명
+留덈Т由???沅뚯옣 ?ㅼ쓬 ?④퀎
+- ?곗꽑 ?쒖쐞濡??묒꽦?댁빞 ??README.md (?ㅼ쓬 ?묒뾽 ?쒖븞):
+  1) work_order/README.md ??work_order ?대뜑??紐⑹쟻, ?④퀎蹂??붿빟, ?곷떒 ?ㅻ뜑 ?쒗뵆由?諛?STAGE_LOCKED 洹쒖튃???ы븿???곸꽭 README
+  2) src/README.md ???뚯뒪 援ъ“ ?ㅻ챸, 二쇱슂 紐⑤뱢/吏꾩엯?? 媛쒕컻???묒뾽 ?먮쫫
+  3) tools/README.md ???뚯뒪??諛??ㅽ겕由쏀듃 ?듯빀 ?댁슜 ?ㅻ챸
 
-저장/검증 체크포인트
-- 현재 커밋 SHA 확인: git rev-parse --short HEAD
-- 문서 검사(드라이런): python tools/scripts/doc_check.py
+???寃利?泥댄겕?ъ씤??
+- ?꾩옱 而ㅻ컠 SHA ?뺤씤: git rev-parse --short HEAD
+- 臾몄꽌 寃???쒕씪?대윴): python tools/scripts/doc_check.py
 
-끝
+?

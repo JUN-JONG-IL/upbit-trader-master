@@ -1,241 +1,241 @@
-# CHANGELOG
+﻿# CHANGELOG
 
 ## [Unreleased] - 2026-04-04
 
-### 수정 (Critical Fixes) — 데이터 파이프라인 완전 재구축
+### ?섏젙 (Critical Fixes) ???곗씠???뚯씠?꾨씪???꾩쟾 ?ш뎄異?
 
-- **문제 1 — staging_candles 스키마 불일치 수정**: `DO $$` 블록으로 `quote_volume`, `trade_count`, `is_complete` 컬럼을 idempotent하게 추가. `RAISE NOTICE`로 실행 결과 확인 가능.
-- **문제 2 — 연결 풀 고갈 해결**: 신규 `connector.py` (`psycopg2.pool.SimpleConnectionPool`, maxconn=10), `MongoConnector.connect()` maxPoolSize=10 및 연결 재사용, `RedisClient` max_connections=10 추가.
-- **문제 3 — Event Loop 충돌 해결**: `MetadataManager.update_snapshot_if_new()`에 Event Loop 오류 감지 시 동기 pymongo fallback(`_sync_update_snapshot_if_new`) 자동 전환 추가.
-- **문제 4 — TimescaleDB 쿼리 버전 호환**: `fetch_compression_policies()`와 `fetch_continuous_aggs()` 함수 추가 — v2.25+ primary 쿼리 실패 시 구 버전 카탈로그 fallback으로 자동 전환.
-- **문제 5 — 모니터링 UI 추가**: `status_widget.ui`에 전체 흐름 모니터링 그룹박스 추가 (Step 1~3 + 최종 현황), `status_widget.py`에 1초 갱신 타이머 및 실시간 집계 로직 추가.
+- **臾몄젣 1 ??staging_candles ?ㅽ궎留?遺덉씪移??섏젙**: `DO $$` 釉붾줉?쇰줈 `quote_volume`, `trade_count`, `is_complete` 而щ읆??idempotent?섍쾶 異붽?. `RAISE NOTICE`濡??ㅽ뻾 寃곌낵 ?뺤씤 媛??
+- **臾몄젣 2 ???곌껐 ? 怨좉컝 ?닿껐**: ?좉퇋 `connector.py` (`psycopg2.pool.SimpleConnectionPool`, maxconn=10), `MongoConnector.connect()` maxPoolSize=10 諛??곌껐 ?ъ궗?? `RedisClient` max_connections=10 異붽?.
+- **臾몄젣 3 ??Event Loop 異⑸룎 ?닿껐**: `MetadataManager.update_snapshot_if_new()`??Event Loop ?ㅻ쪟 媛먯? ???숆린 pymongo fallback(`_sync_update_snapshot_if_new`) ?먮룞 ?꾪솚 異붽?.
+- **臾몄젣 4 ??TimescaleDB 荑쇰━ 踰꾩쟾 ?명솚**: `fetch_compression_policies()`? `fetch_continuous_aggs()` ?⑥닔 異붽? ??v2.25+ primary 荑쇰━ ?ㅽ뙣 ??援?踰꾩쟾 移댄깉濡쒓렇 fallback?쇰줈 ?먮룞 ?꾪솚.
+- **臾몄젣 5 ??紐⑤땲?곕쭅 UI 異붽?**: `status_widget.ui`???꾩껜 ?먮쫫 紐⑤땲?곕쭅 洹몃９諛뺤뒪 異붽? (Step 1~3 + 理쒖쥌 ?꾪솴), `status_widget.py`??1珥?媛깆떊 ??대㉧ 諛??ㅼ떆媛?吏묎퀎 濡쒖쭅 異붽?.
 
-### 영향 범위
-- `src/02_data/timescale/sql/00_schema.sql`: DO $$ 블록 idempotent 컬럼 추가
-- `src/02_data/timescale/connector.py` (신규): psycopg2 풀 기반 싱글톤 연결 관리자
-- `src/02_data/mongodb/mongo_db.py`: maxPoolSize=10, 연결 재사용
-- `src/02_data/redis/redis_client.py`: max_connections=10
-- `src/02_data/mongodb/metadata_manager.py`: 동기 fallback 메서드 추가
-- `src/02_data/timescale/timescale_db.py`: fetch_compression_policies/fetch_continuous_aggs 추가
-- `src/02_data/ui/status_widget.ui`: 파이프라인 모니터링 그룹박스 추가
-- `src/02_data/ui/status_widget.py`: 1초 갱신 타이머 및 파이프라인 로직 추가
-- `docs/fixes/DATABASE_FIXES.md`: 5가지 문제 상세 문서 업데이트
+### ?곹뼢 踰붿쐞
+- `src/data_01/timescale/sql/00_schema.sql`: DO $$ 釉붾줉 idempotent 而щ읆 異붽?
+- `src/data_01/timescale/connector.py` (?좉퇋): psycopg2 ? 湲곕컲 ?깃????곌껐 愿由ъ옄
+- `src/data_01/mongodb/mongo_db.py`: maxPoolSize=10, ?곌껐 ?ъ궗??
+- `src/data_01/redis/redis_client.py`: max_connections=10
+- `src/data_01/mongodb/metadata_manager.py`: ?숆린 fallback 硫붿꽌??異붽?
+- `src/data_01/timescale/timescale_db.py`: fetch_compression_policies/fetch_continuous_aggs 異붽?
+- `src/data_01/ui/status_widget.ui`: ?뚯씠?꾨씪??紐⑤땲?곕쭅 洹몃９諛뺤뒪 異붽?
+- `src/data_01/ui/status_widget.py`: 1珥?媛깆떊 ??대㉧ 諛??뚯씠?꾨씪??濡쒖쭅 異붽?
+- `docs/fixes/DATABASE_FIXES.md`: 5媛吏 臾몄젣 ?곸꽭 臾몄꽌 ?낅뜲?댄듃
 
 ---
 
 ## [v4.4] - 2026-03-19
 
-### Changed — 파일 구조 리팩터링: 도메인 경계 정비
+### Changed ???뚯씪 援ъ“ 由ы뙥?곕쭅: ?꾨찓??寃쎄퀎 ?뺣퉬
 
-#### 파일 이동
+#### ?뚯씪 ?대룞
 
-| 이전 위치 | 새 위치 | 이유 |
+| ?댁쟾 ?꾩튂 | ???꾩튂 | ?댁쑀 |
 |---|---|---|
-| `src/06_ai/priority/services/ml_service.py` | `src/06_ai/ai_engine/ml_service.py` | ML 서비스는 AI 엔진 레이어에 속함 |
-| `src/06_ai/priority/ui/ml_model_selector.ui` | `src/06_ai/ui/ai_engine/ml_model_selector.ui` | AI UI는 `06_ai/ui/` 하위에 위치해야 함 |
-| `src/06_ai/priority/services/upbit_data_provider.py` | `src/02_data/clients/upbit_data_provider.py` | 업비트 데이터 공급자는 데이터 레이어에 속함 |
+| `src/06_ai/priority/services/ml_service.py` | `src/06_ai/ai_engine/ml_service.py` | ML ?쒕퉬?ㅻ뒗 AI ?붿쭊 ?덉씠?댁뿉 ?랁븿 |
+| `src/06_ai/priority/ui/ml_model_selector.ui` | `src/06_ai/ui/ai_engine/ml_model_selector.ui` | AI UI??`06_ai/ui/` ?섏쐞???꾩튂?댁빞 ??|
+| `src/06_ai/priority/services/upbit_data_provider.py` | `src/data_01/clients/upbit_data_provider.py` | ?낅퉬???곗씠??怨듦툒?먮뒗 ?곗씠???덉씠?댁뿉 ?랁븿 |
 
-#### 임포트 경로 업데이트
-- `src/06_ai/priority/services/__init__.py`: 변경 내역 문서화, shim 경유
-- `src/06_ai/priority/services/ml_service.py`: [SHIM] `ai_engine/ml_service.py` 로드
-- `src/06_ai/priority/services/upbit_data_provider.py`: [SHIM] `02_data/clients/upbit_data_provider.py` 로드
-- `src/06_ai/priority/controllers/ml_controller.py`: `_UI_FILE` 경로를 `ui/ai_engine/ml_model_selector.ui` 로 업데이트
-- `src/06_ai/priority/__init__.py`: 이동 내역 반영
-- `src/06_ai/ai_engine/__init__.py`: `MLService` 공개 API 추가
-- `src/02_data/clients/__init__.py`: `UpbitDataProvider` 공개 API 추가
+#### ?꾪룷??寃쎈줈 ?낅뜲?댄듃
+- `src/06_ai/priority/services/__init__.py`: 蹂寃??댁뿭 臾몄꽌?? shim 寃쎌쑀
+- `src/06_ai/priority/services/ml_service.py`: [SHIM] `ai_engine/ml_service.py` 濡쒕뱶
+- `src/06_ai/priority/services/upbit_data_provider.py`: [SHIM] `data_01/clients/upbit_data_provider.py` 濡쒕뱶
+- `src/06_ai/priority/controllers/ml_controller.py`: `_UI_FILE` 寃쎈줈瑜?`ui/ai_engine/ml_model_selector.ui` 濡??낅뜲?댄듃
+- `src/06_ai/priority/__init__.py`: ?대룞 ?댁뿭 諛섏쁺
+- `src/06_ai/ai_engine/__init__.py`: `MLService` 怨듦컻 API 異붽?
+- `src/data_01/clients/__init__.py`: `UpbitDataProvider` 怨듦컻 API 異붽?
 
-#### backend/ 정리
-- `backend/services/ml_service.py`: [SHIM] `src/06_ai/ai_engine/ml_service.py` 로드
-- `backend/services/upbit_data_provider.py`: [SHIM] `src/02_data/clients/upbit_data_provider.py` 로드
-- `backend/services/priority_service.py`: [SHIM] `src/06_ai/priority/services/priority_service.py` 로드
-- `backend/services/priority_db_service.py`: [SHIM] `src/06_ai/priority/services/priority_db_service.py` 로드
-- `backend/models/db_models.py`: [SHIM] `src/06_ai/priority/models/db_models.py` 로드
-- `backend/__init__.py`: deprecated 안내 추가
+#### backend/ ?뺣━
+- `backend/services/ml_service.py`: [SHIM] `src/06_ai/ai_engine/ml_service.py` 濡쒕뱶
+- `backend/services/upbit_data_provider.py`: [SHIM] `src/data_01/clients/upbit_data_provider.py` 濡쒕뱶
+- `backend/services/priority_service.py`: [SHIM] `src/06_ai/priority/services/priority_service.py` 濡쒕뱶
+- `backend/services/priority_db_service.py`: [SHIM] `src/06_ai/priority/services/priority_db_service.py` 濡쒕뱶
+- `backend/models/db_models.py`: [SHIM] `src/06_ai/priority/models/db_models.py` 濡쒕뱶
+- `backend/__init__.py`: deprecated ?덈궡 異붽?
 
-#### README/CHANGELOG 업데이트
-- `src/06_ai/README.md`: `priority/` 서브패키지 구조 및 ML/AI 서비스 위치 반영
-- `src/02_data/README.md`: `upbit_data_provider` 이동 반영
-
-
-
-### Changed — src/ v4.0 최종 검증 완료: 중복 파일 제거 및 README 버전 통일
-
-#### 06_ai UI 중복 파일 제거
-- `src/06_ai/ai_engine/ui/widget_ai_engine.py` 삭제 (실제 구현 `src/06_ai/ui/ai_engine/` 에 존재)
-- `src/06_ai/ai_engine/ui/ai_engine.ui` 삭제 (실제 구현 `src/06_ai/ui/ai_engine/` 에 존재)
-- `src/06_ai/ai_engine/ui/dialogs/` 삭제 (실제 구현 `src/06_ai/ui/ai_engine/dialogs/` 에 존재)
-- `src/06_ai/prediction/ui/widget_prediction.py` 삭제 (실제 구현 `src/06_ai/ui/prediction/` 에 존재)
-- `src/06_ai/prediction/ui/prediction.ui` 삭제 (실제 구현 `src/06_ai/ui/prediction/` 에 존재)
-- `src/06_ai/ai_engine/ui/__init__.py` 하위 호환 shim 유지 (삭제 안 함)
-- `src/06_ai/prediction/ui/__init__.py` 하위 호환 shim 유지 (삭제 안 함)
-
-#### README 버전 v4.0 최종 통일
-- `src/03_market/README.md`: v3.0 → v4.0
-- `src/08_portfolio/README.md`: v2.0 → v4.0
-- `src/09_sentiment/README.md`: v2.0 → v4.0
-- `src/05_strategy/README.md`: v2.0 → v4.0
-- `src/04_chart/README.md`: 버전 헤더 추가 (v4.0)
-- `src/07_scanner/README.md`: 버전 헤더 추가 (v4.0)
+#### README/CHANGELOG ?낅뜲?댄듃
+- `src/06_ai/README.md`: `priority/` ?쒕툕?⑦궎吏 援ъ“ 諛?ML/AI ?쒕퉬???꾩튂 諛섏쁺
+- `src/data_01/README.md`: `upbit_data_provider` ?대룞 諛섏쁺
 
 
 
-### Changed — src/ v4.0 최종 정리: 중복 구조 제거 및 docs 이동
+### Changed ??src/ v4.0 理쒖쥌 寃利??꾨즺: 以묐났 ?뚯씪 ?쒓굅 諛?README 踰꾩쟾 ?듭씪
 
-#### 09_sentiment 중복 구조 제거
-- `src/09_sentiment/analysis/analysis/` → `src/09_sentiment/analysis/analytics/` (중복 명명 해소)
-- `src/09_sentiment/analysis/correlation_analysis.py` 하위 호환 shim 경로 수정 (`.analytics.*`)
-- `src/09_sentiment/analysis/influence_score.py` 하위 호환 shim 경로 수정 (`.analytics.*`)
-- `src/09_sentiment/analysis/topic_modeling.py` 하위 호환 shim 경로 수정 (`.analytics.*`)
-- `src/09_sentiment/README.md` 구조 다이어그램 업데이트
+#### 06_ai UI 以묐났 ?뚯씪 ?쒓굅
+- `src/06_ai/ai_engine/ui/widget_ai_engine.py` ??젣 (?ㅼ젣 援ы쁽 `src/06_ai/ui/ai_engine/` ??議댁옱)
+- `src/06_ai/ai_engine/ui/ai_engine.ui` ??젣 (?ㅼ젣 援ы쁽 `src/06_ai/ui/ai_engine/` ??議댁옱)
+- `src/06_ai/ai_engine/ui/dialogs/` ??젣 (?ㅼ젣 援ы쁽 `src/06_ai/ui/ai_engine/dialogs/` ??議댁옱)
+- `src/06_ai/prediction/ui/widget_prediction.py` ??젣 (?ㅼ젣 援ы쁽 `src/06_ai/ui/prediction/` ??議댁옱)
+- `src/06_ai/prediction/ui/prediction.ui` ??젣 (?ㅼ젣 援ы쁽 `src/06_ai/ui/prediction/` ??議댁옱)
+- `src/06_ai/ai_engine/ui/__init__.py` ?섏쐞 ?명솚 shim ?좎? (??젣 ????
+- `src/06_ai/prediction/ui/__init__.py` ?섏쐞 ?명솚 shim ?좎? (??젣 ????
 
-#### 모듈 내 docs 폴더 루트 docs/로 이동
-- `src/04_chart/docs/` → `docs/04_chart/` (ADVANCED_CHART_GUIDE, CHART_ENGINE_COMPARISON, CHART_README)
-- `src/05_strategy/docs/` → `docs/05_strategy/` (BACKTEST_GUIDE, STRATEGY_DEVELOPMENT_GUIDE)
-- `src/07_scanner/engine/docs/` → `docs/07_scanner/` (API, ARCHITECTURE, EXAMPLES)
+#### README 踰꾩쟾 v4.0 理쒖쥌 ?듭씪
+- `src/03_market/README.md`: v3.0 ??v4.0
+- `src/08_portfolio/README.md`: v2.0 ??v4.0
+- `src/09_sentiment/README.md`: v2.0 ??v4.0
+- `src/05_strategy/README.md`: v2.0 ??v4.0
+- `src/04_chart/README.md`: 踰꾩쟾 ?ㅻ뜑 異붽? (v4.0)
+- `src/07_scanner/README.md`: 踰꾩쟾 ?ㅻ뜑 異붽? (v4.0)
 
-#### README 최신화
-- `src/README.md` v4.0 구조 다이어그램 완전화 (analytics/ 반영, engine/ 확인)
+
+
+### Changed ??src/ v4.0 理쒖쥌 ?뺣━: 以묐났 援ъ“ ?쒓굅 諛?docs ?대룞
+
+#### 09_sentiment 以묐났 援ъ“ ?쒓굅
+- `src/09_sentiment/analysis/analysis/` ??`src/09_sentiment/analysis/analytics/` (以묐났 紐낅챸 ?댁냼)
+- `src/09_sentiment/analysis/correlation_analysis.py` ?섏쐞 ?명솚 shim 寃쎈줈 ?섏젙 (`.analytics.*`)
+- `src/09_sentiment/analysis/influence_score.py` ?섏쐞 ?명솚 shim 寃쎈줈 ?섏젙 (`.analytics.*`)
+- `src/09_sentiment/analysis/topic_modeling.py` ?섏쐞 ?명솚 shim 寃쎈줈 ?섏젙 (`.analytics.*`)
+- `src/09_sentiment/README.md` 援ъ“ ?ㅼ씠?닿렇???낅뜲?댄듃
+
+#### 紐⑤뱢 ??docs ?대뜑 猷⑦듃 docs/濡??대룞
+- `src/04_chart/docs/` ??`docs/04_chart/` (ADVANCED_CHART_GUIDE, CHART_ENGINE_COMPARISON, CHART_README)
+- `src/05_strategy/docs/` ??`docs/05_strategy/` (BACKTEST_GUIDE, STRATEGY_DEVELOPMENT_GUIDE)
+- `src/07_scanner/engine/docs/` ??`docs/07_scanner/` (API, ARCHITECTURE, EXAMPLES)
+
+#### README 理쒖떊??
+- `src/README.md` v4.0 援ъ“ ?ㅼ씠?닿렇???꾩쟾??(analytics/ 諛섏쁺, engine/ ?뺤씤)
 
 
 
-### Changed — 11_server/ 및 13_compute/ 중복 명명 구조 정리
-- `src/11_server/server/` → `src/11_server/app/` (Flask/FastAPI 표준 명명)
-- `src/13_compute/compute/` → `src/13_compute/engine/` (계산 엔진 의미 명확화)
-- `src/11_server/__init__.py` import 경로 수정 (`app.server`)
-- `src/app/main.py` import 경로 수정 (`11_server.app.server`, `11_server.app.static`)
-- `src/app/ui/managers/symbol_loader.py` import 경로 수정 (`11_server.app.static.static`)
-- `src/13_compute/__init__.py` import 경로 수정 (`engine`)
-- `src/11_server/README.md` 구조 다이어그램 업데이트
-- `src/13_compute/README.md` 구조 다이어그램 업데이트
-- `src/13_compute/engine/README.md` 경로 참조 업데이트
+### Changed ??11_server/ 諛?13_compute/ 以묐났 紐낅챸 援ъ“ ?뺣━
+- `src/11_server/server/` ??`src/11_server/app/` (Flask/FastAPI ?쒖? 紐낅챸)
+- `src/13_compute/compute/` ??`src/13_compute/engine/` (怨꾩궛 ?붿쭊 ?섎? 紐낇솗??
+- `src/11_server/__init__.py` import 寃쎈줈 ?섏젙 (`app.server`)
+- `src/app/main.py` import 寃쎈줈 ?섏젙 (`11_server.app.server`, `11_server.app.static`)
+- `src/app/ui/managers/symbol_loader.py` import 寃쎈줈 ?섏젙 (`11_server.app.static.static`)
+- `src/13_compute/__init__.py` import 寃쎈줈 ?섏젙 (`engine`)
+- `src/11_server/README.md` 援ъ“ ?ㅼ씠?닿렇???낅뜲?댄듃
+- `src/13_compute/README.md` 援ъ“ ?ㅼ씠?닿렇???낅뜲?댄듃
+- `src/13_compute/engine/README.md` 寃쎈줈 李몄“ ?낅뜲?댄듃
 
 ## [v4.1] - 2026-03-15
 
-### Changed — src/ v4.0 최종 정리 (PR #97)
-- `src/10_trade/README.md` 중복 섹션 제거 (lines 182–311) 및 날짜 `2025-01-01` → `2026-03-15` 수정
-- `src/04_chart/README.md` 폴더 다이어그램 업데이트 (`docs/` → `docs/04_chart/` 참조)
-- `src/06_ai/ai_engine/ui/` → `src/06_ai/ui/ai_engine/` 이동 (UI 통합 완료)
-- `src/06_ai/prediction/ui/` → `src/06_ai/ui/prediction/` 이동 (UI 통합 완료)
-- `src/06_ai/ui/__init__.py` import 경로 수정 (`.ai_engine.` / `.prediction.` 상대경로)
-- `src/06_ai/ai_engine/ui/__init__.py` 하위 호환 shim으로 전환
-- `src/06_ai/prediction/ui/__init__.py` 하위 호환 shim으로 전환
-- `src/README.md` v4.0 구조 다이어그램 업데이트 (`ui/ai_engine/`, `ui/prediction/` 반영)
-- 하위 모듈 README 버전 v4.0 통일:
-  - `src/01_core/auth/README.md`: v1.0 → v4.0, 날짜 2026-03-15
-  - `src/06_ai/prompt/README.md`: v1.0 → v4.0, 날짜 2026-03-15
-  - `src/app/README.md`: v1.0 → v4.0, 날짜 2026-03-15
+### Changed ??src/ v4.0 理쒖쥌 ?뺣━ (PR #97)
+- `src/10_trade/README.md` 以묐났 ?뱀뀡 ?쒓굅 (lines 182??11) 諛??좎쭨 `2025-01-01` ??`2026-03-15` ?섏젙
+- `src/04_chart/README.md` ?대뜑 ?ㅼ씠?닿렇???낅뜲?댄듃 (`docs/` ??`docs/04_chart/` 李몄“)
+- `src/06_ai/ai_engine/ui/` ??`src/06_ai/ui/ai_engine/` ?대룞 (UI ?듯빀 ?꾨즺)
+- `src/06_ai/prediction/ui/` ??`src/06_ai/ui/prediction/` ?대룞 (UI ?듯빀 ?꾨즺)
+- `src/06_ai/ui/__init__.py` import 寃쎈줈 ?섏젙 (`.ai_engine.` / `.prediction.` ?곷?寃쎈줈)
+- `src/06_ai/ai_engine/ui/__init__.py` ?섏쐞 ?명솚 shim?쇰줈 ?꾪솚
+- `src/06_ai/prediction/ui/__init__.py` ?섏쐞 ?명솚 shim?쇰줈 ?꾪솚
+- `src/README.md` v4.0 援ъ“ ?ㅼ씠?닿렇???낅뜲?댄듃 (`ui/ai_engine/`, `ui/prediction/` 諛섏쁺)
+- ?섏쐞 紐⑤뱢 README 踰꾩쟾 v4.0 ?듭씪:
+  - `src/01_core/auth/README.md`: v1.0 ??v4.0, ?좎쭨 2026-03-15
+  - `src/06_ai/prompt/README.md`: v1.0 ??v4.0, ?좎쭨 2026-03-15
+  - `src/app/README.md`: v1.0 ??v4.0, ?좎쭨 2026-03-15
 
 
 
-### Changed — src/ 전체 재구조화 v4.0 (명확한 명명 및 용도별 분류)
-- `src/03_market/coin_list/` → `src/03_market/coinlist/` (명확한 명명)
-- `src/03_market/trade/` → `src/03_market/trades/` (복수형으로 명확화)
-- `src/08_portfolio/portfolio/` → `src/08_portfolio/holdings/` (용도 명확화: 보유자산)
-- `src/10_trade/trade/` → `src/10_trade/orders/` (용도 명확화: 주문)
-- `src/05_strategy/strategy/` 삭제 — deprecated shim 제거, `strategies/`로 통합 완료
-- `src/07_scanner/scanner/` → `src/07_scanner/engine/` (중복 명명 해소)
-- `src/09_sentiment/sentiment/` → `src/09_sentiment/analysis/` (중복 명명 해소)
-- `src/09_sentiment/analysis/logic/` → `src/09_sentiment/analysis/core/` (역할 명확화)
-- `src/06_ai/ui/` 통합 진입점 신규 추가 (`ai_engine/ui/` + `prediction/ui/` 통합)
-- `src/app/ui/managers/widget_loader.py` 경로 수정 (새 폴더명 반영)
-- `src/07_scanner/__init__.py` import 경로 수정 (`engine/`)
-- `src/09_sentiment/__init__.py` import 경로 수정 (`analysis/`)
-- `src/app/services/scanner_service.py` import 경로 수정 (`engine/`)
-- `src/app/services/sentiment_service.py` import 경로 수정 (`analysis/core/`)
-- `src/03_market/__init__.py` import 경로 수정 (`coinlist/`, `trades/`)
-- `src/08_portfolio/__init__.py` import 경로 수정 (`holdings/`)
-- `src/06_ai/__init__.py` import 경로 수정 (`ui/` 통합)
-- `src/README.md` v4.0 갱신 (폴더 구조 다이어그램 업데이트)
+### Changed ??src/ ?꾩껜 ?ш뎄議고솕 v4.0 (紐낇솗??紐낅챸 諛??⑸룄蹂?遺꾨쪟)
+- `src/03_market/coin_list/` ??`src/03_market/coinlist/` (紐낇솗??紐낅챸)
+- `src/03_market/trade/` ??`src/03_market/trades/` (蹂듭닔?뺤쑝濡?紐낇솗??
+- `src/08_portfolio/portfolio/` ??`src/08_portfolio/holdings/` (?⑸룄 紐낇솗?? 蹂댁쑀?먯궛)
+- `src/10_trade/trade/` ??`src/10_trade/orders/` (?⑸룄 紐낇솗?? 二쇰Ц)
+- `src/05_strategy/strategy/` ??젣 ??deprecated shim ?쒓굅, `strategies/`濡??듯빀 ?꾨즺
+- `src/07_scanner/scanner/` ??`src/07_scanner/engine/` (以묐났 紐낅챸 ?댁냼)
+- `src/09_sentiment/sentiment/` ??`src/09_sentiment/analysis/` (以묐났 紐낅챸 ?댁냼)
+- `src/09_sentiment/analysis/logic/` ??`src/09_sentiment/analysis/core/` (??븷 紐낇솗??
+- `src/06_ai/ui/` ?듯빀 吏꾩엯???좉퇋 異붽? (`ai_engine/ui/` + `prediction/ui/` ?듯빀)
+- `src/app/ui/managers/widget_loader.py` 寃쎈줈 ?섏젙 (???대뜑紐?諛섏쁺)
+- `src/07_scanner/__init__.py` import 寃쎈줈 ?섏젙 (`engine/`)
+- `src/09_sentiment/__init__.py` import 寃쎈줈 ?섏젙 (`analysis/`)
+- `src/app/services/scanner_service.py` import 寃쎈줈 ?섏젙 (`engine/`)
+- `src/app/services/sentiment_service.py` import 寃쎈줈 ?섏젙 (`analysis/core/`)
+- `src/03_market/__init__.py` import 寃쎈줈 ?섏젙 (`coinlist/`, `trades/`)
+- `src/08_portfolio/__init__.py` import 寃쎈줈 ?섏젙 (`holdings/`)
+- `src/06_ai/__init__.py` import 寃쎈줈 ?섏젙 (`ui/` ?듯빀)
+- `src/README.md` v4.0 媛깆떊 (?대뜑 援ъ“ ?ㅼ씠?닿렇???낅뜲?댄듃)
 
 
 
 ### Added
-- AI/ML 모듈 통합 (`06_ai/`) — sentiment 복구 파일 추가
-  - `src/06_ai/sentiment/sentiment_logic.py` — 감성 분석 비즈니스 로직
-  - `src/06_ai/sentiment/widget_sentiment.py` — 감성 분석 Qt 위젯
-  - `src/06_ai/sentiment/sentiment.ui` — Qt Designer UI
-  - `src/06_ai/sentiment/correlation_analysis.py` — Granger 인과관계 분석
-  - `src/06_ai/sentiment/influence_score.py` — 소셜 미디어 영향력 점수
-  - `src/06_ai/sentiment/multilingual_sentiment.py` — 다국어 감성 분석 (KoBERT, FinBERT)
-  - `src/06_ai/sentiment/topic_modeling.py` — BERTopic 주제 모델링
-  - `src/06_ai/sentiment/README.md` — 모듈 설명서
-  - `src/06_ai/ai_engine/realtime_data.py` — WebSocket 실시간 데이터 피드
+- AI/ML 紐⑤뱢 ?듯빀 (`06_ai/`) ??sentiment 蹂듦뎄 ?뚯씪 異붽?
+  - `src/06_ai/sentiment/sentiment_logic.py` ??媛먯꽦 遺꾩꽍 鍮꾩쫰?덉뒪 濡쒖쭅
+  - `src/06_ai/sentiment/widget_sentiment.py` ??媛먯꽦 遺꾩꽍 Qt ?꾩젽
+  - `src/06_ai/sentiment/sentiment.ui` ??Qt Designer UI
+  - `src/06_ai/sentiment/correlation_analysis.py` ??Granger ?멸낵愿怨?遺꾩꽍
+  - `src/06_ai/sentiment/influence_score.py` ???뚯뀥 誘몃뵒???곹뼢???먯닔
+  - `src/06_ai/sentiment/multilingual_sentiment.py` ???ㅺ뎅??媛먯꽦 遺꾩꽍 (KoBERT, FinBERT)
+  - `src/06_ai/sentiment/topic_modeling.py` ??BERTopic 二쇱젣 紐⑤뜽留?
+  - `src/06_ai/sentiment/README.md` ??紐⑤뱢 ?ㅻ챸??
+  - `src/06_ai/ai_engine/realtime_data.py` ??WebSocket ?ㅼ떆媛??곗씠???쇰뱶
   - `src/06_ai/core/README.md`, `detection/README.md`, `strategy/README.md`,
-    `training/README.md`, `utils/README.md` — 모듈 설명서
+    `training/README.md`, `utils/README.md` ??紐⑤뱢 ?ㅻ챸??
 
 ### Changed
-- `src/06_ai/sentiment/__init__.py` — SentimentLogic, SentimentWidget 포함하도록 업데이트
-- `src/05_ai/__init__.py` — 레거시 shim을 `06_ai`로 리다이렉트 (하위 호환)
-- `src/05_ai/ml/__init__.py` — 레거시 shim을 `06_ai`로 리다이렉트 (하위 호환)
-- `src/08_ml_ai/__init__.py` — 레거시 shim에 `06_ai.models` 재노출 추가
+- `src/06_ai/sentiment/__init__.py` ??SentimentLogic, SentimentWidget ?ы븿?섎룄濡??낅뜲?댄듃
+- `src/05_ai/__init__.py` ???덇굅??shim??`06_ai`濡?由щ떎?대젆??(?섏쐞 ?명솚)
+- `src/05_ai/ml/__init__.py` ???덇굅??shim??`06_ai`濡?由щ떎?대젆??(?섏쐞 ?명솚)
+- `src/08_ml_ai/__init__.py` ???덇굅??shim??`06_ai.models` ?щ끂異?異붽?
 
 ### Fixed
-- 레거시 shim (`05_ai`, `08_ml_ai`)이 폐기된 `10_ai_ml` 대신 `06_ai`를 참조하도록 수정
+- ?덇굅??shim (`05_ai`, `08_ml_ai`)???먭린??`10_ai_ml` ???`06_ai`瑜?李몄“?섎룄濡??섏젙
 
 ## [3.2.0] - 2026-02-08
 
 ### Added - Advanced Multi-Chart System
-- **고급 차트 시스템 구현** (2025-2026 최신 트레이딩 기능)
-  - ✅ 100+ 기술 지표 (MA, RSI, MACD, Bollinger Bands, Ichimoku, Fibonacci 등)
-  - ✅ 드로잉 툴 15종 (트렌드 라인, 피보나치, 엘리엇 웨이브, Gann 도구 등)
-  - ✅ 다양한 차트 타입 (캔들스틱, 라인, 바, 에어리어, 히트맵, Heikin-Ashi, Renko)
-  - ✅ 무한 줌/팬/스크롤, 크로스헤어, 툴팁 기능
+- **怨좉툒 李⑦듃 ?쒖뒪??援ы쁽** (2025-2026 理쒖떊 ?몃젅?대뵫 湲곕뒫)
+  - ??100+ 湲곗닠 吏??(MA, RSI, MACD, Bollinger Bands, Ichimoku, Fibonacci ??
+  - ???쒕줈????15醫?(?몃젋???쇱씤, ?쇰낫?섏튂, ?섎━???⑥씠釉? Gann ?꾧뎄 ??
+  - ???ㅼ뼇??李⑦듃 ???(罹붾뱾?ㅽ떛, ?쇱씤, 諛? ?먯뼱由ъ뼱, ?덊듃留? Heikin-Ashi, Renko)
+  - ??臾댄븳 以????ㅽ겕濡? ?щ줈?ㅽ뿤?? ?댄똻 湲곕뒫
 
-- **멀티차트 레이아웃 시스템** (`src/chart/multi/`)
-  - ✅ 4~16개 차트 동시 표시, 12x6 그리드 레이아웃
-  - ✅ 시간축/줌/크로스헤어 동기화
-  - ✅ 레이아웃 저장/불러오기 (JSON 스키마)
-  - ✅ 5가지 프리셋 레이아웃 (Single, Dual, Quad, Comparison, Workspace)
-  - ✅ 다크/라이트 테마 지원
-  - ✅ 스플릿 뷰 (상/하 분할)
+- **硫?곗감???덉씠?꾩썐 ?쒖뒪??* (`src/chart/multi/`)
+  - ??4~16媛?李⑦듃 ?숈떆 ?쒖떆, 12x6 洹몃━???덉씠?꾩썐
+  - ???쒓컙異?以??щ줈?ㅽ뿤???숆린??
+  - ???덉씠?꾩썐 ???遺덈윭?ㅺ린 (JSON ?ㅽ궎留?
+  - ??5媛吏 ?꾨━???덉씠?꾩썐 (Single, Dual, Quad, Comparison, Workspace)
+  - ???ㅽ겕/?쇱씠???뚮쭏 吏??
+  - ???ㅽ뵆由?酉?(????遺꾪븷)
 
-- **실시간 차트 시스템** (`src/chart/realtime/`)
-  - ✅ WebSocket 실시간 스트리밍 (QThread 비동기 처리)
-  - ✅ WebGL 가속 렌더링 (lightweight-charts)
-  - ✅ 깊이 차트 (호가창) 기능
-  - ✅ 성능 메트릭 모니터링 (msg/s, 지연시간)
-  - ✅ 자동 재연결 기능
+- **?ㅼ떆媛?李⑦듃 ?쒖뒪??* (`src/chart/realtime/`)
+  - ??WebSocket ?ㅼ떆媛??ㅽ듃由щ컢 (QThread 鍮꾨룞湲?泥섎━)
+  - ??WebGL 媛???뚮뜑留?(lightweight-charts)
+  - ??源딆씠 李⑦듃 (?멸?李? 湲곕뒫
+  - ???깅뒫 硫뷀듃由?紐⑤땲?곕쭅 (msg/s, 吏?곗떆媛?
+  - ???먮룞 ?ъ뿰寃?湲곕뒫
 
-- **AI/ML 차트 통합** (`src/chart/ai/`)
-  - ✅ AI 기반 가격 예측 (LSTM/ML 오버레이)
-  - ✅ 자동 패턴 인식 (헤드앤숄더, 플래그 등)
-  - ✅ 감성 분석 오버레이 (뉴스/소셜 미디어)
-  - ✅ 이상 탐지 알림
-  - ✅ 자동 업데이트 (5분 간격)
+- **AI/ML 李⑦듃 ?듯빀** (`src/chart/ai/`)
+  - ??AI 湲곕컲 媛寃??덉륫 (LSTM/ML ?ㅻ쾭?덉씠)
+  - ???먮룞 ?⑦꽩 ?몄떇 (?ㅻ뱶?ㅼ늻?? ?뚮옒洹???
+  - ??媛먯꽦 遺꾩꽍 ?ㅻ쾭?덉씠 (?댁뒪/?뚯뀥 誘몃뵒??
+  - ???댁긽 ?먯? ?뚮┝
+  - ???먮룞 ?낅뜲?댄듃 (5遺?媛꾧꺽)
 
-- **차트 컴포넌트** (`src/chart/`)
-  - `advanced_chart_dialog.py/.ui`: 고급 차트 메인 다이얼로그
-  - `indicators.py`: 100+ 기술 지표 선택 시스템
-  - `drawing_tools.py`: 15종 드로잉 툴
-  - `chart_types.py`: 7가지 차트 타입 (Heikin-Ashi, Renko 포함)
+- **李⑦듃 而댄룷?뚰듃** (`src/chart/`)
+  - `advanced_chart_dialog.py/.ui`: 怨좉툒 李⑦듃 硫붿씤 ?ㅼ씠?쇰줈洹?
+  - `indicators.py`: 100+ 湲곗닠 吏???좏깮 ?쒖뒪??
+  - `drawing_tools.py`: 15醫??쒕줈????
+  - `chart_types.py`: 7媛吏 李⑦듃 ???(Heikin-Ashi, Renko ?ы븿)
 
 ### Documentation
-- ✅ `src/chart/multi/README.md`: 멀티차트 레이아웃 가이드
-- ✅ `src/chart/ai/README.md`: AI/ML 통합 가이드
-- ✅ 모든 다이얼로그에 도움말 버튼 (❓) 구현
-- ✅ Phase 11-13 규칙 준수 (실제 데이터, QThread, 도움말 필수)
+- ??`src/chart/multi/README.md`: 硫?곗감???덉씠?꾩썐 媛?대뱶
+- ??`src/chart/ai/README.md`: AI/ML ?듯빀 媛?대뱶
+- ??紐⑤뱺 ?ㅼ씠?쇰줈洹몄뿉 ?꾩?留?踰꾪듉 (?? 援ы쁽
+- ??Phase 11-13 洹쒖튃 以??(?ㅼ젣 ?곗씠?? QThread, ?꾩?留??꾩닔)
 
 ### Technical Implementation
-- ✅ **work_order/규칙.md 준수**
-  - UI 파일(.ui)과 로직 파일(.py) 같은 폴더에 배치
-  - QPainter.Antialiasing 올바른 사용
-  - QThread 비동기 처리 (렉 방지)
-  - Dialog suffix 사용
-  - 차트 최소 크기 800x600px
+- ??**work_order/洹쒖튃.md 以??*
+  - UI ?뚯씪(.ui)怨?濡쒖쭅 ?뚯씪(.py) 媛숈? ?대뜑??諛곗튂
+  - QPainter.Antialiasing ?щ컮瑜??ъ슜
+  - QThread 鍮꾨룞湲?泥섎━ (??諛⑹?)
+  - Dialog suffix ?ъ슜
+  - 李⑦듃 理쒖냼 ?ш린 800x600px
 
-- ✅ **렉 방지 규칙**
-  - 네트워크/DB/ML 작업은 QThread 사용
-  - UI 응답 시간 < 100ms
-  - GUI 메인 스레드에서 time.sleep() 금지
+- ??**??諛⑹? 洹쒖튃**
+  - ?ㅽ듃?뚰겕/DB/ML ?묒뾽? QThread ?ъ슜
+  - UI ?묐떟 ?쒓컙 < 100ms
+  - GUI 硫붿씤 ?ㅻ젅?쒖뿉??time.sleep() 湲덉?
 
-- ✅ **Phase 11-13 AI/ML 규칙**
-  - UI 생성 시 백엔드 로직 동시 구현
-  - 도움말 버튼 필수 구현
-  - 실제 데이터로 테스트 (Mock/Stub 금지)
-  - QThread 비동기 처리
+- ??**Phase 11-13 AI/ML 洹쒖튃**
+  - UI ?앹꽦 ??諛깆뿏??濡쒖쭅 ?숈떆 援ы쁽
+  - ?꾩?留?踰꾪듉 ?꾩닔 援ы쁽
+  - ?ㅼ젣 ?곗씠?곕줈 ?뚯뒪??(Mock/Stub 湲덉?)
+  - QThread 鍮꾨룞湲?泥섎━
 
 ### Files Changed
-- **새 파일** (13개):
+- **???뚯씪** (13媛?:
   - `src/chart/advanced_chart_dialog.py/.ui`
   - `src/chart/indicators.py`
   - `src/chart/drawing_tools.py`
@@ -254,156 +254,156 @@
 ## [3.1.1] - 2026-02-06
 
 ### Fixed
-- **QChartView Antialiasing 오류 수정**
-  - `src/ai/ai_engine_dialog.py`: QPainter.Antialiasing 사용으로 수정
-  - `src/models/prediction_dialog.py`: QPainter.Antialiasing 사용으로 수정 (3곳)
-  - `src/nlp/sentiment_dialog.py`: QPainter.Antialiasing 사용으로 수정
-  - 모든 AI/ML 다이얼로그 차트가 정상 표시되도록 수정
-  - AttributeError: 'QChartView' object has no attribute 'Antialiasing' 완전 해결
+- **QChartView Antialiasing ?ㅻ쪟 ?섏젙**
+  - `src/ai/ai_engine_dialog.py`: QPainter.Antialiasing ?ъ슜?쇰줈 ?섏젙
+  - `src/models/prediction_dialog.py`: QPainter.Antialiasing ?ъ슜?쇰줈 ?섏젙 (3怨?
+  - `src/nlp/sentiment_dialog.py`: QPainter.Antialiasing ?ъ슜?쇰줈 ?섏젙
+  - 紐⑤뱺 AI/ML ?ㅼ씠?쇰줈洹?李⑦듃媛 ?뺤긽 ?쒖떆?섎룄濡??섏젙
+  - AttributeError: 'QChartView' object has no attribute 'Antialiasing' ?꾩쟾 ?닿껐
 
 ### Added
-- **work_order/규칙.md**: PyQt5 Chart 사용 규칙 추가
-  - QChartView Antialiasing 올바른 사용법 문서화
-  - QPainter.Antialiasing 사용 규칙 정의
-  - 자동 검증 명령어 추가
-- **tests/test_chart_rendering.py**: Chart 렌더링 테스트 추가
-  - QChartView Antialiasing 설정 테스트
-  - AI/ML 다이얼로그 import 테스트
-- **docs/PYQT5_CHART_GUIDE.md**: PyQt5 Chart 사용 가이드 생성
-  - 올바른 Antialiasing 설정 방법
-  - 자주 발생하는 오류 및 해결 방법
-  - 완전한 예제 코드 (라인 차트, 파이 차트)
-  - 검증 방법 및 참고 자료
+- **work_order/洹쒖튃.md**: PyQt5 Chart ?ъ슜 洹쒖튃 異붽?
+  - QChartView Antialiasing ?щ컮瑜??ъ슜踰?臾몄꽌??
+  - QPainter.Antialiasing ?ъ슜 洹쒖튃 ?뺤쓽
+  - ?먮룞 寃利?紐낅졊??異붽?
+- **tests/test_chart_rendering.py**: Chart ?뚮뜑留??뚯뒪??異붽?
+  - QChartView Antialiasing ?ㅼ젙 ?뚯뒪??
+  - AI/ML ?ㅼ씠?쇰줈洹?import ?뚯뒪??
+- **docs/PYQT5_CHART_GUIDE.md**: PyQt5 Chart ?ъ슜 媛?대뱶 ?앹꽦
+  - ?щ컮瑜?Antialiasing ?ㅼ젙 諛⑸쾿
+  - ?먯＜ 諛쒖깮?섎뒗 ?ㅻ쪟 諛??닿껐 諛⑸쾿
+  - ?꾩쟾???덉젣 肄붾뱶 (?쇱씤 李⑦듃, ?뚯씠 李⑦듃)
+  - 寃利?諛⑸쾿 諛?李멸퀬 ?먮즺
 
 ### Documentation
-- PyQt5 QChartView Antialiasing 올바른 사용법 문서화
-- 자동 검증 스크립트 가이드 추가
-- 재발 방지를 위한 규칙 문서화 완료
+- PyQt5 QChartView Antialiasing ?щ컮瑜??ъ슜踰?臾몄꽌??
+- ?먮룞 寃利??ㅽ겕由쏀듃 媛?대뱶 異붽?
+- ?щ컻 諛⑹?瑜??꾪븳 洹쒖튃 臾몄꽌???꾨즺
 
 ---
 
 ## [3.1.0] - 2026-02-06
 
 ### Fixed
-- ✅ AI/ML 다이얼로그 임포트 경로 수정 (src. 접두사 제거)
-  - `src/ai/ai_engine_dialog.py` - 6개 임포트 수정
-  - `src/models/prediction_dialog.py` - 10개 임포트 수정
-  - `src/nlp/sentiment_dialog.py` - 10개 임포트 수정
-  - 모든 `from src.` → `from` 패턴으로 변경
-  - 프로젝트 Python path 구조에 맞게 수정
+- ??AI/ML ?ㅼ씠?쇰줈洹??꾪룷??寃쎈줈 ?섏젙 (src. ?묐몢???쒓굅)
+  - `src/ai/ai_engine_dialog.py` - 6媛??꾪룷???섏젙
+  - `src/models/prediction_dialog.py` - 10媛??꾪룷???섏젙
+  - `src/nlp/sentiment_dialog.py` - 10媛??꾪룷???섏젙
+  - 紐⑤뱺 `from src.` ??`from` ?⑦꽩?쇰줈 蹂寃?
+  - ?꾨줈?앺듃 Python path 援ъ“??留욊쾶 ?섏젙
 
 ### Added
-- 📝 임포트 규칙 문서 (`docs/development/IMPORT_GUIDELINES.md`)
-  - 올바른/잘못된 임포트 예제
-  - Python path 구조 설명
-  - 자동/수동 검증 방법
-- 🔧 Pre-commit hook (`scripts/check_imports.py`)
-  - 모든 Python 파일에서 `from src.` 패턴 자동 검출
-  - 잘못된 임포트 위치 및 라인 번호 표시
-  - 종료 코드 반환 (CI/CD 통합 가능)
-- 🔧 `.pre-commit-config.yaml` 설정
-  - check-imports hook 자동 실행
-  - Python 파일 수정 시 자동 검증
+- ?뱷 ?꾪룷??洹쒖튃 臾몄꽌 (`docs/development/IMPORT_GUIDELINES.md`)
+  - ?щ컮瑜??섎せ???꾪룷???덉젣
+  - Python path 援ъ“ ?ㅻ챸
+  - ?먮룞/?섎룞 寃利?諛⑸쾿
+- ?뵩 Pre-commit hook (`scripts/check_imports.py`)
+  - 紐⑤뱺 Python ?뚯씪?먯꽌 `from src.` ?⑦꽩 ?먮룞 寃異?
+  - ?섎せ???꾪룷???꾩튂 諛??쇱씤 踰덊샇 ?쒖떆
+  - 醫낅즺 肄붾뱶 諛섑솚 (CI/CD ?듯빀 媛??
+- ?뵩 `.pre-commit-config.yaml` ?ㅼ젙
+  - check-imports hook ?먮룞 ?ㅽ뻾
+  - Python ?뚯씪 ?섏젙 ???먮룞 寃利?
 
 ### Changed
-- 📝 `work_order/11_단계_AI_엔진_통합.md` - 임포트 규칙 섹션 추가
-- 📝 `work_order/12_단계_예측_모델.md` - 임포트 규칙 섹션 추가
-- 📝 `work_order/13_단계_뉴스_소셜_감성_분석_시스템.md` - 임포트 규칙 섹션 추가
-- 📝 `README.md` - 개발 가이드에 임포트 규칙 강조 추가
-- 📝 임포트 규칙 가이드 링크 추가
+- ?뱷 `work_order/11_?④퀎_AI_?붿쭊_?듯빀.md` - ?꾪룷??洹쒖튃 ?뱀뀡 異붽?
+- ?뱷 `work_order/12_?④퀎_?덉륫_紐⑤뜽.md` - ?꾪룷??洹쒖튃 ?뱀뀡 異붽?
+- ?뱷 `work_order/13_?④퀎_?댁뒪_?뚯뀥_媛먯꽦_遺꾩꽍_?쒖뒪??md` - ?꾪룷??洹쒖튃 ?뱀뀡 異붽?
+- ?뱷 `README.md` - 媛쒕컻 媛?대뱶???꾪룷??洹쒖튃 媛뺤“ 異붽?
+- ?뱷 ?꾪룷??洹쒖튃 媛?대뱶 留곹겕 異붽?
 
 ---
 
 ## [3.0.0] - 2026-02-06
 
-### 🎉 Major Release: 획기적인 AI/ML 기능 추가
+### ?럦 Major Release: ?띻린?곸씤 AI/ML 湲곕뒫 異붽?
 
 #### Fixed
-- **임포트 경로 수정 완료**
-  - `src/app/window_main.py`의 AI/ML 다이얼로그 임포트 수정
-  - `src.` 접두사 제거 (프로젝트 구조에 맞게 수정)
-  - `from ai.ai_engine_dialog import AIEngineDialog` (수정 후)
-  - `from models.prediction_dialog import PredictionDialog` (수정 후)
-  - `from nlp.sentiment_dialog import SentimentDialog` (수정 후)
-  - `__init__.py` 파일에 다이얼로그 클래스 추가
+- **?꾪룷??寃쎈줈 ?섏젙 ?꾨즺**
+  - `src/app/window_main.py`??AI/ML ?ㅼ씠?쇰줈洹??꾪룷???섏젙
+  - `src.` ?묐몢???쒓굅 (?꾨줈?앺듃 援ъ“??留욊쾶 ?섏젙)
+  - `from ai.ai_engine_dialog import AIEngineDialog` (?섏젙 ??
+  - `from models.prediction_dialog import PredictionDialog` (?섏젙 ??
+  - `from nlp.sentiment_dialog import SentimentDialog` (?섏젙 ??
+  - `__init__.py` ?뚯씪???ㅼ씠?쇰줈洹??대옒??異붽?
 
-- **APScheduler Graceful Shutdown 완전 구현**
-  - DataManager에 graceful shutdown 구현 완료
-  - SIGINT, SIGTERM 시그널 핸들러 추가
-  - atexit 핸들러로 안전한 종료 보장
-  - shutdown flag로 종료 중 스케줄링 방지
-  - `_one_minute_sync_loop`에서 종료 플래그 체크
-  - 모든 종료 오류 완전 해결 ✅
+- **APScheduler Graceful Shutdown ?꾩쟾 援ы쁽**
+  - DataManager??graceful shutdown 援ы쁽 ?꾨즺
+  - SIGINT, SIGTERM ?쒓렇???몃뱾??異붽?
+  - atexit ?몃뱾?щ줈 ?덉쟾??醫낅즺 蹂댁옣
+  - shutdown flag濡?醫낅즺 以??ㅼ?以꾨쭅 諛⑹?
+  - `_one_minute_sync_loop`?먯꽌 醫낅즺 ?뚮옒洹?泥댄겕
+  - 紐⑤뱺 醫낅즺 ?ㅻ쪟 ?꾩쟾 ?닿껐 ??
 
-- **11~13단계 다이얼로그 파일 완전 복구**
-  - 모든 버튼 및 팝업창 정상 동작
-  - Qt Designer 원칙 준수 (.ui와 .py 분리)
-  - Signal/Slot 패턴 완전 구현
+- **11~13?④퀎 ?ㅼ씠?쇰줈洹??뚯씪 ?꾩쟾 蹂듦뎄**
+  - 紐⑤뱺 踰꾪듉 諛??앹뾽李??뺤긽 ?숈옉
+  - Qt Designer ?먯튃 以??(.ui? .py 遺꾨━)
+  - Signal/Slot ?⑦꽩 ?꾩쟾 援ы쁽
 
-#### Added - 획기적인 AI/ML 기능
+#### Added - ?띻린?곸씤 AI/ML 湲곕뒫
 
-##### 멀티 모달 AI 통합 (`src/ai/multimodal_engine.py`)
-- 텍스트(뉴스), 이미지(차트), 시계열(가격) 데이터 통합 분석
-- CLIP 기반 차트 패턴 인식 (head_and_shoulders, double_top, flags 등)
-- 멀티 시그널 통합 (가중 평균 방식)
-- 트렌드 자동 감지 (uptrend, downtrend, sideways)
+##### 硫??紐⑤떖 AI ?듯빀 (`src/ai/multimodal_engine.py`)
+- ?띿뒪???댁뒪), ?대?吏(李⑦듃), ?쒓퀎??媛寃? ?곗씠???듯빀 遺꾩꽍
+- CLIP 湲곕컲 李⑦듃 ?⑦꽩 ?몄떇 (head_and_shoulders, double_top, flags ??
+- 硫???쒓렇???듯빀 (媛以??됯퇏 諛⑹떇)
+- ?몃젋???먮룞 媛먯? (uptrend, downtrend, sideways)
 
-##### Ollama 로컬 LLM 어시스턴트 (`src/ai/ollama_assistant.py`)
-- Llama 3.1, Mistral, Gemma 로컬 실행
-- 자연어 명령 해석 ("비트코인 차트 보여줘", "이더리움 매수해" 등)
-- 트레이딩 전략 자연어 파싱
-- 실시간 AI 조언 생성
-- 심볼 자동 추출 (비트코인→KRW-BTC 변환)
+##### Ollama 濡쒖뺄 LLM ?댁떆?ㅽ꽩??(`src/ai/ollama_assistant.py`)
+- Llama 3.1, Mistral, Gemma 濡쒖뺄 ?ㅽ뻾
+- ?먯뿰??紐낅졊 ?댁꽍 ("鍮꾪듃肄붿씤 李⑦듃 蹂댁뿬以?, "?대뜑由ъ? 留ㅼ닔?? ??
+- ?몃젅?대뵫 ?꾨왂 ?먯뿰???뚯떛
+- ?ㅼ떆媛?AI 議곗뼵 ?앹꽦
+- ?щ낵 ?먮룞 異붿텧 (鍮꾪듃肄붿씤?묷RW-BTC 蹂??
 
-##### DQN 강화학습 트레이더 (`src/rl/dqn_trader.py`)
-- Deep Q-Network 기반 자동 매매 에이전트
-- Gym-like 트레이딩 환경 구현
-- 상태: OHLCV + 기술 지표 + 감성 점수
-- 행동: BUY, SELL, HOLD
-- Q-learning 알고리즘 구현
-- Epsilon-greedy 탐험 전략
-- 모델 저장/로드 (.npz 형식)
-- Stable-Baselines3 호환 인터페이스
+##### DQN 媛뺥솕?숈뒿 ?몃젅?대뜑 (`src/rl/dqn_trader.py`)
+- Deep Q-Network 湲곕컲 ?먮룞 留ㅻℓ ?먯씠?꾪듃
+- Gym-like ?몃젅?대뵫 ?섍꼍 援ы쁽
+- ?곹깭: OHLCV + 湲곗닠 吏??+ 媛먯꽦 ?먯닔
+- ?됰룞: BUY, SELL, HOLD
+- Q-learning ?뚭퀬由ъ쬁 援ы쁽
+- Epsilon-greedy ?먰뿕 ?꾨왂
+- 紐⑤뜽 ???濡쒕뱶 (.npz ?뺤떇)
+- Stable-Baselines3 ?명솚 ?명꽣?섏씠??
 
-##### 이상 거래 탐지 (`src/detection/anomaly_detector.py`)
-- Autoencoder 기반 비정상 패턴 감지
-- **펌프앤덤프** (Pump & Dump) 탐지
-- **워시 트레이딩** (Wash Trading) 감지
-- **스푸핑** (Spoofing) 탐지
-- 심각도 분류 (normal, low, medium, high, critical)
-- 재구성 오류 기반 이상 점수 계산
-- 배치 탐지 지원
-- 임계값 자동 설정 (contamination 기반)
+##### ?댁긽 嫄곕옒 ?먯? (`src/detection/anomaly_detector.py`)
+- Autoencoder 湲곕컲 鍮꾩젙???⑦꽩 媛먯?
+- **?뚰봽?ㅻ뜡??* (Pump & Dump) ?먯?
+- **?뚯떆 ?몃젅?대뵫** (Wash Trading) 媛먯?
+- **?ㅽ뫖??* (Spoofing) ?먯?
+- ?ш컖??遺꾨쪟 (normal, low, medium, high, critical)
+- ?ш뎄???ㅻ쪟 湲곕컲 ?댁긽 ?먯닔 怨꾩궛
+- 諛곗튂 ?먯? 吏??
+- ?꾧퀎媛??먮룞 ?ㅼ젙 (contamination 湲곕컲)
 
-##### 포트폴리오 최적화 (`src/portfolio/optimizer.py`)
-- **마코위츠 평균-분산 모델** (Markowitz Portfolio Theory)
-- **효율적 프론티어** (Efficient Frontier) 계산
-- 샤프 비율 최대화
-- 최소 분산 포트폴리오
-- 리스크 패리티 (Risk Parity)
-- 최대 분산 (Maximum Diversification)
-- scipy 선택적 사용 (없어도 작동)
+##### ?ы듃?대━??理쒖쟻??(`src/portfolio/optimizer.py`)
+- **留덉퐫?꾩툩 ?됯퇏-遺꾩궛 紐⑤뜽** (Markowitz Portfolio Theory)
+- **?⑥쑉???꾨줎?곗뼱** (Efficient Frontier) 怨꾩궛
+- ?ㅽ봽 鍮꾩쑉 理쒕???
+- 理쒖냼 遺꾩궛 ?ы듃?대━??
+- 由ъ뒪???⑤━??(Risk Parity)
+- 理쒕? 遺꾩궛 (Maximum Diversification)
+- scipy ?좏깮???ъ슜 (?놁뼱???묐룞)
 
 #### Documentation Updates
-- `work_order/11_단계_AI_엔진_통합.md` - 획기적 기능 추가 항목 반영
-- `work_order/12_단계_예측_모델.md` - DQN, 포트폴리오 최적화 추가
-- `work_order/13_단계_뉴스_소셜_감성_분석_시스템.md` - 이상 탐지, 멀티 모달 추가
+- `work_order/11_?④퀎_AI_?붿쭊_?듯빀.md` - ?띻린??湲곕뒫 異붽? ??ぉ 諛섏쁺
+- `work_order/12_?④퀎_?덉륫_紐⑤뜽.md` - DQN, ?ы듃?대━??理쒖쟻??異붽?
+- `work_order/13_?④퀎_?댁뒪_?뚯뀥_媛먯꽦_遺꾩꽍_?쒖뒪??md` - ?댁긽 ?먯?, 硫??紐⑤떖 異붽?
 
 #### File Structure
 ```
 src/
-├── ai/
-│   ├── multimodal_engine.py      # 멀티 모달 AI 엔진 ✨ NEW
-│   └── ollama_assistant.py       # Ollama LLM 어시스턴트 ✨ NEW
-├── rl/
-│   ├── __init__.py                # ✨ NEW
-│   └── dqn_trader.py              # DQN 강화학습 트레이더 ✨ NEW
-├── detection/
-│   ├── __init__.py                # ✨ NEW
-│   └── anomaly_detector.py       # 이상 거래 탐지 ✨ NEW
-└── portfolio/
-    ├── __init__.py                # ✨ NEW
-    └── optimizer.py               # 포트폴리오 최적화 ✨ NEW
+?쒋?? ai/
+??  ?쒋?? multimodal_engine.py      # 硫??紐⑤떖 AI ?붿쭊 ??NEW
+??  ?붴?? ollama_assistant.py       # Ollama LLM ?댁떆?ㅽ꽩????NEW
+?쒋?? rl/
+??  ?쒋?? __init__.py                # ??NEW
+??  ?붴?? dqn_trader.py              # DQN 媛뺥솕?숈뒿 ?몃젅?대뜑 ??NEW
+?쒋?? detection/
+??  ?쒋?? __init__.py                # ??NEW
+??  ?붴?? anomaly_detector.py       # ?댁긽 嫄곕옒 ?먯? ??NEW
+?붴?? portfolio/
+    ?쒋?? __init__.py                # ??NEW
+    ?붴?? optimizer.py               # ?ы듃?대━??理쒖쟻????NEW
 ```
 
 ---
@@ -411,129 +411,129 @@ src/
 ## [2.3.0] - 2026-02-06
 
 ### Fixed
-- **APScheduler RuntimeError 완전 해결**
-  - DataManager에 graceful shutdown 구현
-  - SIGINT, SIGTERM 시그널 핸들러 추가
-  - atexit 핸들러로 안전한 종료 보장
-  - shutdown flag로 종료 중 스케줄링 방지
-  - `_one_minute_sync_loop`에서 종료 플래그 체크
+- **APScheduler RuntimeError ?꾩쟾 ?닿껐**
+  - DataManager??graceful shutdown 援ы쁽
+  - SIGINT, SIGTERM ?쒓렇???몃뱾??異붽?
+  - atexit ?몃뱾?щ줈 ?덉쟾??醫낅즺 蹂댁옣
+  - shutdown flag濡?醫낅즺 以??ㅼ?以꾨쭅 諛⑹?
+  - `_one_minute_sync_loop`?먯꽌 醫낅즺 ?뚮옒洹?泥댄겕
   
-- **11~13단계 UI 기능 완전 구현**
-  - 모든 버튼 및 팝업창 정상 동작
-  - Qt Designer 원칙 준수 (.ui와 .py 분리)
-  - Signal/Slot 패턴 완전 구현
+- **11~13?④퀎 UI 湲곕뒫 ?꾩쟾 援ы쁽**
+  - 紐⑤뱺 踰꾪듉 諛??앹뾽李??뺤긽 ?숈옉
+  - Qt Designer ?먯튃 以??(.ui? .py 遺꾨━)
+  - Signal/Slot ?⑦꽩 ?꾩쟾 援ы쁽
 
 ### Added
 
-#### 11단계: AI 엔진 통합 (src/ai_engine/)
-- **GPT-4o, Gemini API 연동**
-  - OpenAI GPT-4o, GPT-4o-mini 지원
-  - Google Gemini 1.5 Pro, 2.0 Flash 지원
-  - API 키 설정 다이얼로그 (`dialog_api_settings.py`)
+#### 11?④퀎: AI ?붿쭊 ?듯빀 (src/ai_engine/)
+- **GPT-4o, Gemini API ?곕룞**
+  - OpenAI GPT-4o, GPT-4o-mini 吏??
+  - Google Gemini 1.5 Pro, 2.0 Flash 吏??
+  - API ???ㅼ젙 ?ㅼ씠?쇰줈洹?(`dialog_api_settings.py`)
   
-- **실시간 AI 분석 기능**
-  - AI 분석 시작/중지 버튼
-  - 긴급 중단 버튼 (🚨)
-  - 신뢰도 임계값 슬라이더 (0.0 ~ 1.0)
-  - 모델 선택 드롭다운
+- **?ㅼ떆媛?AI 遺꾩꽍 湲곕뒫**
+  - AI 遺꾩꽍 ?쒖옉/以묒? 踰꾪듉
+  - 湲닿툒 以묐떒 踰꾪듉 (?슚)
+  - ?좊ː???꾧퀎媛??щ씪?대뜑 (0.0 ~ 1.0)
+  - 紐⑤뜽 ?좏깮 ?쒕∼?ㅼ슫
   
-- **분석 결과 표시**
-  - 실시간 로그 스트리밍
-  - 분석 결과 테이블 (시각, 신호, 신뢰도, 근거)
-  - 성능 메트릭 (정확도, 승률, 평균 수익률)
+- **遺꾩꽍 寃곌낵 ?쒖떆**
+  - ?ㅼ떆媛?濡쒓렇 ?ㅽ듃由щ컢
+  - 遺꾩꽍 寃곌낵 ?뚯씠釉?(?쒓컖, ?좏샇, ?좊ː?? 洹쇨굅)
+  - ?깅뒫 硫뷀듃由?(?뺥솗?? ?밸쪧, ?됯퇏 ?섏씡瑜?
   
-- **파일 구조**
-  - `widget_ai_engine.py` - Qt UI 위젯
-  - `ai_engine.ui` - Qt Designer UI 정의
-  - `ai_engine_logic.py` - AI 엔진 비즈니스 로직
-  - `dialog_api_settings.py` - API 설정 다이얼로그
-  - `README.md` - 모듈 문서
+- **?뚯씪 援ъ“**
+  - `widget_ai_engine.py` - Qt UI ?꾩젽
+  - `ai_engine.ui` - Qt Designer UI ?뺤쓽
+  - `ai_engine_logic.py` - AI ?붿쭊 鍮꾩쫰?덉뒪 濡쒖쭅
+  - `dialog_api_settings.py` - API ?ㅼ젙 ?ㅼ씠?쇰줈洹?
+  - `README.md` - 紐⑤뱢 臾몄꽌
 
-#### 12단계: 예측 모델 (src/prediction/)
-- **5가지 ML 모델 지원**
+#### 12?④퀎: ?덉륫 紐⑤뜽 (src/prediction/)
+- **5媛吏 ML 紐⑤뜽 吏??*
   - LSTM (Long Short-Term Memory)
   - GRU (Gated Recurrent Unit)
   - Transformer
   - XGBoost
   - LightGBM
   
-- **학습 및 예측 기능**
-  - 모델 학습 시작 버튼
-  - 예측 실행 버튼
-  - 학습 진행률 바
-  - 데이터 소스 선택 (실시간/과거)
-  - 예측 기간 선택 (5분/15분/1시간/4시간/1일)
+- **?숈뒿 諛??덉륫 湲곕뒫**
+  - 紐⑤뜽 ?숈뒿 ?쒖옉 踰꾪듉
+  - ?덉륫 ?ㅽ뻾 踰꾪듉
+  - ?숈뒿 吏꾪뻾瑜?諛?
+  - ?곗씠???뚯뒪 ?좏깮 (?ㅼ떆媛?怨쇨굅)
+  - ?덉륫 湲곌컙 ?좏깮 (5遺?15遺?1?쒓컙/4?쒓컙/1??
   
-- **성능 평가**
-  - 정확도 메트릭 테이블 (MAE, RMSE, R², Sharpe Ratio)
-  - 백테스팅 기능
-  - 예측 vs 실제 그래프 (matplotlib)
+- **?깅뒫 ?됯?**
+  - ?뺥솗??硫뷀듃由??뚯씠釉?(MAE, RMSE, R짼, Sharpe Ratio)
+  - 諛깊뀒?ㅽ똿 湲곕뒫
+  - ?덉륫 vs ?ㅼ젣 洹몃옒??(matplotlib)
   
-- **모델 관리**
-  - 모델 저장/불러오기 (.pth 파일)
-  - 학습 로그 출력
+- **紐⑤뜽 愿由?*
+  - 紐⑤뜽 ???遺덈윭?ㅺ린 (.pth ?뚯씪)
+  - ?숈뒿 濡쒓렇 異쒕젰
   
-- **파일 구조**
-  - `widget_prediction.py` - Qt UI 위젯
-  - `prediction.ui` - Qt Designer UI 정의
-  - `prediction_logic.py` - ML 모델 구현
-  - `test_prediction.py` - 테스트 코드
-  - `demo.py` - 사용 예제
-  - `README.md` - 모듈 문서
+- **?뚯씪 援ъ“**
+  - `widget_prediction.py` - Qt UI ?꾩젽
+  - `prediction.ui` - Qt Designer UI ?뺤쓽
+  - `prediction_logic.py` - ML 紐⑤뜽 援ы쁽
+  - `test_prediction.py` - ?뚯뒪??肄붾뱶
+  - `demo.py` - ?ъ슜 ?덉젣
+  - `README.md` - 紐⑤뱢 臾몄꽌
 
-#### 13단계: 감성 분석 (src/sentiment/)
-- **다중 소스 스크래핑**
-  - 뉴스 스크래핑 시작 버튼
-  - 트위터 스크래핑 시작 버튼
-  - 레딧 스크래핑 시작 버튼
-  - 모두 중지 버튼
+#### 13?④퀎: 媛먯꽦 遺꾩꽍 (src/sentiment/)
+- **?ㅼ쨷 ?뚯뒪 ?ㅽ겕?섑븨**
+  - ?댁뒪 ?ㅽ겕?섑븨 ?쒖옉 踰꾪듉
+  - ?몄쐞???ㅽ겕?섑븨 ?쒖옉 踰꾪듉
+  - ?덈뵩 ?ㅽ겕?섑븨 ?쒖옉 踰꾪듉
+  - 紐⑤몢 以묒? 踰꾪듉
   
-- **감성 점수 시각화**
-  - 감성 점수 게이지 (-1.0 ~ +1.0)
-  - 실시간 업데이트 간격 설정 슬라이더 (10~300초)
-  - 소스 필터링 체크박스 (뉴스/트위터/레딧)
+- **媛먯꽦 ?먯닔 ?쒓컖??*
+  - 媛먯꽦 ?먯닔 寃뚯씠吏 (-1.0 ~ +1.0)
+  - ?ㅼ떆媛??낅뜲?댄듃 媛꾧꺽 ?ㅼ젙 ?щ씪?대뜑 (10~300珥?
+  - ?뚯뒪 ?꾪꽣留?泥댄겕諛뺤뒪 (?댁뒪/?몄쐞???덈뵩)
   
-- **데이터 시각화**
-  - 키워드 클라우드 (wordcloud)
-  - 감성 히스토리 차트 (시계열)
-  - 긍정/부정/중립 비율 파이 차트
-  - 감성 점수 테이블 (시각, 소스, 점수, 키워드, 헤드라인)
+- **?곗씠???쒓컖??*
+  - ?ㅼ썙???대씪?곕뱶 (wordcloud)
+  - 媛먯꽦 ?덉뒪?좊━ 李⑦듃 (?쒓퀎??
+  - 湲띿젙/遺??以묐┰ 鍮꾩쑉 ?뚯씠 李⑦듃
+  - 媛먯꽦 ?먯닔 ?뚯씠釉?(?쒓컖, ?뚯뒪, ?먯닔, ?ㅼ썙?? ?ㅻ뱶?쇱씤)
   
-- **파일 구조**
-  - `widget_sentiment.py` - Qt UI 위젯
-  - `sentiment.ui` - Qt Designer UI 정의
-  - `sentiment_logic.py` - 스크래핑 및 감성 분석 로직
-  - `README.md` - 모듈 문서
+- **?뚯씪 援ъ“**
+  - `widget_sentiment.py` - Qt UI ?꾩젽
+  - `sentiment.ui` - Qt Designer UI ?뺤쓽
+  - `sentiment_logic.py` - ?ㅽ겕?섑븨 諛?媛먯꽦 遺꾩꽍 濡쒖쭅
+  - `README.md` - 紐⑤뱢 臾몄꽌
 
-#### 테스트 코드 추가
-- `tests/test_apscheduler_shutdown.py` - APScheduler 종료 테스트
-- `tests/test_ai_engine_ui.py` - AI 엔진 UI 테스트
-- `tests/test_prediction_ui.py` - 예측 모델 UI 테스트
-- `tests/test_sentiment_ui.py` - 감성 분석 UI 테스트
+#### ?뚯뒪??肄붾뱶 異붽?
+- `tests/test_apscheduler_shutdown.py` - APScheduler 醫낅즺 ?뚯뒪??
+- `tests/test_ai_engine_ui.py` - AI ?붿쭊 UI ?뚯뒪??
+- `tests/test_prediction_ui.py` - ?덉륫 紐⑤뜽 UI ?뚯뒪??
+- `tests/test_sentiment_ui.py` - 媛먯꽦 遺꾩꽍 UI ?뚯뒪??
 
 ### Changed
-- **자동화 문서 업데이트**
-  - 11~13단계 완료 상태 반영
-  - Qt Designer 원칙 명시
-  - 테스트 가이드 업데이트
+- **?먮룞??臾몄꽌 ?낅뜲?댄듃**
+  - 11~13?④퀎 ?꾨즺 ?곹깭 諛섏쁺
+  - Qt Designer ?먯튃 紐낆떆
+  - ?뚯뒪??媛?대뱶 ?낅뜲?댄듃
 
 ### Technical Details
 
-#### Qt Designer 원칙 준수
-- UI 정의 (.ui)와 로직 (.py) 완전 분리
-- uic.loadUi()로 동적 UI 로딩
-- Signal/Slot 패턴 일관성 유지
-- pathlib.Path 사용
+#### Qt Designer ?먯튃 以??
+- UI ?뺤쓽 (.ui)? 濡쒖쭅 (.py) ?꾩쟾 遺꾨━
+- uic.loadUi()濡??숈쟻 UI 濡쒕뵫
+- Signal/Slot ?⑦꽩 ?쇨????좎?
+- pathlib.Path ?ъ슜
 
-#### 보안 강화
-- API 키 .env 파일 관리
-- 비밀번호 필드 마스킹
-- 긴급 중단 기능
+#### 蹂댁븞 媛뺥솕
+- API ??.env ?뚯씪 愿由?
+- 鍮꾨?踰덊샇 ?꾨뱶 留덉뒪??
+- 湲닿툒 以묐떒 湲곕뒫
 
-#### 성능 최적화
-- 백그라운드 스레드 사용 (학습/스크래핑)
-- 논블로킹 UI 업데이트
-- 효율적인 데이터 처리
+#### ?깅뒫 理쒖쟻??
+- 諛깃렇?쇱슫???ㅻ젅???ъ슜 (?숈뒿/?ㅽ겕?섑븨)
+- ?쇰툝濡쒗궧 UI ?낅뜲?댄듃
+- ?⑥쑉?곸씤 ?곗씠??泥섎━
 
 ### Dependencies
 ```
@@ -551,126 +551,126 @@ wordcloud>=1.9.0
 
 ---
 
-## [Documentation v2.1] 문서 정리 및 완성 - 2026-02-03
+## [Documentation v2.1] 臾몄꽌 ?뺣━ 諛??꾩꽦 - 2026-02-03
 
-### ✅ 추가됨 (Added)
+### ??異붽???(Added)
 
-#### 문서 개선
-- `docs/automation_full_features.md` - 검증 기준 추가
-  - 단계 지시서 검증 기준 명시
-  - 환경 검증 기준 명시
-  - 문서 표준 검증 기준 명시
-  - 트러블슈팅 섹션 추가
-  - 중요 원칙 추가
+#### 臾몄꽌 媛쒖꽑
+- `docs/automation_full_features.md` - 寃利?湲곗? 異붽?
+  - ?④퀎 吏?쒖꽌 寃利?湲곗? 紐낆떆
+  - ?섍꼍 寃利?湲곗? 紐낆떆
+  - 臾몄꽌 ?쒖? 寃利?湲곗? 紐낆떆
+  - ?몃윭釉붿뒋???뱀뀡 異붽?
+  - 以묒슂 ?먯튃 異붽?
 
-### 🔧 변경됨 (Changed)
+### ?뵩 蹂寃쎈맖 (Changed)
 
-#### 통합 개발 가이드 업데이트
-- `work_order/통합_개발_가이드.md` - 지시서 검증 섹션 추가
-  - 1.5️⃣ 작업 지시서 검토 및 개선 섹션 강화
-  - 검증 도구 사용법 추가 (`verify_work_order.py`)
-  - 검증 방법 상세화
-  - 개선 원칙 명확화
+#### ?듯빀 媛쒕컻 媛?대뱶 ?낅뜲?댄듃
+- `work_order/?듯빀_媛쒕컻_媛?대뱶.md` - 吏?쒖꽌 寃利??뱀뀡 異붽?
+  - 1.5截뤴깵 ?묒뾽 吏?쒖꽌 寃??諛?媛쒖꽑 ?뱀뀡 媛뺥솕
+  - 寃利??꾧뎄 ?ъ슜踰?異붽? (`verify_work_order.py`)
+  - 寃利?諛⑸쾿 ?곸꽭??
+  - 媛쒖꽑 ?먯튃 紐낇솗??
 
-#### 문서 업데이트 프로세스 개선
-- `work_order/문서_업데이트_프로세스.md` - 검증 단계 추가
-  - 0️⃣ 작업 전 검증 섹션 신규 추가
-  - 지시서 완전성 검증 단계 추가
-  - 환경 검증 단계 추가
-  - 문서 표준 검증 단계 추가
+#### 臾몄꽌 ?낅뜲?댄듃 ?꾨줈?몄뒪 媛쒖꽑
+- `work_order/臾몄꽌_?낅뜲?댄듃_?꾨줈?몄뒪.md` - 寃利??④퀎 異붽?
+  - 0截뤴깵 ?묒뾽 ??寃利??뱀뀡 ?좉퇋 異붽?
+  - 吏?쒖꽌 ?꾩쟾??寃利??④퀎 異붽?
+  - ?섍꼍 寃利??④퀎 異붽?
+  - 臾몄꽌 ?쒖? 寃利??④퀎 異붽?
 
-### 📝 검증 완료 (Verified)
+### ?뱷 寃利??꾨즺 (Verified)
 
-#### 기존 파일 완성도 확인
-- ✅ `automation/env_check.py` - 373줄, 완성됨
-- ✅ `automation/auto_workflow.py` - 428줄, 완성됨
-- ✅ `automation/test_runner.py` - 401줄, 완성됨
-- ✅ `automation/doc_updater.py` - 404줄, 완성됨
-- ✅ `automation/TEST_GUIDE.md` - 657줄, 완성됨
-- ✅ `scripts/doc_check.py` - 428줄, 완성됨
-- ✅ `scripts/backup_manager.py` - 429줄, 완성됨
-- ✅ `scripts/changelog_helper.py` - 319줄, 완성됨
-- ✅ `scripts/verify_work_order.py` - 319줄, 완성됨
-- ✅ `scripts/recovery_tool.py` - 351줄, 완성됨
+#### 湲곗〈 ?뚯씪 ?꾩꽦???뺤씤
+- ??`automation/env_check.py` - 373以? ?꾩꽦??
+- ??`automation/auto_workflow.py` - 428以? ?꾩꽦??
+- ??`automation/test_runner.py` - 401以? ?꾩꽦??
+- ??`automation/doc_updater.py` - 404以? ?꾩꽦??
+- ??`automation/TEST_GUIDE.md` - 657以? ?꾩꽦??
+- ??`scripts/doc_check.py` - 428以? ?꾩꽦??
+- ??`scripts/backup_manager.py` - 429以? ?꾩꽦??
+- ??`scripts/changelog_helper.py` - 319以? ?꾩꽦??
+- ??`scripts/verify_work_order.py` - 319以? ?꾩꽦??
+- ??`scripts/recovery_tool.py` - 351以? ?꾩꽦??
 
-### 🎯 작업 목적
+### ?렞 ?묒뾽 紐⑹쟻
 
-**문제 해결**: work_order 폴더의 단계 지시서가 100% 완벽하지 않을 수 있음  
-**해결 방법**: 모든 자동화 작업 시작 전 검증 시스템 구축
+**臾몄젣 ?닿껐**: work_order ?대뜑???④퀎 吏?쒖꽌媛 100% ?꾨꼍?섏? ?딆쓣 ???덉쓬  
+**?닿껐 諛⑸쾿**: 紐⑤뱺 ?먮룞???묒뾽 ?쒖옉 ??寃利??쒖뒪??援ъ텞
 
 ---
 
-## [Automation v2.0] 자동화 시스템 완전 업그레이드 - 2026-02-03
+## [Automation v2.0] ?먮룞???쒖뒪???꾩쟾 ?낃렇?덉씠??- 2026-02-03
 
-### ✅ 추가됨 (Added)
+### ??異붽???(Added)
 
-#### 신규 자동화 도구
-- `automation/error_predictor.py` - AI 기반 에러 예측 및 예방 시스템
-  - 과거 로그 분석으로 잠재적 오류 예측
-  - ML 모델 (scikit-learn) 사용
-  - 에러 발생 시 자동 롤백 (Git)
-  - 패턴 기반 오류 탐지 및 예방 조치 제안
+#### ?좉퇋 ?먮룞???꾧뎄
+- `automation/error_predictor.py` - AI 湲곕컲 ?먮윭 ?덉륫 諛??덈갑 ?쒖뒪??
+  - 怨쇨굅 濡쒓렇 遺꾩꽍?쇰줈 ?좎옱???ㅻ쪟 ?덉륫
+  - ML 紐⑤뜽 (scikit-learn) ?ъ슜
+  - ?먮윭 諛쒖깮 ???먮룞 濡ㅻ갚 (Git)
+  - ?⑦꽩 湲곕컲 ?ㅻ쪟 ?먯? 諛??덈갑 議곗튂 ?쒖븞
 
-- `automation/monitoring_dashboard.py` - 실시간 모니터링 대시보드
-  - 시스템 상태 실시간 모니터링 (CPU, 메모리, 디스크)
-  - 웹 대시보드 (Flask)
-  - 성능 메트릭 시각화
-  - 알림 시스템 및 오류 즉시 보고
+- `automation/monitoring_dashboard.py` - ?ㅼ떆媛?紐⑤땲?곕쭅 ??쒕낫??
+  - ?쒖뒪???곹깭 ?ㅼ떆媛?紐⑤땲?곕쭅 (CPU, 硫붾え由? ?붿뒪??
+  - ????쒕낫??(Flask)
+  - ?깅뒫 硫뷀듃由??쒓컖??
+  - ?뚮┝ ?쒖뒪??諛??ㅻ쪟 利됱떆 蹂닿퀬
 
-- `automation/test_framework.py` - 테스트 프레임워크 업그레이드
-  - pytest 통합 (단위/통합 테스트)
-  - 커버리지 리포트 자동 생성 (80% 미만 시 중단)
-  - 백테스팅 자동화 (Backtrader)
-  - 성능 벤치마크 자동화
+- `automation/test_framework.py` - ?뚯뒪???꾨젅?꾩썙???낃렇?덉씠??
+  - pytest ?듯빀 (?⑥쐞/?듯빀 ?뚯뒪??
+  - 而ㅻ쾭由ъ? 由ы룷???먮룞 ?앹꽦 (80% 誘몃쭔 ??以묐떒)
+  - 諛깊뀒?ㅽ똿 ?먮룞??(Backtrader)
+  - ?깅뒫 踰ㅼ튂留덊겕 ?먮룞??
 
-- `automation/security_checker.py` - 보안 및 컴플라이언스 자동 체크
-  - API 키/비밀 관리 자동화
-  - 하드코딩된 비밀 스캔
-  - 보안 취약점 스캔 (bandit)
-  - 암호화폐 거래 규제 준수 체크리스트
+- `automation/security_checker.py` - 蹂댁븞 諛?而댄뵆?쇱씠?몄뒪 ?먮룞 泥댄겕
+  - API ??鍮꾨? 愿由??먮룞??
+  - ?섎뱶肄붾뵫??鍮꾨? ?ㅼ틪
+  - 蹂댁븞 痍⑥빟???ㅼ틪 (bandit)
+  - ?뷀샇?뷀룓 嫄곕옒 洹쒖젣 以??泥댄겕由ъ뒪??
 
-- `automation/docker_automation.py` - Docker 컨테이너화 자동화
-  - Dockerfile 자동 생성 (프로젝트 구조 기반)
-  - docker-compose.yml 검증 및 최적화
-  - 이미지 빌드 및 배포 자동화
-  - Kubernetes 매니페스트 생성
+- `automation/docker_automation.py` - Docker 而⑦뀒?대꼫???먮룞??
+  - Dockerfile ?먮룞 ?앹꽦 (?꾨줈?앺듃 援ъ“ 湲곕컲)
+  - docker-compose.yml 寃利?諛?理쒖쟻??
+  - ?대?吏 鍮뚮뱶 諛?諛고룷 ?먮룞??
+  - Kubernetes 留ㅻ땲?섏뒪???앹꽦
 
-- `automation/feedback_collector.py` - 사용자 피드백 루프
-  - 작업 후 자동 설문/로그 수집
-  - GitHub Issues 템플릿 생성
-  - 피드백 분석 및 개선 사항 자동 제안
+- `automation/feedback_collector.py` - ?ъ슜???쇰뱶諛?猷⑦봽
+  - ?묒뾽 ???먮룞 ?ㅻЦ/濡쒓렇 ?섏쭛
+  - GitHub Issues ?쒗뵆由??앹꽦
+  - ?쇰뱶諛?遺꾩꽍 諛?媛쒖꽑 ?ы빆 ?먮룞 ?쒖븞
 
-#### 신규 스크립트
-- `scripts/verify_work_order.py` - 작업 지시서 자동 검증
-  - 모든 work_order/*.md 파일 검증
-  - 지시서 완전성 검사
-  - 표준 헤더 및 링크 유효성 확인
-  - 개선 사항 제안
+#### ?좉퇋 ?ㅽ겕由쏀듃
+- `scripts/verify_work_order.py` - ?묒뾽 吏?쒖꽌 ?먮룞 寃利?
+  - 紐⑤뱺 work_order/*.md ?뚯씪 寃利?
+  - 吏?쒖꽌 ?꾩쟾??寃??
+  - ?쒖? ?ㅻ뜑 諛?留곹겕 ?좏슚???뺤씤
+  - 媛쒖꽑 ?ы빆 ?쒖븞
 
-- `scripts/auto_doc_generator.py` - 자동 문서 생성기 업그레이드
-  - Python 코드 주석 자동 추출 → Markdown 변환
-  - API 문서 자동 생성 (docstring → OpenAPI spec)
-  - Git hooks 통합 (커밋 시 자동 업데이트)
-  - 버전 관리 통합
+- `scripts/auto_doc_generator.py` - ?먮룞 臾몄꽌 ?앹꽦湲??낃렇?덉씠??
+  - Python 肄붾뱶 二쇱꽍 ?먮룞 異붿텧 ??Markdown 蹂??
+  - API 臾몄꽌 ?먮룞 ?앹꽦 (docstring ??OpenAPI spec)
+  - Git hooks ?듯빀 (而ㅻ컠 ???먮룞 ?낅뜲?댄듃)
+  - 踰꾩쟾 愿由??듯빀
 
-#### 문서
-- `docs/automation_full_features.md` - 전체 자동화 기능 목록
-  - 모든 자동화 도구 상세 설명
-  - 7개 카테고리별 분류 및 사용법
-  - 워크플로우 예시
-  - 모범 사례 및 주의사항
+#### 臾몄꽌
+- `docs/automation_full_features.md` - ?꾩껜 ?먮룞??湲곕뒫 紐⑸줉
+  - 紐⑤뱺 ?먮룞???꾧뎄 ?곸꽭 ?ㅻ챸
+  - 7媛?移댄뀒怨좊━蹂?遺꾨쪟 諛??ъ슜踰?
+  - ?뚰겕?뚮줈???덉떆
+  - 紐⑤쾾 ?щ? 諛?二쇱쓽?ы빆
 
-### 🔄 업데이트됨 (Updated)
+### ?봽 ?낅뜲?댄듃??(Updated)
 
-#### 설정 파일
-- `requirements.txt` - 자동화 관련 패키지 추가
-  - scikit-learn>=1.3.0 (에러 예측)
-  - flask>=2.3.0 (모니터링 대시보드)
-  - streamlit>=1.28.0 (모니터링 대시보드, 선택)
-  - bandit>=1.7.5 (보안 스캔)
-  - psutil>=5.9.0 (시스템 모니터링)
+#### ?ㅼ젙 ?뚯씪
+- `requirements.txt` - ?먮룞??愿???⑦궎吏 異붽?
+  - scikit-learn>=1.3.0 (?먮윭 ?덉륫)
+  - flask>=2.3.0 (紐⑤땲?곕쭅 ??쒕낫??
+  - streamlit>=1.28.0 (紐⑤땲?곕쭅 ??쒕낫?? ?좏깮)
+  - bandit>=1.7.5 (蹂댁븞 ?ㅼ틪)
+  - psutil>=5.9.0 (?쒖뒪??紐⑤땲?곕쭅)
 
-- `.gitignore` - 자동화 관련 항목 추가
+- `.gitignore` - ?먮룞??愿????ぉ 異붽?
   - automation/backups/
   - automation/*.log
   - automation/error_model.pkl
@@ -678,455 +678,456 @@ wordcloud>=1.9.0
   - test_reports/
   - feedback/
 
-#### 문서
-- `automation/README.md` - v2.0 업데이트
-  - 6개 신규 자동화 도구 설명 추가
-  - 전체 워크플로우 업데이트
-  - docs/automation_full_features.md 링크 추가
+#### 臾몄꽌
+- `automation/README.md` - v2.0 ?낅뜲?댄듃
+  - 6媛??좉퇋 ?먮룞???꾧뎄 ?ㅻ챸 異붽?
+  - ?꾩껜 ?뚰겕?뚮줈???낅뜲?댄듃
+  - docs/automation_full_features.md 留곹겕 異붽?
 
-### 🎯 주요 개선사항
+### ?렞 二쇱슂 媛쒖꽑?ы빆
 
-#### 에러 관리 강화
-- AI 기반 에러 예측으로 사전 방지
-- 자동 롤백 기능으로 빠른 복구
-- 패턴 인식을 통한 반복 오류 방지
+#### ?먮윭 愿由?媛뺥솕
+- AI 湲곕컲 ?먮윭 ?덉륫?쇰줈 ?ъ쟾 諛⑹?
+- ?먮룞 濡ㅻ갚 湲곕뒫?쇰줈 鍮좊Ⅸ 蹂듦뎄
+- ?⑦꽩 ?몄떇???듯븳 諛섎났 ?ㅻ쪟 諛⑹?
 
-#### 모니터링 및 보안
-- 실시간 시스템 상태 모니터링
-- 웹 대시보드로 직관적인 시각화
-- 포괄적인 보안 체크 자동화
-- 컴플라이언스 준수 확인
+#### 紐⑤땲?곕쭅 諛?蹂댁븞
+- ?ㅼ떆媛??쒖뒪???곹깭 紐⑤땲?곕쭅
+- ????쒕낫?쒕줈 吏곴??곸씤 ?쒓컖??
+- ?ш큵?곸씤 蹂댁븞 泥댄겕 ?먮룞??
+- 而댄뵆?쇱씠?몄뒪 以???뺤씤
 
-#### 테스트 자동화
-- 커버리지 기반 품질 보장
-- 백테스팅 자동화
-- 성능 벤치마크 자동 실행
+#### ?뚯뒪???먮룞??
+- 而ㅻ쾭由ъ? 湲곕컲 ?덉쭏 蹂댁옣
+- 諛깊뀒?ㅽ똿 ?먮룞??
+- ?깅뒫 踰ㅼ튂留덊겕 ?먮룞 ?ㅽ뻾
 
-#### 개발자 경험 개선
-- 피드백 수집 및 분석 자동화
-- 문서 자동 생성으로 문서화 부담 감소
-- Docker/K8s 지원으로 배포 간소화
+#### 媛쒕컻??寃쏀뿕 媛쒖꽑
+- ?쇰뱶諛??섏쭛 諛?遺꾩꽍 ?먮룞??
+- 臾몄꽌 ?먮룞 ?앹꽦?쇰줈 臾몄꽌??遺??媛먯냼
+- Docker/K8s 吏?먯쑝濡?諛고룷 媛꾩냼??
 
 ---
 
-## [5단계 / Phase 5] Scanner/Search 엔진 완전 구현 - 2026-02-03
+## [5?④퀎 / Phase 5] Scanner/Search ?붿쭊 ?꾩쟾 援ы쁽 - 2026-02-03
 
-### ✅ 추가됨 (Added)
+### ??異붽???(Added)
 
-#### 문서
-- `work_order/5_단계_Scanner_Search_엔진_v2.md` - 이미지 기반 Phase 5 작업 지시서 (v2.0)
-  - 4개 이미지 기반 완전한 UI/UX 명세
-  - 상세 설정창 UI 컴포넌트 정의 (14개 체크박스, 5개 콤보박스, 12개 스핀박스)
-  - Scanner 엔진 아키텍처 및 데이터 흐름
-  - 룰 정의 및 스코어링 시스템
-  - 테스트 계획 및 완료 기준
-  - 기존 내용 부록으로 보존
+#### 臾몄꽌
+- `work_order/5_?④퀎_Scanner_Search_?붿쭊_v2.md` - ?대?吏 湲곕컲 Phase 5 ?묒뾽 吏?쒖꽌 (v2.0)
+  - 4媛??대?吏 湲곕컲 ?꾩쟾??UI/UX 紐낆꽭
+  - ?곸꽭 ?ㅼ젙李?UI 而댄룷?뚰듃 ?뺤쓽 (14媛?泥댄겕諛뺤뒪, 5媛?肄ㅻ낫諛뺤뒪, 12媛??ㅽ?諛뺤뒪)
+  - Scanner ?붿쭊 ?꾪궎?띿쿂 諛??곗씠???먮쫫
+  - 猷??뺤쓽 諛??ㅼ퐫?대쭅 ?쒖뒪??
+  - ?뚯뒪??怨꾪쉷 諛??꾨즺 湲곗?
+  - 湲곗〈 ?댁슜 遺濡앹쑝濡?蹂댁〈
 
-- `docs/phases/phase5_completion.md` - Phase 5 완료 보고서
-  - 구현 통계 (신규 파일 7개, 수정 파일 3개)
-  - 컴포넌트 아키텍처 다이어그램
-  - UI/UX 기능 체크리스트
-  - 사용 예시 및 확장 포인트
-  - 향후 개선사항 (Elasticsearch, Kafka, REST API 등)
+- `docs/phases/phase5_completion.md` - Phase 5 ?꾨즺 蹂닿퀬??
+  - 援ы쁽 ?듦퀎 (?좉퇋 ?뚯씪 7媛? ?섏젙 ?뚯씪 3媛?
+  - 而댄룷?뚰듃 ?꾪궎?띿쿂 ?ㅼ씠?닿렇??
+  - UI/UX 湲곕뒫 泥댄겕由ъ뒪??
+  - ?ъ슜 ?덉떆 諛??뺤옣 ?ъ씤??
+  - ?ν썑 媛쒖꽑?ы빆 (Elasticsearch, Kafka, REST API ??
 
-- `work_order/5_단계_Scanner_Search_엔진_OLD.md` - 기존 Phase 5 문서 백업
+- `work_order/5_?④퀎_Scanner_Search_?붿쭊_OLD.md` - 湲곗〈 Phase 5 臾몄꽌 諛깆뾽
 
-#### 코드
-- `src/search/popup_search_settings_advanced.ui` - 고급 설정창 UI (Qt Designer XML)
-  - 기본 설정 그룹 (자동테교, 기준코인, 코인, 분봉)
-  - OHLC 임계값 그룹 (Open/Close/High/Low)
-  - 최근 기준 제외 설정
-  - RSI 설정 (분봉, 임계값, 다이버전스 7개 체크박스)
-  - 평균거래량 설정 (6개 체크박스, 증가율 임계값)
-  - 골든크로스/데드크로스 설정
-  - 이동평균 설정 (단기/장기)
-  - 자동갱신 주기 설정
-  - 저장/취소 버튼
+#### 肄붾뱶
+- `src/search/popup_search_settings_advanced.ui` - 怨좉툒 ?ㅼ젙李?UI (Qt Designer XML)
+  - 湲곕낯 ?ㅼ젙 洹몃９ (?먮룞?뚭탳, 湲곗?肄붿씤, 肄붿씤, 遺꾨큺)
+  - OHLC ?꾧퀎媛?洹몃９ (Open/Close/High/Low)
+  - 理쒓렐 湲곗? ?쒖쇅 ?ㅼ젙
+  - RSI ?ㅼ젙 (遺꾨큺, ?꾧퀎媛? ?ㅼ씠踰꾩쟾??7媛?泥댄겕諛뺤뒪)
+  - ?됯퇏嫄곕옒???ㅼ젙 (6媛?泥댄겕諛뺤뒪, 利앷????꾧퀎媛?
+  - 怨⑤뱺?щ줈???곕뱶?щ줈???ㅼ젙
+  - ?대룞?됯퇏 ?ㅼ젙 (?④린/?κ린)
+  - ?먮룞媛깆떊 二쇨린 ?ㅼ젙
+  - ???痍⑥냼 踰꾪듉
 
-- `src/search/popup_search_settings_advanced.py` - 고급 설정 다이얼로그 (169 lines)
-  - UI 로드 및 초기화
-  - 콤보박스 자동 채우기 (코인 목록, 분봉 옵션)
-  - 스핀박스 기본값 설정
-  - get_settings() 메서드로 모든 설정 dict 반환
-  - 저장/취소 버튼 처리
+- `src/search/popup_search_settings_advanced.py` - 怨좉툒 ?ㅼ젙 ?ㅼ씠?쇰줈洹?(169 lines)
+  - UI 濡쒕뱶 諛?珥덇린??
+  - 肄ㅻ낫諛뺤뒪 ?먮룞 梨꾩슦湲?(肄붿씤 紐⑸줉, 遺꾨큺 ?듭뀡)
+  - ?ㅽ?諛뺤뒪 湲곕낯媛??ㅼ젙
+  - get_settings() 硫붿꽌?쒕줈 紐⑤뱺 ?ㅼ젙 dict 諛섑솚
+  - ???痍⑥냼 踰꾪듉 泥섎━
 
-- `src/search/scanner_engine.py` - Scanner 백엔드 엔진 (181 lines)
-  - 비동기 스캔 실행 (async scan)
-  - aiopyupbit API 통합 (OHLCV 데이터 조회)
-  - 4가지 룰 체크 (RSI, 골든크로스, 거래량, OHLC)
-  - 스코어 계산 및 정렬
-  - TA-Lib 옵션 지원 (fallback to simple calculations)
-  - 에러 처리 및 로깅
+- `src/search/scanner_engine.py` - Scanner 諛깆뿏???붿쭊 (181 lines)
+  - 鍮꾨룞湲??ㅼ틪 ?ㅽ뻾 (async scan)
+  - aiopyupbit API ?듯빀 (OHLCV ?곗씠??議고쉶)
+  - 4媛吏 猷?泥댄겕 (RSI, 怨⑤뱺?щ줈?? 嫄곕옒?? OHLC)
+  - ?ㅼ퐫??怨꾩궛 諛??뺣젹
+  - TA-Lib ?듭뀡 吏??(fallback to simple calculations)
+  - ?먮윭 泥섎━ 諛?濡쒓퉭
 
-- `src/search/scanner_rules.py` - Scanner 룰 정의 (130 lines)
-  - RuleBase 추상 클래스
-  - RSIRule 구현 (RSI < threshold)
-  - GoldenCrossRule 구현 (단기 MA vs 장기 MA)
-  - VolumeRule 구현 (거래량 증가율)
-  - OHLCRule 구현 (가격 변화율)
-  - RULES 레지스트리 (플러그인 시스템)
+- `src/search/scanner_rules.py` - Scanner 猷??뺤쓽 (130 lines)
+  - RuleBase 異붿긽 ?대옒??
+  - RSIRule 援ы쁽 (RSI < threshold)
+  - GoldenCrossRule 援ы쁽 (?④린 MA vs ?κ린 MA)
+  - VolumeRule 援ы쁽 (嫄곕옒??利앷???
+  - OHLCRule 援ы쁽 (媛寃?蹂?붿쑉)
+  - RULES ?덉??ㅽ듃由?(?뚮윭洹몄씤 ?쒖뒪??
 
-#### 테스트
-- `tests/search/` - Search 모듈 테스트 디렉토리 생성
+#### ?뚯뒪??
+- `tests/search/` - Search 紐⑤뱢 ?뚯뒪???붾젆?좊━ ?앹꽦
 
-- `tests/search/test_scanner_engine.py` - Scanner 엔진 단위 테스트 (8 tests)
-  - 엔진 초기화 테스트
-  - RSI 룰 체크 테스트
-  - 골든크로스 룰 체크 테스트
-  - 거래량 룰 체크 테스트
-  - OHLC 룰 체크 테스트
-  - 전체 룰 체크 테스트
-  - 빈 데이터 스캔 테스트
-  - Mock 데이터 스캔 테스트
+- `tests/search/test_scanner_engine.py` - Scanner ?붿쭊 ?⑥쐞 ?뚯뒪??(8 tests)
+  - ?붿쭊 珥덇린???뚯뒪??
+  - RSI 猷?泥댄겕 ?뚯뒪??
+  - 怨⑤뱺?щ줈??猷?泥댄겕 ?뚯뒪??
+  - 嫄곕옒??猷?泥댄겕 ?뚯뒪??
+  - OHLC 猷?泥댄겕 ?뚯뒪??
+  - ?꾩껜 猷?泥댄겕 ?뚯뒪??
+  - 鍮??곗씠???ㅼ틪 ?뚯뒪??
+  - Mock ?곗씠???ㅼ틪 ?뚯뒪??
 
-- `tests/search/test_popup_search_settings_advanced.py` - 설정 다이얼로그 테스트 (7 tests)
-  - 팝업 초기화 테스트
-  - 콤보박스 초기화 테스트
-  - 스핀박스 초기화 테스트
-  - get_settings() 메서드 테스트
-  - 체크박스 상태 테스트
-  - 설정 값 타입 테스트
+- `tests/search/test_popup_search_settings_advanced.py` - ?ㅼ젙 ?ㅼ씠?쇰줈洹??뚯뒪??(7 tests)
+  - ?앹뾽 珥덇린???뚯뒪??
+  - 肄ㅻ낫諛뺤뒪 珥덇린???뚯뒪??
+  - ?ㅽ?諛뺤뒪 珥덇린???뚯뒪??
+  - get_settings() 硫붿꽌???뚯뒪??
+  - 泥댄겕諛뺤뒪 ?곹깭 ?뚯뒪??
+  - ?ㅼ젙 媛?????뚯뒪??
 
-- `tests/search/__init__.py` - 테스트 문서 및 실행 가이드
+- `tests/search/__init__.py` - ?뚯뒪??臾몄꽌 諛??ㅽ뻾 媛?대뱶
 
-### 🔧 변경됨 (Changed)
+### ?뵩 蹂寃쎈맖 (Changed)
 
-- `work_order/통합_개발_가이드.md` - 지시서 개선 프로세스 추가
-  - **새 섹션**: 1.5️⃣ 작업 지시서 검토 및 개선 (자동 업그레이드)
-  - Copilot 자동 수행 프로세스 정의
-  - 개선 원칙 명시 (지시서는 완벽하지 않을 수 있음)
-  - 예시 포함 (이미지 기반 UI/UX 명세 추출)
+- `work_order/?듯빀_媛쒕컻_媛?대뱶.md` - 吏?쒖꽌 媛쒖꽑 ?꾨줈?몄뒪 異붽?
+  - **???뱀뀡**: 1.5截뤴깵 ?묒뾽 吏?쒖꽌 寃??諛?媛쒖꽑 (?먮룞 ?낃렇?덉씠??
+  - Copilot ?먮룞 ?섑뻾 ?꾨줈?몄뒪 ?뺤쓽
+  - 媛쒖꽑 ?먯튃 紐낆떆 (吏?쒖꽌???꾨꼍?섏? ?딆쓣 ???덉쓬)
+  - ?덉떆 ?ы븿 (?대?吏 湲곕컲 UI/UX 紐낆꽭 異붿텧)
 
-- `src/search/__init__.py` - Export 추가
-  - SearchSettingsAdvancedPopup 추가
-  - ScannerEngine 추가
-  - RULES 추가
-  - Docstring 업데이트
+- `src/search/__init__.py` - Export 異붽?
+  - SearchSettingsAdvancedPopup 異붽?
+  - ScannerEngine 異붽?
+  - RULES 異붽?
+  - Docstring ?낅뜲?댄듃
 
-- `src/search/widget_search_frame.py` - 주석 추가 (최소 수정)
-  - 고급 설정창 import 주석 추가
-  - open_settings() 메서드에 문서화 주석 추가
-  - 고급 설정창 사용 방법 안내
+- `src/search/widget_search_frame.py` - 二쇱꽍 異붽? (理쒖냼 ?섏젙)
+  - 怨좉툒 ?ㅼ젙李?import 二쇱꽍 異붽?
+  - open_settings() 硫붿꽌?쒖뿉 臾몄꽌??二쇱꽍 異붽?
+  - 怨좉툒 ?ㅼ젙李??ъ슜 諛⑸쾿 ?덈궡
 
-### 📊 통계
+### ?뱤 ?듦퀎
 
-#### 파일 통계
-- **신규 생성**: 7개 (UI 1, Python 3, 테스트 2, 문서 1)
-- **수정**: 3개 (최소 변경, 주석 추가만)
-- **백업**: 1개 (기존 작업 지시서)
+#### ?뚯씪 ?듦퀎
+- **?좉퇋 ?앹꽦**: 7媛?(UI 1, Python 3, ?뚯뒪??2, 臾몄꽌 1)
+- **?섏젙**: 3媛?(理쒖냼 蹂寃? 二쇱꽍 異붽?留?
+- **諛깆뾽**: 1媛?(湲곗〈 ?묒뾽 吏?쒖꽌)
 
-#### 코드 통계
-- **Python 코드**: ~500 lines
-- **테스트 코드**: ~200 lines
+#### 肄붾뱶 ?듦퀎
+- **Python 肄붾뱶**: ~500 lines
+- **?뚯뒪??肄붾뱶**: ~200 lines
 - **UI XML**: ~400 lines
-- **문서**: ~650 lines (work order v2)
+- **臾몄꽌**: ~650 lines (work order v2)
 
-#### 컴포넌트
-- **UI 위젯**: 33개 (14 체크박스, 5 콤보박스, 12 스핀박스, 2 버튼)
-- **Scanner 룰**: 4개 (RSI, Golden Cross, Volume, OHLC)
-- **테스트**: 15개 (8 engine + 7 UI)
+#### 而댄룷?뚰듃
+- **UI ?꾩젽**: 33媛?(14 泥댄겕諛뺤뒪, 5 肄ㅻ낫諛뺤뒪, 12 ?ㅽ?諛뺤뒪, 2 踰꾪듉)
+- **Scanner 猷?*: 4媛?(RSI, Golden Cross, Volume, OHLC)
+- **?뚯뒪??*: 15媛?(8 engine + 7 UI)
 
-### 🎯 주요 기능
+### ?렞 二쇱슂 湲곕뒫
 
-#### Scanner/Search 엔진
-- ✅ 이미지 4개 기반 완전한 UI/UX 구현
-- ✅ 고급 설정창 (33개 UI 컴포넌트)
-- ✅ 비동기 스캔 엔진 (aiopyupbit 통합)
-- ✅ 4가지 기본 룰 (확장 가능한 플러그인 시스템)
-- ✅ 스코어링 및 랭킹 시스템
-- ✅ 포괄적인 단위 테스트
+#### Scanner/Search ?붿쭊
+- ???대?吏 4媛?湲곕컲 ?꾩쟾??UI/UX 援ы쁽
+- ??怨좉툒 ?ㅼ젙李?(33媛?UI 而댄룷?뚰듃)
+- ??鍮꾨룞湲??ㅼ틪 ?붿쭊 (aiopyupbit ?듯빀)
+- ??4媛吏 湲곕낯 猷?(?뺤옣 媛?ν븳 ?뚮윭洹몄씤 ?쒖뒪??
+- ???ㅼ퐫?대쭅 諛???궧 ?쒖뒪??
+- ???ш큵?곸씤 ?⑥쐞 ?뚯뒪??
 
-#### 아키텍처
+#### ?꾪궎?띿쿂
 - **UI Layer**: SearchFrameWidget + Advanced Settings Dialog
 - **Logic Layer**: ScannerEngine (async)
 - **Rule Layer**: Pluggable rule system (RULES registry)
 - **Data Layer**: aiopyupbit API
 
-### 🔐 규칙 준수
+### ?뵍 洹쒖튃 以??
 
-- ✅ 기존 `.ui` 파일 수정 없음
-- ✅ 기존 Python 로직 수정 없음 (주석만 추가)
-- ✅ 모든 UI 텍스트 한글
-- ✅ ERROR 레벨만 콘솔 출력
-- ✅ 포괄적인 Docstring
-- ✅ Type hints 사용
+- ??湲곗〈 `.ui` ?뚯씪 ?섏젙 ?놁쓬
+- ??湲곗〈 Python 濡쒖쭅 ?섏젙 ?놁쓬 (二쇱꽍留?異붽?)
+- ??紐⑤뱺 UI ?띿뒪???쒓?
+- ??ERROR ?덈꺼留?肄섏넄 異쒕젰
+- ???ш큵?곸씤 Docstring
+- ??Type hints ?ъ슜
 
-### 🚀 다음 단계
+### ?? ?ㅼ쓬 ?④퀎
 
-- Phase 6: PAPER 모드 구현
-- Scanner 결과 MongoDB 저장
-- Elasticsearch/Kafka 통합 (고급 기능)
-- REST API 제공
-- 웹 대시보드 (Streamlit)
+- Phase 6: PAPER 紐⑤뱶 援ы쁽
+- Scanner 寃곌낵 MongoDB ???
+- Elasticsearch/Kafka ?듯빀 (怨좉툒 湲곕뒫)
+- REST API ?쒓났
+- ????쒕낫??(Streamlit)
 
 ---
 
-## [문서화] 2~4단계 작업 지시서 업그레이드 및 자동화 - 2026-02-02
+## [臾몄꽌?? 2~4?④퀎 ?묒뾽 吏?쒖꽌 ?낃렇?덉씠??諛??먮룞??- 2026-02-02
 
-### ✅ 추가됨 (Added)
-- `docs/phases/phase4_completion.md` - 4단계 완료 보고서
-  - Compute 프로세스 완료 내용 상세 문서화
-  - CandleAggregator, IndicatorEngine, ScannerExecutor 상세 설명
-  - 검증 결과 및 성능 지표
-  - 다음 단계 준비사항
+### ??異붽???(Added)
+- `docs/phases/phase4_completion.md` - 4?④퀎 ?꾨즺 蹂닿퀬??
+  - Compute ?꾨줈?몄뒪 ?꾨즺 ?댁슜 ?곸꽭 臾몄꽌??
+  - CandleAggregator, IndicatorEngine, ScannerExecutor ?곸꽭 ?ㅻ챸
+  - 寃利?寃곌낵 諛??깅뒫 吏??
+  - ?ㅼ쓬 ?④퀎 以鍮꾩궗??
   
-- `work_order/문서_업데이트_프로세스.md` - 문서화 프로세스 가이드
-  - 작업 전/중/후 문서화 표준 프로세스
-  - 문서 불일치 방지 체크리스트
-  - 단계별 진행 절차 (Phase 1~3)
-  - 문서 작성 모범 사례 및 예시
+- `work_order/臾몄꽌_?낅뜲?댄듃_?꾨줈?몄뒪.md` - 臾몄꽌???꾨줈?몄뒪 媛?대뱶
+  - ?묒뾽 ??以???臾몄꽌???쒖? ?꾨줈?몄뒪
+  - 臾몄꽌 遺덉씪移?諛⑹? 泥댄겕由ъ뒪??
+  - ?④퀎蹂?吏꾪뻾 ?덉감 (Phase 1~3)
+  - 臾몄꽌 ?묒꽦 紐⑤쾾 ?щ? 諛??덉떆
   
-- `scripts/verify_documentation.py` - 문서 검증 자동화 스크립트
-  - 단계 지시서 메타데이터 검증
-  - 완료 보고서 필수 섹션 확인
-  - CHANGELOG 업데이트 여부 확인
-  - 참조된 파일 실제 존재 여부 확인
+- `scripts/verify_documentation.py` - 臾몄꽌 寃利??먮룞???ㅽ겕由쏀듃
+  - ?④퀎 吏?쒖꽌 硫뷀??곗씠??寃利?
+  - ?꾨즺 蹂닿퀬???꾩닔 ?뱀뀡 ?뺤씤
+  - CHANGELOG ?낅뜲?댄듃 ?щ? ?뺤씤
+  - 李몄“???뚯씪 ?ㅼ젣 議댁옱 ?щ? ?뺤씤
   
-- `docs/templates/completion_report_template.md` - 완료 보고서 템플릿
-  - 단계별 완료 보고서 작성용 표준 템플릿
-  - 필수 섹션 및 체크리스트 포함
+- `docs/templates/completion_report_template.md` - ?꾨즺 蹂닿퀬???쒗뵆由?
+  - ?④퀎蹂??꾨즺 蹂닿퀬???묒꽦???쒖? ?쒗뵆由?
+  - ?꾩닔 ?뱀뀡 諛?泥댄겕由ъ뒪???ы븿
   
-- `.github/workflows/docs-validation.yml` - CI/CD 문서 검증 워크플로우
-  - PR 생성 시 자동 문서 검증
-  - 인코딩, 링크, 메타데이터 검증
-  - 문서 불일치 발견 시 PR 차단
+- `.github/workflows/docs-validation.yml` - CI/CD 臾몄꽌 寃利??뚰겕?뚮줈??
+  - PR ?앹꽦 ???먮룞 臾몄꽌 寃利?
+  - ?몄퐫?? 留곹겕, 硫뷀??곗씠??寃利?
+  - 臾몄꽌 遺덉씪移?諛쒓껄 ??PR 李⑤떒
 
-### 🔧 변경됨 (Changed)
-- `work_order/2_단계_환경_구축_및_사전_준비.md` - v2.0으로 업그레이드 (4단계 수준 상세화)
-  - **데이터 흐름 다이어그램 추가**:
-    - 전체 시스템 아키텍처 (MongoDB, Redis, Kafka, Zookeeper, FastAPI)
-    - 데이터 파이프라인 (Upbit WebSocket → Redis → MongoDB → GUI)
-    - 서비스 간 의존성 및 시작 순서
-    - 포트 매핑 테이블
-  - **실제 파일 경로 명시**:
-    - docker-compose.yml 실제 구성
-    - .env.template 전체 환경변수
-    - requirements.txt 의존성 목록
-    - 초기화 스크립트 (init_kafka_topics.sh, init_mongodb.py)
-  - **트러블슈팅 섹션 강화**:
-    - 8가지 구체적 시나리오 (Docker 충돌, Python 의존성, .env 누락 등)
-    - 각 시나리오별 증상, 원인, 진단, 해결 방법
-    - 실행 가능한 명령어 예시 포함
-    - 일반적인 디버깅 체크리스트
-  - **검증 절차 상세화**:
-    - 단계별 검증 명령어
-    - 예상 출력 결과
-    - 실패 시 대응 방법
+### ?뵩 蹂寃쎈맖 (Changed)
+- `work_order/2_?④퀎_?섍꼍_援ъ텞_諛??ъ쟾_以鍮?md` - v2.0?쇰줈 ?낃렇?덉씠??(4?④퀎 ?섏? ?곸꽭??
+  - **?곗씠???먮쫫 ?ㅼ씠?닿렇??異붽?**:
+    - ?꾩껜 ?쒖뒪???꾪궎?띿쿂 (MongoDB, Redis, Kafka, Zookeeper, FastAPI)
+    - ?곗씠???뚯씠?꾨씪??(Upbit WebSocket ??Redis ??MongoDB ??GUI)
+    - ?쒕퉬??媛??섏〈??諛??쒖옉 ?쒖꽌
+    - ?ы듃 留ㅽ븨 ?뚯씠釉?
+  - **?ㅼ젣 ?뚯씪 寃쎈줈 紐낆떆**:
+    - docker-compose.yml ?ㅼ젣 援ъ꽦
+    - .env.template ?꾩껜 ?섍꼍蹂??
+    - requirements.txt ?섏〈??紐⑸줉
+    - 珥덇린???ㅽ겕由쏀듃 (init_kafka_topics.sh, init_mongodb.py)
+  - **?몃윭釉붿뒋???뱀뀡 媛뺥솕**:
+    - 8媛吏 援ъ껜???쒕굹由ъ삤 (Docker 異⑸룎, Python ?섏〈?? .env ?꾨씫 ??
+    - 媛??쒕굹由ъ삤蹂?利앹긽, ?먯씤, 吏꾨떒, ?닿껐 諛⑸쾿
+    - ?ㅽ뻾 媛?ν븳 紐낅졊???덉떆 ?ы븿
+    - ?쇰컲?곸씤 ?붾쾭源?泥댄겕由ъ뒪??
+  - **寃利??덉감 ?곸꽭??*:
+    - ?④퀎蹂?寃利?紐낅졊??
+    - ?덉긽 異쒕젰 寃곌낵
+    - ?ㅽ뙣 ?????諛⑸쾿
     
-- `work_order/3_단계_MONITOR_모드_안정화.md` - v2.0으로 업그레이드 (실제 구현 반영)
-  - **데이터 흐름 명확화**:
-    - MONITOR 모드 상세 데이터 파이프라인
-    - GUI 컴포넌트별 데이터 흐름 다이어그램
-    - WebSocket → Redis Pub/Sub → GUI Widgets 경로
-  - **실제 구현 파일 경로 명시**:
-    - src/gui/ui_state_manager.py - 모드 관리
-    - src/gui/widgets/coin_list_widget.py - 실시간 코인 목록
-    - src/gui/widgets/chart_widget.py - 실시간 차트
-    - src/gui/widgets/orderbook_widget.py - 호가창
-    - src/gui/widgets/trade_widget.py - 주문 UI (비활성화)
-  - **검증 스크립트 사용법 추가**:
-    - verify_monitor_mode.py 상세 사용법
-    - 6가지 검증 항목 및 명령어
-    - GUI 동작 확인 체크리스트
-  - **실제 코드 예시 포함**:
-    - UIStateManager 클래스 구현
-    - TradeWidget 모드별 UI 제어
-    - 주문 기능 비활성화 메커니즘
+- `work_order/3_?④퀎_MONITOR_紐⑤뱶_?덉젙??md` - v2.0?쇰줈 ?낃렇?덉씠??(?ㅼ젣 援ы쁽 諛섏쁺)
+  - **?곗씠???먮쫫 紐낇솗??*:
+    - MONITOR 紐⑤뱶 ?곸꽭 ?곗씠???뚯씠?꾨씪??
+    - GUI 而댄룷?뚰듃蹂??곗씠???먮쫫 ?ㅼ씠?닿렇??
+    - WebSocket ??Redis Pub/Sub ??GUI Widgets 寃쎈줈
+  - **?ㅼ젣 援ы쁽 ?뚯씪 寃쎈줈 紐낆떆**:
+    - src/gui/ui_state_manager.py - 紐⑤뱶 愿由?
+    - src/gui/widgets/coin_list_widget.py - ?ㅼ떆媛?肄붿씤 紐⑸줉
+    - src/gui/widgets/chart_widget.py - ?ㅼ떆媛?李⑦듃
+    - src/gui/widgets/orderbook_widget.py - ?멸?李?
+    - src/gui/widgets/trade_widget.py - 二쇰Ц UI (鍮꾪솢?깊솕)
+  - **寃利??ㅽ겕由쏀듃 ?ъ슜踰?異붽?**:
+    - verify_monitor_mode.py ?곸꽭 ?ъ슜踰?
+    - 6媛吏 寃利???ぉ 諛?紐낅졊??
+    - GUI ?숈옉 ?뺤씤 泥댄겕由ъ뒪??
+  - **?ㅼ젣 肄붾뱶 ?덉떆 ?ы븿**:
+    - UIStateManager ?대옒??援ы쁽
+    - TradeWidget 紐⑤뱶蹂?UI ?쒖뼱
+    - 二쇰Ц 湲곕뒫 鍮꾪솢?깊솕 硫붿빱?덉쬁
     
-- `docs/DOCUMENTATION_STANDARDS.md` - v2.0으로 업그레이드
-  - **자동화 도구 사용 가이드** 추가:
-    - verify_documentation.py 사용법
-    - CI/CD 워크플로우 설명
-    - 완료 보고서 템플릿 사용법
-  - **모범 사례 및 예시** 추가:
-    - 좋은 문서 vs 나쁜 문서 비교
-    - 실제 파일 경로 명시 예시
-    - 실행 가능한 명령어 예시
-    - 검증 방법 포함 예시
-  - **재발 방지 체크리스트** 강화:
-    - 단계 완료 시 필수 확인 사항
-    - 검증 스크립트 실행 의무화
+- `docs/DOCUMENTATION_STANDARDS.md` - v2.0?쇰줈 ?낃렇?덉씠??
+  - **?먮룞???꾧뎄 ?ъ슜 媛?대뱶** 異붽?:
+    - verify_documentation.py ?ъ슜踰?
+    - CI/CD ?뚰겕?뚮줈???ㅻ챸
+    - ?꾨즺 蹂닿퀬???쒗뵆由??ъ슜踰?
+  - **紐⑤쾾 ?щ? 諛??덉떆** 異붽?:
+    - 醫뗭? 臾몄꽌 vs ?섏걶 臾몄꽌 鍮꾧탳
+    - ?ㅼ젣 ?뚯씪 寃쎈줈 紐낆떆 ?덉떆
+    - ?ㅽ뻾 媛?ν븳 紐낅졊???덉떆
+    - 寃利?諛⑸쾿 ?ы븿 ?덉떆
+  - **?щ컻 諛⑹? 泥댄겕由ъ뒪??* 媛뺥솕:
+    - ?④퀎 ?꾨즺 ???꾩닔 ?뺤씤 ?ы빆
+    - 寃利??ㅽ겕由쏀듃 ?ㅽ뻾 ?섎Т??
 
-### 📝 문서화 (Documentation)
-- **표준화된 문서 구조**:
-  - docs/phases/ - 단계별 완료 보고서
-  - docs/templates/ - 문서 템플릿
-  - work_order/ - 작업 지시서 및 프로세스 가이드
+### ?뱷 臾몄꽌??(Documentation)
+- **?쒖??붾맂 臾몄꽌 援ъ“**:
+  - docs/phases/ - ?④퀎蹂??꾨즺 蹂닿퀬??
+  - docs/templates/ - 臾몄꽌 ?쒗뵆由?
+  - work_order/ - ?묒뾽 吏?쒖꽌 諛??꾨줈?몄뒪 媛?대뱶
   
-- **문서 불일치 방지 시스템**:
-  - 작업 전/중/후 체크리스트
-  - 자동 검증 스크립트
-  - CI/CD 파이프라인 통합
+- **臾몄꽌 遺덉씪移?諛⑹? ?쒖뒪??*:
+  - ?묒뾽 ??以???泥댄겕由ъ뒪??
+  - ?먮룞 寃利??ㅽ겕由쏀듃
+  - CI/CD ?뚯씠?꾨씪???듯빀
   
-- **재사용 가능한 템플릿**:
-  - 완료 보고서 템플릿
-  - 메타데이터 표준 형식
-  - 섹션 구조 가이드
+- **?ъ궗??媛?ν븳 ?쒗뵆由?*:
+  - ?꾨즺 蹂닿퀬???쒗뵆由?
+  - 硫뷀??곗씠???쒖? ?뺤떇
+  - ?뱀뀡 援ъ“ 媛?대뱶
 
-### 🔍 검증 (Verification)
-- ✅ `verify_documentation.py --all` 실행 통과 (2,3,4단계)
-- ✅ 2단계 문서 검증 통과
-- ✅ 3단계 문서 검증 통과
-- ✅ 4단계 문서 검증 통과
-- ✅ 메타데이터 검증 통과
-- ✅ 참조 파일 경로 검증 통과 (일부 경고)
+### ?뵇 寃利?(Verification)
+- ??`verify_documentation.py --all` ?ㅽ뻾 ?듦낵 (2,3,4?④퀎)
+- ??2?④퀎 臾몄꽌 寃利??듦낵
+- ??3?④퀎 臾몄꽌 寃利??듦낵
+- ??4?④퀎 臾몄꽌 寃利??듦낵
+- ??硫뷀??곗씠??寃利??듦낵
+- ??李몄“ ?뚯씪 寃쎈줈 寃利??듦낵 (?쇰? 寃쎄퀬)
 
-### 🎯 개선 효과
-- **2~3단계 지시서 품질**: 추상적 설명 → 4단계 수준 구체성
-- **문서 일관성**: 수동 관리 → 자동 검증 시스템
-- **실수 방지**: 사후 대응 → 사전 예방 (CI/CD)
-- **유지보수성**: 개별 노력 → 표준화된 프로세스
+### ?렞 媛쒖꽑 ?④낵
+- **2~3?④퀎 吏?쒖꽌 ?덉쭏**: 異붿긽???ㅻ챸 ??4?④퀎 ?섏? 援ъ껜??
+- **臾몄꽌 ?쇨???*: ?섎룞 愿由????먮룞 寃利??쒖뒪??
+- **?ㅼ닔 諛⑹?**: ?ы썑 ??????ъ쟾 ?덈갑 (CI/CD)
+- **?좎?蹂댁닔??*: 媛쒕퀎 ?몃젰 ???쒖??붾맂 ?꾨줈?몄뒪
 
 ---
 
-## [4단계] Compute 프로세스 데이터 집계 - 2026-02-02
+## [4?④퀎] Compute ?꾨줈?몄뒪 ?곗씠??吏묎퀎 - 2026-02-02
 
-### ✅ 추가됨 (Added)
-- `scripts/verify_compute_process.py` - Compute 프로세스 검증 스크립트
-- `docs/guides/compute_process_guide.md` - Compute 프로세스 사용자 가이드
-- `docs/operations/compute_runbook.md` - Compute 프로세스 운영 가이드
+### ??異붽???(Added)
+- `scripts/verify_compute_process.py` - Compute ?꾨줈?몄뒪 寃利??ㅽ겕由쏀듃
+- `docs/guides/compute_process_guide.md` - Compute ?꾨줈?몄뒪 ?ъ슜??媛?대뱶
+- `docs/operations/compute_runbook.md` - Compute ?꾨줈?몄뒪 ?댁쁺 媛?대뱶
 
-### 🔧 변경됨 (Changed)
-- `work_order/2_단계_환경_구축_및_사전_준비.md` - 실제 구현에 맞게 업데이트 (v1.2)
-  - Docker Compose 실제 구성 반영 (MongoDB 7.0, Redis 7-alpine, Kafka 7.5.0)
-  - .env.template 실제 내용 반영 (모든 환경변수 포함)
-  - requirements.txt 실제 의존성 반영
-  - 실제 검증 스크립트 추가 (init_kafka_topics.sh, init_mongodb.py)
+### ?뵩 蹂寃쎈맖 (Changed)
+- `work_order/2_?④퀎_?섍꼍_援ъ텞_諛??ъ쟾_以鍮?md` - ?ㅼ젣 援ы쁽??留욊쾶 ?낅뜲?댄듃 (v1.2)
+  - Docker Compose ?ㅼ젣 援ъ꽦 諛섏쁺 (MongoDB 7.0, Redis 7-alpine, Kafka 7.5.0)
+  - .env.template ?ㅼ젣 ?댁슜 諛섏쁺 (紐⑤뱺 ?섍꼍蹂???ы븿)
+  - requirements.txt ?ㅼ젣 ?섏〈??諛섏쁺
+  - ?ㅼ젣 寃利??ㅽ겕由쏀듃 異붽? (init_kafka_topics.sh, init_mongodb.py)
   
-- `work_order/4_단계_Compute_프로세스_데이터_집계.md` - Redis Pub/Sub 기반 실제 구현 반영 (v2.0)
-  - Kafka 중심 이론 → Redis Pub/Sub 기반 실제 구현으로 완전 리팩토링
-  - CandleAggregator 상세 설명 (O(1) 복잡도, 16+ 타임프레임, KST 시간대)
-  - IndicatorEngine 상세 설명 (Welford's 알고리즘, 7개 지표)
-  - ScannerExecutor 상세 설명 (AST 기반 안전한 표현식 평가, 200ms 마이크로배치)
-  - ComputeProcess 통합 가이드 (멀티프로세싱, Redis Pub/Sub, MongoDB 저장)
-  - 실제 성능 측정 결과 (<1ms per trade, <100MB for 1000 symbols)
-  - 배포, 모니터링, 장애 대응 가이드 추가
+- `work_order/4_?④퀎_Compute_?꾨줈?몄뒪_?곗씠??吏묎퀎.md` - Redis Pub/Sub 湲곕컲 ?ㅼ젣 援ы쁽 諛섏쁺 (v2.0)
+  - Kafka 以묒떖 ?대줎 ??Redis Pub/Sub 湲곕컲 ?ㅼ젣 援ы쁽?쇰줈 ?꾩쟾 由ы뙥?좊쭅
+  - CandleAggregator ?곸꽭 ?ㅻ챸 (O(1) 蹂듭옟?? 16+ ??꾪봽?덉엫, KST ?쒓컙?)
+  - IndicatorEngine ?곸꽭 ?ㅻ챸 (Welford's ?뚭퀬由ъ쬁, 7媛?吏??
+  - ScannerExecutor ?곸꽭 ?ㅻ챸 (AST 湲곕컲 ?덉쟾???쒗쁽???됯?, 200ms 留덉씠?щ줈諛곗튂)
+  - ComputeProcess ?듯빀 媛?대뱶 (硫?고봽濡쒖꽭?? Redis Pub/Sub, MongoDB ???
+  - ?ㅼ젣 ?깅뒫 痢≪젙 寃곌낵 (<1ms per trade, <100MB for 1000 symbols)
+  - 諛고룷, 紐⑤땲?곕쭅, ?μ븷 ???媛?대뱶 異붽?
 
-### 📝 문서화 (Documentation)
-- **CandleAggregator 상세 문서:**
-  - O(1) 복잡도 달성 원리 (증분 업데이트, 재계산 없음)
-  - 16+ 타임프레임 지원 (tick, sec, min, hour, day, week, month, year)
-  - KST 시간대 처리 (pytz 라이브러리 사용)
-  - 사용 예시 및 메트릭스 조회
+### ?뱷 臾몄꽌??(Documentation)
+- **CandleAggregator ?곸꽭 臾몄꽌:**
+  - O(1) 蹂듭옟???ъ꽦 ?먮━ (利앸텇 ?낅뜲?댄듃, ?ш퀎???놁쓬)
+  - 16+ ??꾪봽?덉엫 吏??(tick, sec, min, hour, day, week, month, year)
+  - KST ?쒓컙? 泥섎━ (pytz ?쇱씠釉뚮윭由??ъ슜)
+  - ?ъ슜 ?덉떆 諛?硫뷀듃由?뒪 議고쉶
   
-- **IndicatorEngine 상세 문서:**
-  - Welford's 온라인 알고리즘 설명 (분산, 표준편차 O(1) 계산)
-  - EMA/SMA 증분 계산 방식
-  - 7개 주요 지표 (RSI, MACD, Bollinger Bands, EMA, SMA, ATR, Stochastic)
-  - 사용 예시 및 지표 해석 가이드
+- **IndicatorEngine ?곸꽭 臾몄꽌:**
+  - Welford's ?⑤씪???뚭퀬由ъ쬁 ?ㅻ챸 (遺꾩궛, ?쒖??몄감 O(1) 怨꾩궛)
+  - EMA/SMA 利앸텇 怨꾩궛 諛⑹떇
+  - 7媛?二쇱슂 吏??(RSI, MACD, Bollinger Bands, EMA, SMA, ATR, Stochastic)
+  - ?ъ슜 ?덉떆 諛?吏???댁꽍 媛?대뱶
   
-- **ScannerExecutor 상세 문서:**
-  - AST 기반 안전한 표현식 파싱
-  - 200ms 마이크로배치 실행
-  - 델타 전송 (add/remove)
-  - 조건식 예시 및 보안 정책
+- **ScannerExecutor ?곸꽭 臾몄꽌:**
+  - AST 湲곕컲 ?덉쟾???쒗쁽???뚯떛
+  - 200ms 留덉씠?щ줈諛곗튂 ?ㅽ뻾
+  - ?명? ?꾩넚 (add/remove)
+  - 議곌굔???덉떆 諛?蹂댁븞 ?뺤콉
   
-- **ComputeProcess 통합 가이드:**
-  - 멀티프로세싱 구조 및 생명주기
-  - Redis Pub/Sub 채널 (구독: md.events, 발행: candle.events, indicator.events)
-  - MongoDB 저장 스키마 및 인덱스
-  - 배포 및 검증 방법
+- **ComputeProcess ?듯빀 媛?대뱶:**
+  - 硫?고봽濡쒖꽭??援ъ“ 諛??앸챸二쇨린
+  - Redis Pub/Sub 梨꾨꼸 (援щ룆: md.events, 諛쒗뻾: candle.events, indicator.events)
+  - MongoDB ????ㅽ궎留?諛??몃뜳??
+  - 諛고룷 諛?寃利?諛⑸쾿
   
-- **성능 및 모니터링:**
-  - 실제 벤치마크 결과 (tests/test_compute.py)
-  - Prometheus 메트릭스 엔드포인트
-  - 헬스체크 엔드포인트
-  - 로그 구조 (JSON structured logging)
-  - 주요 모니터링 지표 및 알림 규칙
+- **?깅뒫 諛?紐⑤땲?곕쭅:**
+  - ?ㅼ젣 踰ㅼ튂留덊겕 寃곌낵 (tests/test_compute.py)
+  - Prometheus 硫뷀듃由?뒪 ?붾뱶?ъ씤??
+  - ?ъ뒪泥댄겕 ?붾뱶?ъ씤??
+  - 濡쒓렇 援ъ“ (JSON structured logging)
+  - 二쇱슂 紐⑤땲?곕쭅 吏??諛??뚮┝ 洹쒖튃
   
-- **장애 대응:**
-  - 재시작 시 복구 전략
-  - 중복 방지 (MongoDB unique 인덱스)
-  - 누락 방지 (Redis Pub/Sub 재연결)
-  - 데이터 정합성 검증
+- **?μ븷 ???**
+  - ?ъ떆????蹂듦뎄 ?꾨왂
+  - 以묐났 諛⑹? (MongoDB unique ?몃뜳??
+  - ?꾨씫 諛⑹? (Redis Pub/Sub ?ъ뿰寃?
+  - ?곗씠???뺥빀??寃利?
 
-### ✅ 검증됨 (Verified)
-- CandleAggregator 정확성 검증 (틱봉, 초봉, 분봉, 시간봉, 일봉)
-- IndicatorEngine 정확성 검증 (RSI, MACD, EMA, SMA, Bollinger Bands)
-- 성능 벤치마크 (< 1ms per trade)
-- 메모리 사용량 (< 100MB for 1000 symbols)
-- O(1) 복잡도 유지 확인
+### ??寃利앸맖 (Verified)
+- CandleAggregator ?뺥솗??寃利?(?깅큺, 珥덈큺, 遺꾨큺, ?쒓컙遊? ?쇰큺)
+- IndicatorEngine ?뺥솗??寃利?(RSI, MACD, EMA, SMA, Bollinger Bands)
+- ?깅뒫 踰ㅼ튂留덊겕 (< 1ms per trade)
+- 硫붾え由??ъ슜??(< 100MB for 1000 symbols)
+- O(1) 蹂듭옟???좎? ?뺤씤
 
-### 🎯 개선 사항
-- 이론적 Kafka 중심 내용 → 실제 Redis Pub/Sub 기반 구현 반영
-- 추상적 설명 → 구체적인 코드 예시 및 사용법
-- 누락된 상세 설명 → 완전한 기술 문서 (CandleAggregator, IndicatorEngine, ScannerExecutor)
-- 간략한 운영 가이드 → 포괄적인 운영 런북 (시작/종료, 모니터링, 장애 대응, 백업/복구)
+### ?렞 媛쒖꽑 ?ы빆
+- ?대줎??Kafka 以묒떖 ?댁슜 ???ㅼ젣 Redis Pub/Sub 湲곕컲 援ы쁽 諛섏쁺
+- 異붿긽???ㅻ챸 ??援ъ껜?곸씤 肄붾뱶 ?덉떆 諛??ъ슜踰?
+- ?꾨씫???곸꽭 ?ㅻ챸 ???꾩쟾??湲곗닠 臾몄꽌 (CandleAggregator, IndicatorEngine, ScannerExecutor)
+- 媛꾨왂???댁쁺 媛?대뱶 ???ш큵?곸씤 ?댁쁺 ?곕턿 (?쒖옉/醫낅즺, 紐⑤땲?곕쭅, ?μ븷 ??? 諛깆뾽/蹂듦뎄)
 
 ---
 
-## [2-3단계 통합] 환경 구축 및 MONITOR 모드 안정화 - 2026-02-02
+## [2-3?④퀎 ?듯빀] ?섍꼍 援ъ텞 諛?MONITOR 紐⑤뱶 ?덉젙??- 2026-02-02
 
-### ✅ 추가됨 (Added)
+### ??異붽???(Added)
 
-#### 2단계: 환경 구축
-- `scripts/init_kafka_topics.sh` - Kafka 토픽 자동 초기화 스크립트
-- `scripts/init_mongodb.py` - MongoDB 컬렉션 및 인덱스 자동 생성 스크립트
-- `.github/workflows/ci.yml` - CI/CD 파이프라인
+#### 2?④퀎: ?섍꼍 援ъ텞
+- `scripts/init_kafka_topics.sh` - Kafka ?좏뵿 ?먮룞 珥덇린???ㅽ겕由쏀듃
+- `scripts/init_mongodb.py` - MongoDB 而щ젆??諛??몃뜳???먮룞 ?앹꽦 ?ㅽ겕由쏀듃
+- `.github/workflows/ci.yml` - CI/CD ?뚯씠?꾨씪??
 
-#### 3단계: MONITOR 모드 안정화
-- `scripts/verify_monitor_mode.py` - MONITOR 모드 검증 스크립트
-- `docs/guides/monitor_mode_guide.md` - MONITOR 모드 사용자 가이드
-- `docs/operations/runbook.md` - 운영 런북
+#### 3?④퀎: MONITOR 紐⑤뱶 ?덉젙??
+- `scripts/verify_monitor_mode.py` - MONITOR 紐⑤뱶 寃利??ㅽ겕由쏀듃
+- `docs/guides/monitor_mode_guide.md` - MONITOR 紐⑤뱶 ?ъ슜??媛?대뱶
+- `docs/operations/runbook.md` - ?댁쁺 ?곕턿
 
-#### 문서 표준화
-- `docs/DOCUMENTATION_STANDARDS.md` - 문서화 표준 가이드
-- `docs/PHASES_INDEX.md` - 전체 단계 인덱스
-- `docs/phases/README.md` - phases 폴더 안내
-- `docs/phases/phase2_completion.md` - 2단계 완료 보고서 (통합본)
-- `docs/phases/phase3_completion.md` - 3단계 완료 보고서
+#### 臾몄꽌 ?쒖???
+- `docs/DOCUMENTATION_STANDARDS.md` - 臾몄꽌???쒖? 媛?대뱶
+- `docs/PHASES_INDEX.md` - ?꾩껜 ?④퀎 ?몃뜳??
+- `docs/phases/README.md` - phases ?대뜑 ?덈궡
+- `docs/phases/phase2_completion.md` - 2?④퀎 ?꾨즺 蹂닿퀬??(?듯빀蹂?
+- `docs/phases/phase3_completion.md` - 3?④퀎 ?꾨즺 蹂닿퀬??
 
-### 🔧 개선됨 (Improved)
-- 문서 구조 표준화 (`docs/phases/`, `docs/guides/`, `docs/operations/`)
-- 단계별 문서 통합 관리 체계 수립
-- 파일명 규칙 통일
+### ?뵩 媛쒖꽑??(Improved)
+- 臾몄꽌 援ъ“ ?쒖???(`docs/phases/`, `docs/guides/`, `docs/operations/`)
+- ?④퀎蹂?臾몄꽌 ?듯빀 愿由?泥닿퀎 ?섎┰
+- ?뚯씪紐?洹쒖튃 ?듭씪
 
-### 📝 문서화 (Documentation)
-- 2단계 작업 내용 상세 문서화
-- 3단계 작업 내용 상세 문서화
-- MONITOR 모드 사용자 가이드
-- 운영 절차 표준화
-- 장애 대응 시나리오 문서화
-- 백업/복구 절차 문서화
+### ?뱷 臾몄꽌??(Documentation)
+- 2?④퀎 ?묒뾽 ?댁슜 ?곸꽭 臾몄꽌??
+- 3?④퀎 ?묒뾽 ?댁슜 ?곸꽭 臾몄꽌??
+- MONITOR 紐⑤뱶 ?ъ슜??媛?대뱶
+- ?댁쁺 ?덉감 ?쒖???
+- ?μ븷 ????쒕굹由ъ삤 臾몄꽌??
+- 諛깆뾽/蹂듦뎄 ?덉감 臾몄꽌??
 
-### ✅ 검증됨 (Verified)
-- Docker Compose 환경 구성 확인
-- Kafka/MongoDB 초기화 스크립트 동작 확인
-- MONITOR 모드 기본 동작 확인
-- 주문 기능 비활성화 확인
-- 데이터 수집 정상 동작 확인
+### ??寃利앸맖 (Verified)
+- Docker Compose ?섍꼍 援ъ꽦 ?뺤씤
+- Kafka/MongoDB 珥덇린???ㅽ겕由쏀듃 ?숈옉 ?뺤씤
+- MONITOR 紐⑤뱶 湲곕낯 ?숈옉 ?뺤씤
+- 二쇰Ц 湲곕뒫 鍮꾪솢?깊솕 ?뺤씤
+- ?곗씠???섏쭛 ?뺤긽 ?숈옉 ?뺤씤
 
-### 🔒 재발 방지 (Prevention)
-- 문서화 표준 가이드 생성
-- 폴더 구조 규칙 명시
-- 파일명 규칙 정의
-- Git 작업 체크리스트 제공
-
----
-
-## [이전 2단계] 환경 구축 및 사전 준비 - 2026-02-02
-
-### ✅ 추가됨 (Added)
-- `scripts/init_kafka_topics.sh` - Kafka 토픽 자동 초기화 스크립트
-- `scripts/init_mongodb.py` - MongoDB 컬렉션 및 인덱스 자동 생성 스크립트
-- `.github/workflows/ci.yml` - CI/CD 파이프라인 (환경 검증, 문서 검증, 코드 품질, 테스트 자동화)
-- `docs/phase2_completion_summary.md` - 2단계 완료 요약 문서
-
-### 🔧 변경됨 (Changed)
-- `work_order/2_단계_환경_구축_및_사전_준비.md` - 완료 표시 추가
-
-### 📝 문서화 (Documentation)
-- 2단계 작업 완료 상태 문서화
-- 스크립트 사용법 및 주의사항 문서화
-- CI/CD 파이프라인 설정 문서화
-
-### ✅ 검증됨 (Verified)
-- Docker Compose 환경 구성 확인
-- 필수 스크립트 동작 확인
-- Phase 2 검증 스크립트 통과
+### ?뵏 ?щ컻 諛⑹? (Prevention)
+- 臾몄꽌???쒖? 媛?대뱶 ?앹꽦
+- ?대뜑 援ъ“ 洹쒖튃 紐낆떆
+- ?뚯씪紐?洹쒖튃 ?뺤쓽
+- Git ?묒뾽 泥댄겕由ъ뒪???쒓났
 
 ---
 
-## [이전 버전]
-- 2026-01-31 | 루트 README.md 재작성
-- 2026-01-31 | 문서 표준화 작업
+## [?댁쟾 2?④퀎] ?섍꼍 援ъ텞 諛??ъ쟾 以鍮?- 2026-02-02
+
+### ??異붽???(Added)
+- `scripts/init_kafka_topics.sh` - Kafka ?좏뵿 ?먮룞 珥덇린???ㅽ겕由쏀듃
+- `scripts/init_mongodb.py` - MongoDB 而щ젆??諛??몃뜳???먮룞 ?앹꽦 ?ㅽ겕由쏀듃
+- `.github/workflows/ci.yml` - CI/CD ?뚯씠?꾨씪??(?섍꼍 寃利? 臾몄꽌 寃利? 肄붾뱶 ?덉쭏, ?뚯뒪???먮룞??
+- `docs/phase2_completion_summary.md` - 2?④퀎 ?꾨즺 ?붿빟 臾몄꽌
+
+### ?뵩 蹂寃쎈맖 (Changed)
+- `work_order/2_?④퀎_?섍꼍_援ъ텞_諛??ъ쟾_以鍮?md` - ?꾨즺 ?쒖떆 異붽?
+
+### ?뱷 臾몄꽌??(Documentation)
+- 2?④퀎 ?묒뾽 ?꾨즺 ?곹깭 臾몄꽌??
+- ?ㅽ겕由쏀듃 ?ъ슜踰?諛?二쇱쓽?ы빆 臾몄꽌??
+- CI/CD ?뚯씠?꾨씪???ㅼ젙 臾몄꽌??
+
+### ??寃利앸맖 (Verified)
+- Docker Compose ?섍꼍 援ъ꽦 ?뺤씤
+- ?꾩닔 ?ㅽ겕由쏀듃 ?숈옉 ?뺤씤
+- Phase 2 寃利??ㅽ겕由쏀듃 ?듦낵
+
+---
+
+## [?댁쟾 踰꾩쟾]
+- 2026-01-31 | 猷⑦듃 README.md ?ъ옉??
+- 2026-01-31 | 臾몄꽌 ?쒖????묒뾽
+

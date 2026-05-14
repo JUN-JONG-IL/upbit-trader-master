@@ -1,13 +1,12 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-DataManager 동적 로더 (강화판)
+DataManager ?숈쟻 濡쒕뜑 (媛뺥솕??
 
-- 패키지 네임스페이스 후보 순차 import
-- 파일-레벨 폴백(로컬 파일 및 repo-wide 검색)
-- factory 함수와 클래스 생성자에 대해 가능한 시그니처들을 폭넓게 시도
-- 파일로 로드한 모듈을 sys.modules에 등록하여 내부 import가 안정적으로 동작하도록 함
-- static 기반 로깅 일관화 및 상세 예외 로깅
+- ?⑦궎吏 ?ㅼ엫?ㅽ럹?댁뒪 ?꾨낫 ?쒖감 import
+- ?뚯씪-?덈꺼 ?대갚(濡쒖뺄 ?뚯씪 諛?repo-wide 寃??
+- factory ?⑥닔? ?대옒???앹꽦?먯뿉 ???媛?ν븳 ?쒓렇?덉쿂?ㅼ쓣 ??꼻寃??쒕룄
+- ?뚯씪濡?濡쒕뱶??紐⑤뱢??sys.modules???깅줉?섏뿬 ?대? import媛 ?덉젙?곸쑝濡??숈옉?섎룄濡???- static 湲곕컲 濡쒓퉭 ?쇨???諛??곸꽭 ?덉쇅 濡쒓퉭
 """
 from __future__ import annotations
 
@@ -26,7 +25,7 @@ _logger = logging.getLogger("app.loaders.datamanager_loader")
 
 def _log(static: Any, level: str, *args, **kwargs) -> None:
     """
-    static.log 가 있으면 사용, 아니면 모듈 로거 또는 print 로 폴백.
+    static.log 媛 ?덉쑝硫??ъ슜, ?꾨땲硫?紐⑤뱢 濡쒓굅 ?먮뒗 print 濡??대갚.
     """
     try:
         log_obj = getattr(static, "log", None)
@@ -49,30 +48,30 @@ def _log(static: Any, level: str, *args, **kwargs) -> None:
 
 
 # ------------------------------------------------------------------
-# 런타임에 src 및 repo 루트를 sys.path에 추가해 절대 import('app...') 문제 완화
+# ?고??꾩뿉 src 諛?repo 猷⑦듃瑜?sys.path??異붽????덈? import('app...') 臾몄젣 ?꾪솕
 # ------------------------------------------------------------------
 def _ensure_package_paths(static: Any = None) -> None:
     """
-    이 모듈 파일 위치를 기준으로 상위 경로에서 'src' 디렉토리와 repo 루트를 추정하여
-    sys.path에 안전하게 추가합니다. 이미 추가되어 있으면 중복 추가하지 않습니다.
-    목적: bootstrap에서 'import app.loaders...' 같은 절대 import가 실패하는 문제 완화.
+    ??紐⑤뱢 ?뚯씪 ?꾩튂瑜?湲곗??쇰줈 ?곸쐞 寃쎈줈?먯꽌 'src' ?붾젆?좊━? repo 猷⑦듃瑜?異붿젙?섏뿬
+    sys.path???덉쟾?섍쾶 異붽??⑸땲?? ?대? 異붽??섏뼱 ?덉쑝硫?以묐났 異붽??섏? ?딆뒿?덈떎.
+    紐⑹쟻: bootstrap?먯꽌 'import app.loaders...' 媛숈? ?덈? import媛 ?ㅽ뙣?섎뒗 臾몄젣 ?꾪솕.
     """
     try:
         p = Path(__file__).resolve()
         # p.parents[0] -> loaders dir
         # p.parents[1] -> app dir
         # p.parents[2] -> src dir
-        # p.parents[3] -> repo root (대부분)
+        # p.parents[3] -> repo root (?遺遺?
         if len(p.parents) >= 3:
             src_dir = str(p.parents[2])
             repo_root = str(p.parents[3]) if len(p.parents) >= 4 else str(p.parents[2])
 
-            # src 경로 우선 추가 (절대 import 'app'을 위한 경로)
+            # src 寃쎈줈 ?곗꽑 異붽? (?덈? import 'app'???꾪븳 寃쎈줈)
             if src_dir and src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
                 _log(static, "debug", "[datamanager_loader] inserted src into sys.path: %s", src_dir)
 
-            # repo root도 추가해 파일-레벨 탐색 경우를 돕는다.
+            # repo root??異붽????뚯씪-?덈꺼 ?먯깋 寃쎌슦瑜??뺣뒗??
             if repo_root and repo_root not in sys.path:
                 sys.path.insert(0, repo_root)
                 _log(static, "debug", "[datamanager_loader] inserted repo_root into sys.path: %s", repo_root)
@@ -83,12 +82,12 @@ def _ensure_package_paths(static: Any = None) -> None:
             pass
 
 
-# 모듈 import 시점에 실행하여 bootstrap 시 네임스페이스 문제를 완화
+# 紐⑤뱢 import ?쒖젏???ㅽ뻾?섏뿬 bootstrap ???ㅼ엫?ㅽ럹?댁뒪 臾몄젣瑜??꾪솕
 _ensure_package_paths(None)
 
 
 def _load_module_by_names(names: Iterable[str], static: Any = None) -> Optional[Any]:
-    """주어진 네임 목록을 순서대로 import 시도, 성공한 모듈 반환. 실패 로그 남김."""
+    """二쇱뼱吏??ㅼ엫 紐⑸줉???쒖꽌?濡?import ?쒕룄, ?깃났??紐⑤뱢 諛섑솚. ?ㅽ뙣 濡쒓렇 ?④?."""
     for nm in names:
         try:
             mod = importlib.import_module(nm)
@@ -100,7 +99,7 @@ def _load_module_by_names(names: Iterable[str], static: Any = None) -> Optional[
 
 
 def _load_module_from_file(path: str, alias: str, static: Any = None) -> Optional[Any]:
-    """파일 경로에서 모듈 로드(파일이 존재하면 로드하고 sys.modules에 등록)."""
+    """?뚯씪 寃쎈줈?먯꽌 紐⑤뱢 濡쒕뱶(?뚯씪??議댁옱?섎㈃ 濡쒕뱶?섍퀬 sys.modules???깅줉)."""
     try:
         if not os.path.isfile(path):
             _log(static, "debug", "[datamanager_loader] file not found: %s", path)
@@ -127,7 +126,7 @@ def _load_module_from_file(path: str, alias: str, static: Any = None) -> Optiona
 
 def _search_repo_for_file(repo_root: str, filename_part: str, max_results: int = 10) -> List[str]:
     """
-    repo_root 아래에서 filename_part를 포함한 파일들을 재귀 검색.
+    repo_root ?꾨옒?먯꽌 filename_part瑜??ы븿???뚯씪?ㅼ쓣 ?ш? 寃??
     ex) filename_part='data_manager'
     """
     matches: List[str] = []
@@ -145,7 +144,7 @@ def _search_repo_for_file(repo_root: str, filename_part: str, max_results: int =
 
 def _extract_config_values(static: Any) -> Dict[str, Any]:
     """
-    static 또는 static.config(객체 또는 dict)에서 가능한 DB 관련 키를 찾아 딕셔너리로 반환.
+    static ?먮뒗 static.config(媛앹껜 ?먮뒗 dict)?먯꽌 媛?ν븳 DB 愿???ㅻ? 李얠븘 ?뺤뀛?덈━濡?諛섑솚.
     """
     out: Dict[str, Any] = {}
 
@@ -223,7 +222,7 @@ def _extract_config_values(static: Any) -> Dict[str, Any]:
 
 def _instantiate_class_with_best_args(cls: Any, cfg: Dict[str, Any], static: Any) -> Optional[Any]:
     """
-    cls 의 생성자 시그니처를 확인하고 cfg에서 제공된 값으로 가능한 인자를 매핑해 인스턴스화 시도.
+    cls ???앹꽦???쒓렇?덉쿂瑜??뺤씤?섍퀬 cfg?먯꽌 ?쒓났??媛믪쑝濡?媛?ν븳 ?몄옄瑜?留ㅽ븨???몄뒪?댁뒪???쒕룄.
     """
     try:
         sig = inspect.signature(cls)
@@ -294,7 +293,7 @@ def _instantiate_class_with_best_args(cls: Any, cfg: Dict[str, Any], static: Any
 
 def _call_factory_with_best_args(factory: Any, cfg_values: Dict[str, Any], static: Any) -> Optional[Any]:
     """
-    factory 함수의 시그니처를 보고 가능한 인자를 전달하여 호출 시도.
+    factory ?⑥닔???쒓렇?덉쿂瑜?蹂닿퀬 媛?ν븳 ?몄옄瑜??꾨떖?섏뿬 ?몄텧 ?쒕룄.
     """
     try:
         sig = inspect.signature(factory)
@@ -342,16 +341,16 @@ def _call_factory_with_best_args(factory: Any, cfg_values: Dict[str, Any], stati
 
 def create_data_manager(static: Any) -> Optional[Any]:
     """
-    DataManager 인스턴스를 생성하여 반환. 실패하면 None 반환.
+    DataManager ?몄뒪?댁뒪瑜??앹꽦?섏뿬 諛섑솚. ?ㅽ뙣?섎㈃ None 諛섑솚.
     """
     _log(static, "info", "[datamanager_loader] create_data_manager invoked")
 
     module_candidates = [
-        "02_data.core.data_manager",
-        "src.02_data.core.data_manager",
-        "src._02_data.core.data_manager",
-        "02_data.core",
-        "02_data.core.data_manager_v2",
+        "data_01.core.data_manager",
+        "src.data_01.core.data_manager",
+        "src._data_01.core.data_manager",
+        "data_01.core",
+        "data_01.core.data_manager_v2",
         "data.core.data_manager",
         "src.data.core.data_manager",
     ]
@@ -369,10 +368,10 @@ def create_data_manager(static: Any) -> Optional[Any]:
         try:
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             file_candidates = [
-                os.path.join(base_dir, "02_data", "core", "data_manager.py"),
-                os.path.join(base_dir, "src", "02_data", "core", "data_manager.py"),
-                os.path.join(base_dir, "02_data", "core", "data_manager_local.py"),
-                os.path.join(base_dir, "..", "02_data", "core", "data_manager.py"),
+                os.path.join(base_dir, "data_01", "core", "data_manager.py"),
+                os.path.join(base_dir, "src", "data_01", "core", "data_manager.py"),
+                os.path.join(base_dir, "data_01", "core", "data_manager_local.py"),
+                os.path.join(base_dir, "..", "data_01", "core", "data_manager.py"),
             ]
             for p in file_candidates:
                 mod = _load_module_from_file(p, alias=f"datamanager_file_{os.path.basename(p)}", static=static)

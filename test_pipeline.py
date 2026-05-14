@@ -39,7 +39,7 @@ if not processor:
 # 시도 3: PipelineProcessor 클래스 import
 if not processor:
     try:
-        processor_module = importlib.import_module("02_data.pipeline.processor")
+        processor_module = importlib.import_module("data_01.pipeline.processor")
         PipelineProcessor = getattr(processor_module, "PipelineProcessor", None)
         print(f"⚠️ PipelineProcessor 클래스만 발견 (인스턴스 없음)")
         print(f"   클래스: {PipelineProcessor}")

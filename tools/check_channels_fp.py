@@ -4,7 +4,7 @@ import importlib.util
 
 try:
     repo = Path(__file__).resolve().parents[1]
-    mod_path = repo / 'src' / '02_data' / 'timescale' / 'timescale_redis.py'
+    mod_path = repo / 'src' / 'data_01' / 'timescale' / 'timescale_redis.py'
     print('MODULE_PATH:', mod_path)
     spec = importlib.util.spec_from_file_location('timescale_redis_mod', str(mod_path))
     mod = importlib.util.module_from_spec(spec)
@@ -16,3 +16,4 @@ try:
     print('HAS_md:last:KRW-BTC:ticker', 'md:last:KRW-BTC:ticker' in channels)
 except Exception:
     traceback.print_exc()
+

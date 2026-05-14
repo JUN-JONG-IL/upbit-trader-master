@@ -1,55 +1,55 @@
-# src/12_realtime — 실시간 데이터 스트리밍
+﻿# src/12_realtime ???ㅼ떆媛??곗씠???ㅽ듃由щ컢
 
-## 개요
+## 媛쒖슂
 
-업비트 WebSocket API를 통해 실시간 시세 데이터를 수신하고, 틱 단위 이벤트를 처리하며, 연결 유지 및 자동 재연결을 관리하는 모듈입니다.
+?낅퉬??WebSocket API瑜??듯빐 ?ㅼ떆媛??쒖꽭 ?곗씠?곕? ?섏떊?섍퀬, ???⑥쐞 ?대깽?몃? 泥섎━?섎ŉ, ?곌껐 ?좎? 諛??먮룞 ?ъ뿰寃곗쓣 愿由ы븯??紐⑤뱢?낅땲??
 
-## 디렉토리 구조
+## ?붾젆?좊━ 援ъ“
 
 ```
 src/12_realtime/
-├── __init__.py          # 패키지 진입점
-├── README.md            # 이 파일
-├── component/           # 실시간 스트림 컴포넌트
-│   ├── __init__.py
-│   └── README.md
-├── workers/             # 백그라운드 스트리밍 워커
-│   ├── __init__.py
-│   └── README.md
-└── ui/                  # 실시간 데이터 표시 위젯
-    ├── __init__.py
-    └── README.md
+?쒋?? __init__.py          # ?⑦궎吏 吏꾩엯??
+?쒋?? README.md            # ???뚯씪
+?쒋?? component/           # ?ㅼ떆媛??ㅽ듃由?而댄룷?뚰듃
+??  ?쒋?? __init__.py
+??  ?붴?? README.md
+?쒋?? workers/             # 諛깃렇?쇱슫???ㅽ듃由щ컢 ?뚯빱
+??  ?쒋?? __init__.py
+??  ?붴?? README.md
+?붴?? ui/                  # ?ㅼ떆媛??곗씠???쒖떆 ?꾩젽
+    ?쒋?? __init__.py
+    ?붴?? README.md
 ```
 
-## 하위 모듈 설명
+## ?섏쐞 紐⑤뱢 ?ㅻ챸
 
-### component/ — 실시간 스트림 컴포넌트
+### component/ ???ㅼ떆媛??ㅽ듃由?而댄룷?뚰듃
 
-WebSocket 연결, 틱 데이터 수신기, 이벤트 라우팅 등 핵심 스트리밍 컴포넌트를 제공합니다.
+WebSocket ?곌껐, ???곗씠???섏떊湲? ?대깽???쇱슦?????듭떖 ?ㅽ듃由щ컢 而댄룷?뚰듃瑜??쒓났?⑸땲??
 
-**주요 클래스**:
-- `RealtimeStreamManager` : 스트림 연결/관리 (업비트 WebSocket)
-- `TickReceiver` : 틱 데이터 수신 및 파싱
-- `EventRouter` : 수신 이벤트를 구독자에게 라우팅
+**二쇱슂 ?대옒??*:
+- `RealtimeStreamManager` : ?ㅽ듃由??곌껐/愿由?(?낅퉬??WebSocket)
+- `TickReceiver` : ???곗씠???섏떊 諛??뚯떛
+- `EventRouter` : ?섏떊 ?대깽?몃? 援щ룆?먯뿉寃??쇱슦??
 
-### workers/ — 백그라운드 스트리밍 워커
+### workers/ ??諛깃렇?쇱슫???ㅽ듃由щ컢 ?뚯빱
 
-연결 유지, 자동 재연결, 데이터 버퍼링 등 백그라운드 처리를 담당합니다.
+?곌껐 ?좎?, ?먮룞 ?ъ뿰寃? ?곗씠??踰꾪띁留???諛깃렇?쇱슫??泥섎━瑜??대떦?⑸땲??
 
-**주요 클래스**:
-- `StreamWorker` : WebSocket 스트리밍 백그라운드 워커
-- `ReconnectWorker` : 연결 끊김 시 자동 재연결 워커
-- `BufferWorker` : 수신 데이터 버퍼링 및 배치 처리
+**二쇱슂 ?대옒??*:
+- `StreamWorker` : WebSocket ?ㅽ듃由щ컢 諛깃렇?쇱슫???뚯빱
+- `ReconnectWorker` : ?곌껐 ?딄? ???먮룞 ?ъ뿰寃??뚯빱
+- `BufferWorker` : ?섏떊 ?곗씠??踰꾪띁留?諛?諛곗튂 泥섎━
 
-### ui/ — 실시간 데이터 표시 위젯
+### ui/ ???ㅼ떆媛??곗씠???쒖떆 ?꾩젽
 
-실시간 시세, 스트림 상태를 PyQt5 위젯으로 표시합니다.
+?ㅼ떆媛??쒖꽭, ?ㅽ듃由??곹깭瑜?PyQt5 ?꾩젽?쇰줈 ?쒖떆?⑸땲??
 
-**주요 클래스**:
-- `RealtimeWidget` : 실시간 데이터 표시 메인 위젯
-- `StreamStatusWidget` : WebSocket 연결 상태 표시 위젯
+**二쇱슂 ?대옒??*:
+- `RealtimeWidget` : ?ㅼ떆媛??곗씠???쒖떆 硫붿씤 ?꾩젽
+- `StreamStatusWidget` : WebSocket ?곌껐 ?곹깭 ?쒖떆 ?꾩젽
 
-## 사용 예시
+## ?ъ슜 ?덉떆
 
 ```python
 from src.12_realtime.component import RealtimeStreamManager
@@ -59,13 +59,14 @@ manager.subscribe(["KRW-BTC", "KRW-ETH"])
 manager.start()
 ```
 
-## 의존성
+## ?섏〈??
 
-- `src/01_core/` : 이벤트 버스, 기본 설정
-- `src/02_data/` : Redis PubSub (실시간 데이터 전달)
-- `src/03_market/` : 시장 데이터 모델
+- `src/01_core/` : ?대깽??踰꾩뒪, 湲곕낯 ?ㅼ젙
+- `src/data_01/` : Redis PubSub (?ㅼ떆媛??곗씠???꾨떖)
+- `src/03_market/` : ?쒖옣 ?곗씠??紐⑤뜽
 
-## 참고 문서
+## 李멸퀬 臾몄꽌
 
-- [`work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md`](../../work_order/1_단계_기관에이전트급_최신_트레이딩_시스템_가이드.md)
-- [`work_order/DB설계.md`](../../work_order/DB설계.md) — TimescaleDB 틱 데이터 스키마
+- [`work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md`](../../work_order/1_?④퀎_湲곌??먯씠?꾪듃湲?理쒖떊_?몃젅?대뵫_?쒖뒪??媛?대뱶.md)
+- [`work_order/DB?ㅺ퀎.md`](../../work_order/DB?ㅺ퀎.md) ??TimescaleDB ???곗씠???ㅽ궎留?
+

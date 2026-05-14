@@ -4,7 +4,7 @@ import importlib, sys
 def main():
     # try import gap_finder from known paths
     mod = None
-    for name in ("src.02_data.timescale.operations.gap_finder", "02_data.timescale.operations.gap_finder", "src.02_data.timescale.operations.gap_finder"):
+    for name in ("src.data_01.timescale.operations.gap_finder", "data_01.timescale.operations.gap_finder", "src.data_01.timescale.operations.gap_finder"):
         try:
             mod = importlib.import_module(name)
             print("Imported gap_finder from", name)

@@ -27,7 +27,7 @@ def main(limit=None):
     # 1) timescale writer 가져오기 시도
     connector = None
     try:
-        ts_mod = importlib.import_module("02_data.timescale.timescale_db")
+        ts_mod = importlib.import_module("data_01.timescale.timescale_db")
         get_conn = getattr(ts_mod, "get_timescale_connector", None)
         if callable(get_conn):
             connector = get_conn()
@@ -38,7 +38,7 @@ def main(limit=None):
     # try to import CandleWriter (preferred)
     CandleWriter = None
     try:
-        cw_mod = importlib.import_module("02_data.timescale.operations.candle_writer")
+        cw_mod = importlib.import_module("data_01.timescale.operations.candle_writer")
         CandleWriter = getattr(cw_mod, "CandleWriter", None) or getattr(cw_mod, "TimescaleCandleWriter", None)
     except Exception:
         CandleWriter = None
@@ -109,3 +109,4 @@ if __name__ == "__main__":
     ap.add_argument("--limit", type=int, default=None, help="최대 처리할 실패 청크 수 (테스트용)")
     args = ap.parse_args()
     main(limit=args.limit)
+

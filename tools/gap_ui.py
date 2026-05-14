@@ -285,7 +285,7 @@ class GapStatusWindow(QtWidgets.QMainWindow):
             return
 
         py = sys.executable
-        args = [py, "-m", "src.02_data.gap.status_api", "--host", "127.0.0.1", "--port", "8080", "--redis-url", "redis://localhost:6379/0"]
+        args = [py, "-m", "src.data_01.gap.status_api", "--host", "127.0.0.1", "--port", "8080", "--redis-url", "redis://localhost:6379/0"]
 
         try:
             creationflags = 0

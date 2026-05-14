@@ -18,8 +18,8 @@ from pathlib import Path
 from typing import Any, Dict
 
 ROOT = Path(__file__).resolve().parents[3]  # repo root (tools/... -> parents[3] -> repo root)
-SRC = ROOT / "src" / "02_data" / "redis"
-TS_SRC = ROOT / "src" / "02_data" / "timescale"
+SRC = ROOT / "src" / "data_01" / "redis"
+TS_SRC = ROOT / "src" / "data_01" / "timescale"
 
 def load_module_from_path(name: str, path: Path):
     spec = importlib.util.spec_from_file_location(name, str(path))
@@ -155,3 +155,4 @@ if __name__ == "__main__":
     except Exception as e:
         print("실행 중 예외:", e)
         sys.exit(1)
+

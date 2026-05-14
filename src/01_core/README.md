@@ -1,66 +1,66 @@
-# src/01_core 폴더
+﻿# src/01_core ?대뜑
 
-## 목적
-upbit-trader 플랫폼의 **핵심 인프라 및 공통 모듈**을 제공합니다.
+## 紐⑹쟻
+upbit-trader ?뚮옯?쇱쓽 **?듭떖 ?명봽??諛?怨듯넻 紐⑤뱢**???쒓났?⑸땲??
 
-## 폴더 구조
+## ?대뜑 援ъ“
 
 ```
 src/01_core/
-├── auth/           # 인증 및 로그인
-├── base/           # 기본 인프라 (이벤트 루프 등)
-├── config/         # 설정 관리 (구 root config/ 포함)
-├── lib/            # 핵심 라이브러리 (구 root lib/)
-└── utils/          # 공통 유틸리티
+?쒋?? auth/           # ?몄쬆 諛?濡쒓렇??
+?쒋?? base/           # 湲곕낯 ?명봽??(?대깽??猷⑦봽 ??
+?쒋?? config/         # ?ㅼ젙 愿由?(援?root config/ ?ы븿)
+?쒋?? lib/            # ?듭떖 ?쇱씠釉뚮윭由?(援?root lib/)
+?붴?? utils/          # 怨듯넻 ?좏떥由ы떚
 ```
 
-## 각 폴더 설명
+## 媛??대뜑 ?ㅻ챸
 
-### auth/ - 인증 및 로그인
-사용자 인증, 세션 관리, 2FA 등을 담당합니다.
+### auth/ - ?몄쬆 諛?濡쒓렇??
+?ъ슜???몄쬆, ?몄뀡 愿由? 2FA ?깆쓣 ?대떦?⑸땲??
 
-**구조**:
-- `services/`: 비즈니스 로직 (AuthService, SessionManager, TwoFactorAuth)
-- `ui/`: 로그인 화면 UI (LoginWidget, login.ui)
+**援ъ“**:
+- `services/`: 鍮꾩쫰?덉뒪 濡쒖쭅 (AuthService, SessionManager, TwoFactorAuth)
+- `ui/`: 濡쒓렇???붾㈃ UI (LoginWidget, login.ui)
 
-**사용 예시**:
+**?ъ슜 ?덉떆**:
 ```python
 from auth import gui_main, AuthService
 
-# GUI 로그인 실행
+# GUI 濡쒓렇???ㅽ뻾
 gui_main()
 
-# 서비스 직접 사용
+# ?쒕퉬??吏곸젒 ?ъ슜
 auth_service = AuthService()
 auth_service.authenticate(username, password)
 ```
 
-### base/ - 기본 인프라
-플랫폼 전역에서 사용하는 기본 인프라를 제공합니다.
+### base/ - 湲곕낯 ?명봽??
+?뚮옯???꾩뿭?먯꽌 ?ъ슜?섎뒗 湲곕낯 ?명봽?쇰? ?쒓났?⑸땲??
 
-**주요 기능**:
-- `event_loop.py`: asyncio 이벤트 루프 관리 (Windows SelectorEventLoopPolicy 설정)
+**二쇱슂 湲곕뒫**:
+- `event_loop.py`: asyncio ?대깽??猷⑦봽 愿由?(Windows SelectorEventLoopPolicy ?ㅼ젙)
 
-**사용 예시**:
+**?ъ슜 ?덉떆**:
 ```python
 from base import setup_event_loop, get_event_loop
 
-# 앱 시작 시 한 번만 호출
+# ???쒖옉 ????踰덈쭔 ?몄텧
 setup_event_loop()
 
-# 이벤트 루프 가져오기
+# ?대깽??猷⑦봽 媛?몄삤湲?
 loop = get_event_loop()
 ```
 
-### config/ - 설정 관리
-YAML 기반 설정 파일 로딩 및 관리를 담당합니다.
+### config/ - ?ㅼ젙 愿由?
+YAML 湲곕컲 ?ㅼ젙 ?뚯씪 濡쒕뵫 諛?愿由щ? ?대떦?⑸땲??
 
-**주요 파일**:
-- `config.yaml`: 실제 설정 파일 (Git 제외)
-- `config.yaml.example`: 설정 템플릿
-- `loader.py`: 설정 로딩 로직
+**二쇱슂 ?뚯씪**:
+- `config.yaml`: ?ㅼ젣 ?ㅼ젙 ?뚯씪 (Git ?쒖쇅)
+- `config.yaml.example`: ?ㅼ젙 ?쒗뵆由?
+- `loader.py`: ?ㅼ젙 濡쒕뵫 濡쒖쭅
 
-**사용 예시**:
+**?ъ슜 ?덉떆**:
 ```python
 from config import load_config
 
@@ -68,13 +68,13 @@ config = load_config()
 upbit_key = config['UPBIT']['ACCESS_KEY']
 ```
 
-### lib/ - 핵심 라이브러리
-MongoDB/Redis/SQLAlchemy 통합 IO 핸들러 및 핵심 라이브러리를 제공합니다.
+### lib/ - ?듭떖 ?쇱씠釉뚮윭由?
+MongoDB/Redis/SQLAlchemy ?듯빀 IO ?몃뱾??諛??듭떖 ?쇱씠釉뚮윭由щ? ?쒓났?⑸땲??
 
-**주요 모듈**:
-- `db_handler.py`: DBHandler 클래스 (MongoDB/Redis/SQLAlchemy 통합, dask/Polars 지원)
+**二쇱슂 紐⑤뱢**:
+- `db_handler.py`: DBHandler ?대옒??(MongoDB/Redis/SQLAlchemy ?듯빀, dask/Polars 吏??
 
-**사용 예시**:
+**?ъ슜 ?덉떆**:
 ```python
 from lib import DBHandler
 
@@ -83,17 +83,17 @@ inserted_id = await db.insert_item_one(data, "candles", "KRW-BTC_minute_1")
 result = await db.find_item_one({"symbol": "KRW-BTC"}, "candles", "KRW-BTC_minute_1")
 ```
 
-### utils/ - 공통 유틸리티
-플랫폼 전역에서 사용하는 유틸리티 함수/클래스를 제공합니다.
+### utils/ - 怨듯넻 ?좏떥由ы떚
+?뚮옯???꾩뿭?먯꽌 ?ъ슜?섎뒗 ?좏떥由ы떚 ?⑥닔/?대옒?ㅻ? ?쒓났?⑸땲??
 
-**주요 모듈**:
-- `logger.py`: JSON 구조화 로깅
-- `debounce.py`, `throttle.py`: 함수 실행 제어
-- `metrics_lite.py`: 경량 메트릭스 수집
-- `compute/`: 기술적 지표 계산 엔진
-- `metrics/`: Prometheus 메트릭스 export
+**二쇱슂 紐⑤뱢**:
+- `logger.py`: JSON 援ъ“??濡쒓퉭
+- `debounce.py`, `throttle.py`: ?⑥닔 ?ㅽ뻾 ?쒖뼱
+- `metrics_lite.py`: 寃쎈웾 硫뷀듃由?뒪 ?섏쭛
+- `compute/`: 湲곗닠??吏??怨꾩궛 ?붿쭊
+- `metrics/`: Prometheus 硫뷀듃由?뒪 export
 
-**사용 예시**:
+**?ъ슜 ?덉떆**:
 ```python
 from utils import get_logger, debounce, throttle
 from utils.compute import IndicatorEngine
@@ -105,25 +105,26 @@ def on_resize():
     logger.info("Resized")
 ```
 
-## 개발 가이드
+## 媛쒕컻 媛?대뱶
 
-### 폴더 네이밍 규칙
-- 숫자 prefix 유지: `01_core`, `02_data`, ...
-- 명확한 단수/복수 구분: `auth` (단일 개념), `utils` (복수 유틸리티)
+### ?대뜑 ?ㅼ씠諛?洹쒖튃
+- ?レ옄 prefix ?좎?: `01_core`, `data_01`, ...
+- 紐낇솗???⑥닔/蹂듭닔 援щ텇: `auth` (?⑥씪 媛쒕뀗), `utils` (蹂듭닔 ?좏떥由ы떚)
 
-### import 경로
-- 절대 import 사용: `from auth import ...`
-- 상대 import 금지 (테스트 제외)
+### import 寃쎈줈
+- ?덈? import ?ъ슜: `from auth import ...`
+- ?곷? import 湲덉? (?뚯뒪???쒖쇅)
 
-### 하위 호환성
-- 기존 import 경로 유지 필수
-- `__init__.py`에서 re-export로 보장
+### ?섏쐞 ?명솚??
+- 湲곗〈 import 寃쎈줈 ?좎? ?꾩닔
+- `__init__.py`?먯꽌 re-export濡?蹂댁옣
 
-## 확장 계획
-- `validation/`: 입력 검증 모듈
-- `security/`: 보안 유틸리티 (암호화, 해시 등)
+## ?뺤옣 怨꾪쉷
+- `validation/`: ?낅젰 寃利?紐⑤뱢
+- `security/`: 蹂댁븞 ?좏떥由ы떚 (?뷀샇?? ?댁떆 ??
 
 ---
 
-**작성**: Copilot Workspace Refactor
-**날짜**: 2026-03-05
+**?묒꽦**: Copilot Workspace Refactor
+**?좎쭨**: 2026-03-05
+

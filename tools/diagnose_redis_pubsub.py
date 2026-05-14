@@ -27,9 +27,9 @@ except Exception:
     # try relative project path
     repo_root = Path(__file__).resolve().parents[1]  # repo/tools -> repo
     candidates = [
-        repo_root / "src" / "02_data" / "timescale" / "timescale_redis.py",
-        repo_root / "src" / "02_data" / "timescale_redis.py",
-        repo_root / "src" / "02_data" / "redis" / "timescale_redis.py",
+        repo_root / "src" / "data_01" / "timescale" / "timescale_redis.py",
+        repo_root / "src" / "data_01" / "timescale_redis.py",
+        repo_root / "src" / "data_01" / "redis" / "timescale_redis.py",
     ]
     for c in candidates:
         if c.exists():
@@ -136,3 +136,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

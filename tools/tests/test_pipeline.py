@@ -1,14 +1,14 @@
-"""
+﻿"""
 tools/tests/test_pipeline.py
-데이터 수집 파이프라인 단위 테스트
+?곗씠???섏쭛 ?뚯씠?꾨씪???⑥쐞 ?뚯뒪??
 
-스코프:
-    - CandleValidator (OHLC, volume, gap 검증)
-    - CandleStager    (버퍼링 및 플러시)
-    - CandlesFinalizer (UPSERT 로직)
-    - RedisClient     (캐시 키 패턴)
-    - GapDetector     (Gap 큐잉)
-    - PipelineMonitor (메트릭 수집)
+?ㅼ퐫??
+    - CandleValidator (OHLC, volume, gap 寃利?
+    - CandleStager    (踰꾪띁留?諛??뚮윭??
+    - CandlesFinalizer (UPSERT 濡쒖쭅)
+    - RedisClient     (罹먯떆 ???⑦꽩)
+    - GapDetector     (Gap ?먯엵)
+    - PipelineMonitor (硫뷀듃由??섏쭛)
 """
 
 from __future__ import annotations
@@ -22,9 +22,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-# src 및 src/02_data 디렉터리를 패스에 추가
+# src 諛?src/data_01 ?붾젆?곕━瑜??⑥뒪??異붽?
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "02_data"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "data_01"))
 
 from pipeline.validator import (
     CandleValidator,
@@ -36,7 +36,7 @@ from pipeline.checker  import CandleChecker
 
 
 # ---------------------------------------------------------------------------
-# 픽스처
+# ?쎌뒪泥?
 # ---------------------------------------------------------------------------
 def _make_candle(
     symbol: str = "KRW-BTC",
@@ -44,7 +44,7 @@ def _make_candle(
     dt: datetime = None,
     **kwargs,
 ) -> dict:
-    """테스트용 캔들 dict를 생성합니다."""
+    """?뚯뒪?몄슜 罹붾뱾 dict瑜??앹꽦?⑸땲??"""
     if dt is None:
         dt = datetime(2024, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
     base = {
@@ -67,7 +67,7 @@ def _make_candle(
 
 
 # ---------------------------------------------------------------------------
-# CandleValidator 테스트
+# CandleValidator ?뚯뒪??
 # ---------------------------------------------------------------------------
 class TestCandleValidator:
 
@@ -76,7 +76,7 @@ class TestCandleValidator:
 
     def test_valid_candle_passes(self):
         c = _make_candle()
-        self.v.validate(c)  # 예외 없어야 함
+        self.v.validate(c)  # ?덉쇅 ?놁뼱????
 
     def test_high_less_than_low_raises(self):
         c = _make_candle(high=49_000_000.0, low=51_000_000.0)
@@ -111,11 +111,11 @@ class TestCandleValidator:
     def test_gap_within_threshold_passes(self):
         last = datetime(2024, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
         c    = _make_candle(dt=last + timedelta(minutes=2))
-        self.v.validate_gap(c, last, "1m")  # 예외 없어야 함
+        self.v.validate_gap(c, last, "1m")  # ?덉쇅 ?놁뼱????
 
     def test_gap_exceeds_threshold_raises(self):
         last = datetime(2024, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-        # 1분봉에서 11분 Gap → 10배 초과
+        # 1遺꾨큺?먯꽌 11遺?Gap ??10諛?珥덇낵
         c    = _make_candle(dt=last + timedelta(minutes=11))
         with pytest.raises(GapExceededException) as exc_info:
             self.v.validate_gap(c, last, "1m")
@@ -133,7 +133,7 @@ class TestCandleValidator:
 
 
 # ---------------------------------------------------------------------------
-# PipelineMonitor 테스트
+# PipelineMonitor ?뚯뒪??
 # ---------------------------------------------------------------------------
 class TestPipelineMonitor:
 
@@ -164,7 +164,7 @@ class TestPipelineMonitor:
 
 
 # ---------------------------------------------------------------------------
-# CandleChecker 테스트
+# CandleChecker ?뚯뒪??
 # ---------------------------------------------------------------------------
 class TestCandleChecker:
 
@@ -196,7 +196,7 @@ class TestCandleChecker:
 
 
 # ---------------------------------------------------------------------------
-# CandleStager 테스트 (Mock Pool)
+# CandleStager ?뚯뒪??(Mock Pool)
 # ---------------------------------------------------------------------------
 class TestCandleStager:
 
@@ -227,13 +227,13 @@ class TestCandleStager:
         stager = CandleStager(pool)
         for i in range(BATCH_SIZE):
             await stager.add_candle(_make_candle())
-        # BATCH_SIZE 에 도달하면 자동 flush → 버퍼가 비워짐
+        # BATCH_SIZE ???꾨떖?섎㈃ ?먮룞 flush ??踰꾪띁媛 鍮꾩썙吏?
         assert stager.pending_count() == 0
         pool.executemany.assert_called_once()
 
 
 # ---------------------------------------------------------------------------
-# CandlesFinalizer 테스트 (Mock Pool)
+# CandlesFinalizer ?뚯뒪??(Mock Pool)
 # ---------------------------------------------------------------------------
 class TestCandlesFinalizer:
 
@@ -258,7 +258,7 @@ class TestCandlesFinalizer:
 
 
 # ---------------------------------------------------------------------------
-# CacheHydrator 테스트 (Mock)
+# CacheHydrator ?뚯뒪??(Mock)
 # ---------------------------------------------------------------------------
 class TestCacheHydrator:
 
@@ -276,7 +276,7 @@ class TestCacheHydrator:
     async def test_hydrate_calls_pipeline(self):
         from pipeline.hydrate import CacheHydrator
         pool  = AsyncMock()
-        # asyncpg Record를 dict로 흉내
+        # asyncpg Record瑜?dict濡??됰궡
         pool.fetch = AsyncMock(return_value=[
             {"time": datetime(2024,1,1, tzinfo=timezone.utc),
              "symbol": "KRW-BTC", "timeframe": "1m", "exchange": "upbit",
@@ -295,3 +295,4 @@ class TestCacheHydrator:
         count = await hydrator.hydrate("KRW-BTC", "1m")
         assert count == 1
         pipe_mock.lpush.assert_called_once()
+

@@ -1,21 +1,22 @@
-"""
-src/06_ai/priority 패키지
+﻿"""
+src/06_ai/priority ?⑦궎吏
 
-우선순위 설정 기능 제공 (우선순위 비즈니스 로직 전담).
+?곗꽑?쒖쐞 ?ㅼ젙 湲곕뒫 ?쒓났 (?곗꽑?쒖쐞 鍮꾩쫰?덉뒪 濡쒖쭅 ?꾨떞).
 
-하위 패키지:
-- config/    : 우선순위·ML 설정 관리
-- services/  : 우선순위 점수 계산, DB 서비스
-             (MLService → src/06_ai/ai_engine/ml_service.py 로 이동, shim 유지)
-             (UpbitDataProvider → src/02_data/clients/upbit_data_provider.py 로 이동, shim 유지)
+?섏쐞 ?⑦궎吏:
+- config/    : ?곗꽑?쒖쐞쨌ML ?ㅼ젙 愿由?
+- services/  : ?곗꽑?쒖쐞 ?먯닔 怨꾩궛, DB ?쒕퉬??
+             (MLService ??src/06_ai/ai_engine/ml_service.py 濡??대룞, shim ?좎?)
+             (UpbitDataProvider ??src/data_01/clients/upbit_data_provider.py 濡??대룞, shim ?좎?)
 - models/    : Gap Predictor, Adaptive TF, Anomaly Detector, Drift Monitor
-- controllers/: PyQt5 UI 컨트롤러 (우선순위 설정, ML 모델 선택, 대시보드)
-- api/       : FastAPI 라우터 (priority_routes, ml_routes)
-- ui/        : .ui 파일 (priority_settings, priority_dashboard)
-             (ml_model_selector.ui → src/06_ai/ui/ai_engine/ 로 이동)
+- controllers/: PyQt5 UI 而⑦듃濡ㅻ윭 (?곗꽑?쒖쐞 ?ㅼ젙, ML 紐⑤뜽 ?좏깮, ??쒕낫??
+- api/       : FastAPI ?쇱슦??(priority_routes, ml_routes)
+- ui/        : .ui ?뚯씪 (priority_settings, priority_dashboard)
+             (ml_model_selector.ui ??src/06_ai/ui/ai_engine/ 濡??대룞)
 
 CHANGELOG:
-- 2026-03-19 | Copilot | MLService → src/06_ai/ai_engine/ 으로 이동
-              UpbitDataProvider → src/02_data/clients/ 으로 이동
-              ml_model_selector.ui → src/06_ai/ui/ai_engine/ 으로 이동
+- 2026-03-19 | Copilot | MLService ??src/06_ai/ai_engine/ ?쇰줈 ?대룞
+              UpbitDataProvider ??src/data_01/clients/ ?쇰줈 ?대룞
+              ml_model_selector.ui ??src/06_ai/ui/ai_engine/ ?쇰줈 ?대룞
 """
+

@@ -1,17 +1,17 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Pipeline 통합 로더 (정석적 경로 우선, shim 제거)
+Pipeline ?듯빀 濡쒕뜑 (?뺤꽍??寃쎈줈 ?곗꽑, shim ?쒓굅)
 
-주요 변경/보완:
-- src 루트 계산을 더 견고하게 함 (상위에서 'src' 디렉토리 발견을 우선).
-- 파일로 로드한 모듈을 sys.modules에 등록하여 내부 import 안정성 보강.
-- static.log 우선 사용 유지, 없으면 모듈 로거 또는 print 폴백.
-- repo-wide heavy search 제거 (성능/노이즈 문제 회피).
-- Noop 대체는 유지(PIPELINE_ALLOW_NOOP=True 기본)하여 안전하게 앱이 동작하도록 함.
-- ✅ Stager/Finalizer 주기적 flush 자동 시작 추가
-- ✅ Timescale 관련 모듈에서 get_timescale_connector() 호출을 시도하여
-      connector/전역풀을 pg_pool 후보로 사용하는 로직을 보강.
+二쇱슂 蹂寃?蹂댁셿:
+- src 猷⑦듃 怨꾩궛????寃ш퀬?섍쾶 ??(?곸쐞?먯꽌 'src' ?붾젆?좊━ 諛쒓껄???곗꽑).
+- ?뚯씪濡?濡쒕뱶??紐⑤뱢??sys.modules???깅줉?섏뿬 ?대? import ?덉젙??蹂닿컯.
+- static.log ?곗꽑 ?ъ슜 ?좎?, ?놁쑝硫?紐⑤뱢 濡쒓굅 ?먮뒗 print ?대갚.
+- repo-wide heavy search ?쒓굅 (?깅뒫/?몄씠利?臾몄젣 ?뚰뵾).
+- Noop ?泥대뒗 ?좎?(PIPELINE_ALLOW_NOOP=True 湲곕낯)?섏뿬 ?덉쟾?섍쾶 ?깆씠 ?숈옉?섎룄濡???
+- ??Stager/Finalizer 二쇨린??flush ?먮룞 ?쒖옉 異붽?
+- ??Timescale 愿??紐⑤뱢?먯꽌 get_timescale_connector() ?몄텧???쒕룄?섏뿬
+      connector/?꾩뿭???pg_pool ?꾨낫濡??ъ슜?섎뒗 濡쒖쭅??蹂닿컯.
 """
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ _logger = logging.getLogger("app.loaders.pipeline_loader")
 
 
 def _log(static: Any, level: str, msg: str, *args) -> None:
-    """static.log가 있으면 사용, 없으면 모듈 로거 또는 print 폴백."""
+    """static.log媛 ?덉쑝硫??ъ슜, ?놁쑝硫?紐⑤뱢 濡쒓굅 ?먮뒗 print ?대갚."""
     try:
         log_obj = getattr(static, "log", None)
         if log_obj is not None and hasattr(log_obj, level):
@@ -49,7 +49,7 @@ def _log(static: Any, level: str, msg: str, *args) -> None:
 
 
 def _short_list(iterable: Iterable, limit: int = 20) -> List[Any]:
-    """디버그 출력을 위해 리스트를 짧게 줄임."""
+    """?붾쾭洹?異쒕젰???꾪빐 由ъ뒪?몃? 吏㏐쾶 以꾩엫."""
     try:
         lst = list(iterable)
         if len(lst) > limit:
@@ -61,7 +61,7 @@ def _short_list(iterable: Iterable, limit: int = 20) -> List[Any]:
 
 def _debug_component_failure(static: Any, name: str, mod: Optional[Any], obj: Any, avail: Dict[str, Any], exc: Exception) -> None:
     """
-    인스턴스 생성 실패 시 상세 디버그를 남김.
+    ?몄뒪?댁뒪 ?앹꽦 ?ㅽ뙣 ???곸꽭 ?붾쾭洹몃? ?④?.
     """
     try:
         _log(static, "error", "[pipeline_loader] %s instantiation FAILED: %s", name, str(exc))
@@ -114,8 +114,8 @@ def _debug_component_failure(static: Any, name: str, mod: Optional[Any], obj: An
 
 def _load_module_from_file(path: str, alias: str) -> Optional[Any]:
     """
-    파일 경로에서 모듈 로드 시도. 성공 시 sys.modules에 alias로 등록하여
-    모듈 내부의 상대/절대 import가 안정적으로 동작하도록 함.
+    ?뚯씪 寃쎈줈?먯꽌 紐⑤뱢 濡쒕뱶 ?쒕룄. ?깃났 ??sys.modules??alias濡??깅줉?섏뿬
+    紐⑤뱢 ?대????곷?/?덈? import媛 ?덉젙?곸쑝濡??숈옉?섎룄濡???
     """
     try:
         if not os.path.isfile(path):
@@ -123,7 +123,7 @@ def _load_module_from_file(path: str, alias: str) -> Optional[Any]:
         spec = importlib.util.spec_from_file_location(alias, path)
         if spec and spec.loader:
             mod = importlib.util.module_from_spec(spec)
-            # 조기 등록(상호참조를 안정화)
+            # 議곌린 ?깅줉(?곹샇李몄“瑜??덉젙??
             try:
                 sys.modules[alias] = mod
             except Exception:
@@ -138,12 +138,12 @@ def _load_module_from_file(path: str, alias: str) -> Optional[Any]:
 
 def _try_candidates_with_file(candidates: Iterable[str], file_relpath: Optional[str], static: Any, src_root: str) -> Optional[Any]:
     """
-    후보 네임스페이스들을 순차 import 시도하고, 실패하면 src_root + file_relpath 를 file-load 시도.
-    file_relpath은 src 루트 기준 상대경로(예: '02_data/pipeline/processor.py').
+    ?꾨낫 ?ㅼ엫?ㅽ럹?댁뒪?ㅼ쓣 ?쒖감 import ?쒕룄?섍퀬, ?ㅽ뙣?섎㈃ src_root + file_relpath 瑜?file-load ?쒕룄.
+    file_relpath? src 猷⑦듃 湲곗? ?곷?寃쎈줈(?? 'data_01/pipeline/processor.py').
     """
     tried: List[Tuple[str, str]] = []
 
-    # 1) namespace imports (정석적 순서)
+    # 1) namespace imports (?뺤꽍???쒖꽌)
     for nm in candidates:
         if not nm:
             continue
@@ -162,7 +162,7 @@ def _try_candidates_with_file(candidates: Iterable[str], file_relpath: Optional[
             tried.append((nm, f"{type(e).__name__}: {e}"))
             _log(static, "debug", "[pipeline_loader] import %s failed: %s", nm, f"{type(e).__name__}: {e}")
 
-    # 2) file-level load from src root (정석적, 소스 우선)
+    # 2) file-level load from src root (?뺤꽍?? ?뚯뒪 ?곗꽑)
     if file_relpath:
         try:
             fp = os.path.join(src_root, file_relpath)
@@ -184,14 +184,14 @@ def _try_candidates_with_file(candidates: Iterable[str], file_relpath: Optional[
 
 
 # -----------------------------
-# A) pg_pool 탐색 자동화 (강화)
+# A) pg_pool ?먯깋 ?먮룞??(媛뺥솕)
 # -----------------------------
 def _discover_pg_pool(static: Any) -> Optional[Any]:
     """
-    static 및 static.data_manager에서 가능한 pg_pool 후보들을 찾아 반환.
-    또한 timescale 관련 모듈에서 get_timescale_connector() 호출을 시도하여
-    connector/전역풀을 후보로 포함합니다.
-    반환값은 'pool' 형태 또는 Connector 객체(실행/커밋/ executemany 지원)를 허용합니다.
+    static 諛?static.data_manager?먯꽌 媛?ν븳 pg_pool ?꾨낫?ㅼ쓣 李얠븘 諛섑솚.
+    ?먰븳 timescale 愿??紐⑤뱢?먯꽌 get_timescale_connector() ?몄텧???쒕룄?섏뿬
+    connector/?꾩뿭????꾨낫濡??ы븿?⑸땲??
+    諛섑솚媛믪? 'pool' ?뺥깭 ?먮뒗 Connector 媛앹껜(?ㅽ뻾/而ㅻ컠/ executemany 吏??瑜??덉슜?⑸땲??
     """
     candidates = [
         "pg_pool", "pool", "engine", "db_pool", "connection_pool", "asyncpg_pool", "sa_engine", "sqlalchemy_engine",
@@ -233,20 +233,20 @@ def _discover_pg_pool(static: Any) -> Optional[Any]:
             except Exception:
                 continue
 
-    # 3) timescale 관련 모듈에서 connector 얻기 시도 (강화)
+    # 3) timescale 愿??紐⑤뱢?먯꽌 connector ?산린 ?쒕룄 (媛뺥솕)
     try:
         try:
-            ts_mod = importlib.import_module("02_data.timescale.timescale_db")
+            ts_mod = importlib.import_module("data_01.timescale.timescale_db")
         except Exception:
-            # 파일 레벨로 직접 로드 시도 (비패키지 실행 환경)
+            # ?뚯씪 ?덈꺼濡?吏곸젒 濡쒕뱶 ?쒕룄 (鍮꾪뙣?ㅼ? ?ㅽ뻾 ?섍꼍)
             base = pathlib.Path(__file__).resolve().parents[1]  # project/src/.. -> project
-            ts_path = base / "src" / "02_data" / "timescale" / "timescale_db.py"
+            ts_path = base / "src" / "data_01" / "timescale" / "timescale_db.py"
             if ts_path.exists():
                 ts_mod = _load_module_from_file(str(ts_path), alias="file_timescale_timescale_db")
             else:
                 ts_mod = None
         if ts_mod is not None:
-            # 우선, 모듈 내부에서 이미 pool/pg_pool 같은 심볼이 있는지 체크
+            # ?곗꽑, 紐⑤뱢 ?대??먯꽌 ?대? pool/pg_pool 媛숈? ?щ낵???덈뒗吏 泥댄겕
             for name in ("pg_pool", "pool", "timescale_pool"):
                 try:
                     if hasattr(ts_mod, name):
@@ -256,7 +256,7 @@ def _discover_pg_pool(static: Any) -> Optional[Any]:
                             return val
                 except Exception:
                     continue
-            # 다음으로 get_timescale_connector 시도 (자동 초기화 포함)
+            # ?ㅼ쓬?쇰줈 get_timescale_connector ?쒕룄 (?먮룞 珥덇린???ы븿)
             get_conn_fn = getattr(ts_mod, "get_timescale_connector", None)
             if callable(get_conn_fn):
                 try:
@@ -270,8 +270,8 @@ def _discover_pg_pool(static: Any) -> Optional[Any]:
     except Exception:
         _log(static, "debug", "[pipeline_loader] timescale module discovery failed: %s", traceback.format_exc())
 
-    # 4) module-level minimal fallbacks (예전 방식 유지)
-    for mod_name in ("02_data.timescale.timescale_db",):
+    # 4) module-level minimal fallbacks (?덉쟾 諛⑹떇 ?좎?)
+    for mod_name in ("data_01.timescale.timescale_db",):
         try:
             mod = importlib.import_module(mod_name)
             for name in ("pg_pool", "pool", "engine"):
@@ -288,7 +288,7 @@ def _discover_pg_pool(static: Any) -> Optional[Any]:
 
 
 # -----------------------------
-# Noop 대체 클래스들 (최소 동작 보장)
+# Noop ?泥??대옒?ㅻ뱾 (理쒖냼 ?숈옉 蹂댁옣)
 # -----------------------------
 class NoopWriter:
     def __init__(self, *args, **kwargs):
@@ -337,7 +337,7 @@ class NoopIsolator:
 
 
 # -----------------------------
-# 헬퍼: 인스턴스화 / 팩토리 호출 (기존 로직 유지)
+# ?ы띁: ?몄뒪?댁뒪??/ ?⑺넗由??몄텧 (湲곗〈 濡쒖쭅 ?좎?)
 # -----------------------------
 def _instantiate_class_with_best_args(cls: Any, avail: Dict[str, Any], static: Any, extra: Optional[Dict[str, Any]] = None) -> Optional[Any]:
     try:
@@ -432,11 +432,11 @@ def _call_factory_with_best_args(factory: Any, avail: Dict[str, Any], static: An
 
 
 # -----------------------------
-# main setup_pipeline (정석적)
+# main setup_pipeline (?뺤꽍??
 # -----------------------------
 def _find_src_root(start: str) -> str:
     """
-    start 경로에서 위로 올라가며 'src' 디렉토리를 찾는다. 못 찾으면 start의 상위 3단계 디렉토리를 사용.
+    start 寃쎈줈?먯꽌 ?꾨줈 ?щ씪媛硫?'src' ?붾젆?좊━瑜?李얜뒗?? 紐?李얠쑝硫?start???곸쐞 3?④퀎 ?붾젆?좊━瑜??ъ슜.
     """
     p = os.path.abspath(start)
     for _ in range(6):
@@ -447,43 +447,43 @@ def _find_src_root(start: str) -> str:
         if parent == p:
             break
         p = parent
-    # fallback: 상위 3단계를 src_root로 간주
+    # fallback: ?곸쐞 3?④퀎瑜?src_root濡?媛꾩＜
     return os.path.abspath(os.path.join(start, "..", "..", ".."))
 
 
 def setup_pipeline(static: Any) -> None:
     """
-    Pipeline 구성요소를 동적으로 로드하고 PipelineProcessor 인스턴스를 생성하여
-    static.processor에 등록합니다.
+    Pipeline 援ъ꽦?붿냼瑜??숈쟻?쇰줈 濡쒕뱶?섍퀬 PipelineProcessor ?몄뒪?댁뒪瑜??앹꽦?섏뿬
+    static.processor???깅줉?⑸땲??
 
-    설계 원칙: shim/비정상 후보 제거, src 루트 기준의 표준 경로 우선, 파일 이동 금지.
+    ?ㅺ퀎 ?먯튃: shim/鍮꾩젙???꾨낫 ?쒓굅, src 猷⑦듃 湲곗????쒖? 寃쎈줈 ?곗꽑, ?뚯씪 ?대룞 湲덉?.
     """
     _log(static, "info", "[pipeline_loader] setup_pipeline invoked")
     try:
-        # 더 견고한 src_root 계산
+        # ??寃ш퀬??src_root 怨꾩궛
         here = os.path.dirname(os.path.abspath(__file__))
         src_root = _find_src_root(here)
 
         # --------------------
-        # PipelineProcessor 로드 (정석 경로만)
+        # PipelineProcessor 濡쒕뱶 (?뺤꽍 寃쎈줈留?
         # --------------------
-        proc_candidates = ("02_data.pipeline.processor",)
-        proc_relpath = os.path.join("02_data", "pipeline", "processor.py")
+        proc_candidates = ("data_01.pipeline.processor",)
+        proc_relpath = os.path.join("data_01", "pipeline", "processor.py")
         proc_mod = _try_candidates_with_file(proc_candidates, proc_relpath, static, src_root)
         if proc_mod is None:
-            _log(static, "info", "[pipeline_loader] PipelineProcessor not found — skipping pipeline setup (candidates tried logged)")
+            _log(static, "info", "[pipeline_loader] PipelineProcessor not found ??skipping pipeline setup (candidates tried logged)")
             return
 
         PipelineProcessor = getattr(proc_mod, "PipelineProcessor", None)
         create_processor_fn = getattr(proc_mod, "create_processor", None) or getattr(proc_mod, "create_pipeline_processor", None)
         if PipelineProcessor is None and not callable(create_processor_fn):
-            _log(static, "warning", "[pipeline_loader] PipelineProcessor class or factory missing in module — skipping")
+            _log(static, "warning", "[pipeline_loader] PipelineProcessor class or factory missing in module ??skipping")
             return
 
         _log(static, "info", "[pipeline_loader] PipelineProcessor module loaded from %s", getattr(proc_mod, "__file__", None))
 
         # --------------------
-        # 리소스 수집 (pg_pool, redis, kafka, data_manager)
+        # 由ъ냼???섏쭛 (pg_pool, redis, kafka, data_manager)
         # --------------------
         pg_pool = _discover_pg_pool(static)
         redis_client = getattr(static, "redis_client", None) or getattr(getattr(static, "data_manager", None), "redis_client", None)
@@ -501,16 +501,16 @@ def setup_pipeline(static: Any) -> None:
         allow_noop = getattr(static, "PIPELINE_ALLOW_NOOP", True)
 
         # --------------------
-        # MetadataManager (정상 경로 우선, 파일 폴백)
+        # MetadataManager (?뺤긽 寃쎈줈 ?곗꽑, ?뚯씪 ?대갚)
         # --------------------
         metadata = None
-        meta_candidates = ("02_data.pipeline.metadata_manager", "02_data.mongodb.metadata_manager")
-        meta_relpath = os.path.join("02_data", "pipeline", "metadata_manager.py")
+        meta_candidates = ("data_01.pipeline.metadata_manager", "data_01.mongodb.metadata_manager")
+        meta_relpath = os.path.join("data_01", "pipeline", "metadata_manager.py")
         meta_mod = _try_candidates_with_file(meta_candidates, meta_relpath, static, src_root)
 
         if meta_mod is None:
             # try mongodb metadata file as secondary explicit path
-            mongo_rel = os.path.join("02_data", "mongodb", "metadata_manager.py")
+            mongo_rel = os.path.join("data_01", "mongodb", "metadata_manager.py")
             meta_mod = _try_candidates_with_file((), mongo_rel, static, src_root)
 
         if meta_mod is not None:
@@ -521,7 +521,7 @@ def setup_pipeline(static: Any) -> None:
                 mongo_db = getattr(data_manager, "db")
             else:
                 try:
-                    mmod = _try_candidates_with_file(("02_data.mongodb.init_mongodb",), os.path.join("02_data", "mongodb", "init_mongodb.py"), static, src_root)
+                    mmod = _try_candidates_with_file(("data_01.mongodb.init_mongodb",), os.path.join("data_01", "mongodb", "init_mongodb.py"), static, src_root)
                     get_db = getattr(mmod, "get_db", None) if mmod is not None else None
                     if callable(get_db):
                         mongo_db = get_db()
@@ -530,7 +530,7 @@ def setup_pipeline(static: Any) -> None:
 
             if callable(create_meta_fn):
                 try:
-                    # 시그니처 기반 호출 우선
+                    # ?쒓렇?덉쿂 湲곕컲 ?몄텧 ?곗꽑
                     try:
                         sig = inspect.signature(create_meta_fn)
                         params = sig.parameters
@@ -575,15 +575,15 @@ def setup_pipeline(static: Any) -> None:
 
         if metadata is None and allow_noop:
             metadata = NoopMetadataManager()
-            _log(static, "info", "[pipeline_loader] MetadataManager missing — using NoopMetadataManager (PIPELINE_ALLOW_NOOP=True)")
+            _log(static, "info", "[pipeline_loader] MetadataManager missing ??using NoopMetadataManager (PIPELINE_ALLOW_NOOP=True)")
 
         # --------------------
-        # CandleWriter (정석 경로 + file load)
+        # CandleWriter (?뺤꽍 寃쎈줈 + file load)
         # --------------------
         writer = None
         CandleWriter = None
-        cw_candidates = ("02_data.timescale.operations.candle_writer",)
-        cw_relpath = os.path.join("02_data", "timescale", "operations", "candle_writer.py")
+        cw_candidates = ("data_01.timescale.operations.candle_writer",)
+        cw_relpath = os.path.join("data_01", "timescale", "operations", "candle_writer.py")
         cw_mod = _try_candidates_with_file(cw_candidates, cw_relpath, static, src_root)
 
         if cw_mod is not None:
@@ -612,14 +612,14 @@ def setup_pipeline(static: Any) -> None:
 
             if writer is None and allow_noop:
                 writer = NoopWriter()
-                _log(static, "info", "[pipeline_loader] CandleWriter missing — using NoopWriter (PIPELINE_ALLOW_NOOP=True)")
+                _log(static, "info", "[pipeline_loader] CandleWriter missing ??using NoopWriter (PIPELINE_ALLOW_NOOP=True)")
 
         # --------------------
         # Stager
         # --------------------
         stager = None
-        stager_candidates = ("02_data.pipeline.stager",)
-        s_relpath = os.path.join("02_data", "pipeline", "stager.py")
+        stager_candidates = ("data_01.pipeline.stager",)
+        s_relpath = os.path.join("data_01", "pipeline", "stager.py")
         s_mod = _try_candidates_with_file(stager_candidates, s_relpath, static, src_root)
         if s_mod is not None:
             Stager = getattr(s_mod, "CandleStager", None) or getattr(s_mod, "Stager", None)
@@ -635,14 +635,14 @@ def setup_pipeline(static: Any) -> None:
 
         if stager is None and allow_noop:
             stager = NoopStager()
-            _log(static, "info", "[pipeline_loader] Stager missing — using NoopStager (PIPELINE_ALLOW_NOOP=True)")
+            _log(static, "info", "[pipeline_loader] Stager missing ??using NoopStager (PIPELINE_ALLOW_NOOP=True)")
 
         # --------------------
         # Finalizer
         # --------------------
         finalizer = None
-        f_candidates = ("02_data.pipeline.finalizer",)
-        f_relpath = os.path.join("02_data", "pipeline", "finalizer.py")
+        f_candidates = ("data_01.pipeline.finalizer",)
+        f_relpath = os.path.join("data_01", "pipeline", "finalizer.py")
         f_mod = _try_candidates_with_file(f_candidates, f_relpath, static, src_root)
         if f_mod is not None:
             Finalizer = getattr(f_mod, "CandlesFinalizer", None) or getattr(f_mod, "Finalizer", None)
@@ -658,14 +658,14 @@ def setup_pipeline(static: Any) -> None:
 
         if finalizer is None and allow_noop:
             finalizer = NoopFinalizer()
-            _log(static, "info", "[pipeline_loader] Finalizer missing — using NoopFinalizer (PIPELINE_ALLOW_NOOP=True)")
+            _log(static, "info", "[pipeline_loader] Finalizer missing ??using NoopFinalizer (PIPELINE_ALLOW_NOOP=True)")
 
         # --------------------
         # Isolator
         # --------------------
         isolator = None
-        iso_candidates = ("02_data.pipeline.isolator",)
-        iso_relpath = os.path.join("02_data", "pipeline", "isolator.py")
+        iso_candidates = ("data_01.pipeline.isolator",)
+        iso_relpath = os.path.join("data_01", "pipeline", "isolator.py")
         iso_mod = _try_candidates_with_file(iso_candidates, iso_relpath, static, src_root)
         if iso_mod is not None:
             Isolator = getattr(iso_mod, "CandleIsolator", None) or getattr(iso_mod, "Isolator", None)
@@ -681,7 +681,7 @@ def setup_pipeline(static: Any) -> None:
 
         if isolator is None and allow_noop:
             isolator = NoopIsolator()
-            _log(static, "info", "[pipeline_loader] Isolator missing — using NoopIsolator (PIPELINE_ALLOW_NOOP=True)")
+            _log(static, "info", "[pipeline_loader] Isolator missing ??using NoopIsolator (PIPELINE_ALLOW_NOOP=True)")
 
         # --------------------
         # Instantiate PipelineProcessor
@@ -719,7 +719,7 @@ def setup_pipeline(static: Any) -> None:
                 _debug_component_failure(static, "PipelineProcessorFactory", proc_mod, create_processor_fn, avail_processor, e)
 
         if processor is None:
-            _log(static, "warning", "[pipeline_loader] PipelineProcessor instantiation failed — skipping pipeline registration")
+            _log(static, "warning", "[pipeline_loader] PipelineProcessor instantiation failed ??skipping pipeline registration")
             return
 
         try:
@@ -729,9 +729,9 @@ def setup_pipeline(static: Any) -> None:
             _log(static, "warning", "[pipeline_loader] Failed to assign processor to static: %s", traceback.format_exc())
             return
 
-        # ✅ ========================================
-        # ✅ Stager 주기적 flush 시작 (30초마다)
-        # ✅ ========================================
+        # ??========================================
+        # ??Stager 二쇨린??flush ?쒖옉 (30珥덈쭏??
+        # ??========================================
         if stager is not None and hasattr(stager, "start_periodic_flush"):
             try:
                 import asyncio
@@ -739,22 +739,22 @@ def setup_pipeline(static: Any) -> None:
                     loop = asyncio.get_event_loop()
                     if loop.is_running():
                         loop.create_task(stager.start_periodic_flush(interval_seconds=30))
-                        _log(static, "info", "[pipeline_loader] CandleStager 주기적 flush 시작 (30초)")
+                        _log(static, "info", "[pipeline_loader] CandleStager 二쇨린??flush ?쒖옉 (30珥?")
                     else:
-                        _log(static, "info", "[pipeline_loader] 이벤트 루프 미실행 - Stager 주기적 flush 스킵")
+                        _log(static, "info", "[pipeline_loader] ?대깽??猷⑦봽 誘몄떎??- Stager 二쇨린??flush ?ㅽ궢")
                 except RuntimeError:
-                    _log(static, "info", "[pipeline_loader] 이벤트 루프 없음 - Stager 주기적 flush 스킵")
+                    _log(static, "info", "[pipeline_loader] ?대깽??猷⑦봽 ?놁쓬 - Stager 二쇨린??flush ?ㅽ궢")
             except Exception as e:
-                _log(static, "warning", "[pipeline_loader] Stager 주기적 flush 시작 실패: %s", e)
+                _log(static, "warning", "[pipeline_loader] Stager 二쇨린??flush ?쒖옉 ?ㅽ뙣: %s", e)
         else:
             if stager is None:
-                _log(static, "debug", "[pipeline_loader] Stager가 None - 주기적 flush 스킵")
+                _log(static, "debug", "[pipeline_loader] Stager媛 None - 二쇨린??flush ?ㅽ궢")
             elif not hasattr(stager, "start_periodic_flush"):
-                _log(static, "debug", "[pipeline_loader] Stager에 start_periodic_flush 메서드 없음")
+                _log(static, "debug", "[pipeline_loader] Stager??start_periodic_flush 硫붿꽌???놁쓬")
 
-        # ✅ ========================================
-        # ✅ Finalizer 주기적 flush 시작 (기존 로직)
-        # ✅ ========================================
+        # ??========================================
+        # ??Finalizer 二쇨린??flush ?쒖옉 (湲곗〈 濡쒖쭅)
+        # ??========================================
         if finalizer is not None and hasattr(finalizer, "start_periodic_flush"):
             try:
                 import asyncio
@@ -762,13 +762,13 @@ def setup_pipeline(static: Any) -> None:
                     loop = asyncio.get_event_loop()
                     if loop.is_running():
                         loop.create_task(finalizer.start_periodic_flush())
-                        _log(static, "info", "[pipeline_loader] CandlesFinalizer 주기적 flush 시작")
+                        _log(static, "info", "[pipeline_loader] CandlesFinalizer 二쇨린??flush ?쒖옉")
                     else:
-                        _log(static, "info", "[pipeline_loader] 이벤트 루프 미실행 - Finalizer 주기적 flush 스킵")
+                        _log(static, "info", "[pipeline_loader] ?대깽??猷⑦봽 誘몄떎??- Finalizer 二쇨린??flush ?ㅽ궢")
                 except RuntimeError:
-                    _log(static, "info", "[pipeline_loader] 이벤트 루프 없음 - Finalizer 주기적 flush 스킵")
+                    _log(static, "info", "[pipeline_loader] ?대깽??猷⑦봽 ?놁쓬 - Finalizer 二쇨린??flush ?ㅽ궢")
             except Exception as e:
-                _log(static, "warning", "[pipeline_loader] Finalizer 주기적 flush 시작 실패: %s", e)
+                _log(static, "warning", "[pipeline_loader] Finalizer 二쇨린??flush ?쒖옉 ?ㅽ뙣: %s", e)
 
         # --------------------
         # Hook RealtimeManager -> processor callback
@@ -812,11 +812,11 @@ def setup_pipeline(static: Any) -> None:
                 static.realtime_manager = realtime_manager
                 static.rt_manager = realtime_manager
                 static.manager = realtime_manager
-                _log(static, "info", "[pipeline_loader] RealtimeManager 등록 완료: realtime_manager, rt_manager, manager")
+                _log(static, "info", "[pipeline_loader] RealtimeManager ?깅줉 ?꾨즺: realtime_manager, rt_manager, manager")
             else:
-                _log(static, "warning", "[pipeline_loader] ⚠️ static.chart is None - RealtimeManager를 등록할 수 없습니다")
+                _log(static, "warning", "[pipeline_loader] ?좑툘 static.chart is None - RealtimeManager瑜??깅줉?????놁뒿?덈떎")
         except Exception as e:
-            _log(static, "warning", "[pipeline_loader] RealtimeManager 등록 실패: %s", e)
+            _log(static, "warning", "[pipeline_loader] RealtimeManager ?깅줉 ?ㅽ뙣: %s", e)
 
     except Exception:
         _log(static, "error", "[pipeline_loader] Pipeline setup encountered unexpected error:\n%s", traceback.format_exc())

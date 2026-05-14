@@ -7,8 +7,8 @@ if src not in sys.path:
 # 가능한 모듈 후보로 import 시도
 candidates = [
     "redis.health_check",
-    "src.02_data.redis.health_check",
-    "02_data.redis.health_check",
+    "src.data_01.redis.health_check",
+    "data_01.redis.health_check",
     "src.redis.health_check",
 ]
 
@@ -35,3 +35,4 @@ try:
     print("내부 impl_name:", getattr(rh, "_impl_name", "<없음>"))
 except NameError:
     print("모듈이 로드되지 않았습니다.")
+
