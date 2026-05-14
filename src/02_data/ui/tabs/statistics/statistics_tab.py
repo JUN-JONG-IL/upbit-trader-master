@@ -38,7 +38,7 @@ if _HAS_QT:
         settings_requested = pyqtSignal()            # 설정 다이얼로그 요청
         pause_toggled = pyqtSignal()                 # 툴바 일시정지/재개 클릭
         manual_refresh_requested = pyqtSignal()      # 수동 새로고침 요청
-        export_tab_requested = pyqtSignal(int)       # 탭별 내보내기 요청 (컨트롤러에서 저장 다이���로그 열기를 권장)
+        export_tab_requested = pyqtSignal(int)       # 탭별 내보내기 요청 (컨트롤러에서 저장 다이얼로그 열기를 권장)
         export_tab_with_path = pyqtSignal(int, str)  # (옵션) 뷰가 직접 경로를 골라서 보낼 때
         export_all_requested = pyqtSignal()          # 전체 내보내기 요청
         clear_tab_requested = pyqtSignal(int)        # 탭별 지우기 요청
@@ -47,7 +47,7 @@ if _HAS_QT:
         active_tab_changed = pyqtSignal(int)         # 탭 변경 시 발생 (1..7)
         search_text_changed = pyqtSignal(int, str)   # 탭, 검색어 소문자화된 값
         # 외부 로그 입력을 뷰로 직접 전달하려는 경우(권장 아님 — controller에서 처리 권장)
-        #request_append_log = pyqtSignal(dict)      # (제거 권장)
+        # request_append_log = pyqtSignal(dict)      # (제거 권장)
 
         def __init__(self, parent=None, ui_filename: Optional[str] = None):
             super().__init__(parent)
@@ -78,6 +78,7 @@ if _HAS_QT:
                 # 검색어 변경 시 시그널 발행 (간단 유효성: string)
                 if self._search_boxes[i] is not None:
                     try:
+                        # 안전한 래핑으로 탭 인덱스를 캡처
                         self._search_boxes[i].textChanged.connect((lambda t: (lambda text: self._on_search_changed(t, text)))(i))
                     except Exception:
                         pass
@@ -104,12 +105,25 @@ if _HAS_QT:
                 btn_refresh = getattr(self, "btn_refresh", None)
                 if btn_refresh is not None:
                     btn_refresh.clicked.connect(lambda: self.manual_refresh_requested.emit())
+
+                # Top-toolbar: 선택 내보내기 (현재 활성 탭을 대상으로 export_tab_requested 발행)
+                btn_export_selected = getattr(self, "btn_export_selected", None)
+                if btn_export_selected is not None:
+                    btn_export_selected.clicked.connect(lambda: self.export_tab_requested.emit(self.get_active_tab()))
+
                 btn_export_all = getattr(self, "btn_export_all", None)
                 if btn_export_all is not None:
                     btn_export_all.clicked.connect(lambda: self.export_all_requested.emit())
+
+                # Top-toolbar: 선택 지우기 (현재 활성 탭을 대상으로 clear_tab_requested 발행)
+                btn_clear_selected = getattr(self, "btn_clear_selected", None)
+                if btn_clear_selected is not None:
+                    btn_clear_selected.clicked.connect(lambda: self.clear_tab_requested.emit(self.get_active_tab()))
+
                 btn_clear_all = getattr(self, "btn_clear_all", None)
                 if btn_clear_all is not None:
                     btn_clear_all.clicked.connect(lambda: self.clear_all_requested.emit())
+
                 btn_settings = getattr(self, "btn_settings", None)
                 if btn_settings is not None:
                     btn_settings.clicked.connect(lambda: self.settings_requested.emit())
@@ -148,7 +162,7 @@ if _HAS_QT:
             """
             try:
                 filename, _ = QFileDialog.getOpenFileName(self, "로그 파일 선택", os.path.expanduser("~"), "Log Files (*.log *.txt);;All Files (*)")
-                # 선택되지 않으면 빈 문자열을 보내서 '자동 후보' 사용을 요청할 수도 있습니다.
+                # 선택되지 않으면 빈 문자열로 보내서 '자동 후보' 사용을 요청할 수도 있습니다.
                 path = filename or ""
                 self.load_history_requested.emit(path)
             except Exception:

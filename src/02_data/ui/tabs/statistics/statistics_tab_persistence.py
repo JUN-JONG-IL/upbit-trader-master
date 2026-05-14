@@ -2,12 +2,13 @@
 """
 Persistence 모듈
 - 설정(settings) 및 컬럼 레이아웃(layouts)을 파일로 로드/저장하는 책임만 가집니다.
-- 다른 모듈에서 Persistence 클래스를 import 하여 사용합니다.
+- 안전한(원자적) 저장 및 편의성 헬퍼(get_setting/set_setting)를 제공합니다.
 """
 from __future__ import annotations
 import json
 import logging
 import os
+import tempfile
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -35,8 +36,10 @@ class Persistence:
     ):
         self.defaults = dict(defaults or _DEFAULTS)
         home = os.path.expanduser("~")
-        self.layout_file = layout_file or os.path.join(home, ".upbit_trader", "statistics_tab_layout.json")
-        self.settings_file = settings_file or os.path.join(home, ".upbit_trader", "statistics_tab_settings.json")
+        # 기본 경로: ~/.upbit_trader/...
+        base_dir = os.path.join(home, ".upbit_trader")
+        self.layout_file = layout_file or os.path.join(base_dir, "statistics_tab_layout.json")
+        self.settings_file = settings_file or os.path.join(base_dir, "statistics_tab_settings.json")
 
         self.settings: Dict[str, Any] = dict(self.defaults)
         self.column_layouts: Dict[str, List[int]] = {}
@@ -55,13 +58,53 @@ class Persistence:
         except Exception as e:
             logger.debug("[Persistence] _load_settings 실패: %s", e)
 
+    def get_setting(self, key: str, default: Any = None) -> Any:
+        """설정 조회 (없으면 default 반환)."""
+        return self.settings.get(key, self.defaults.get(key, default))
+
+    def set_setting(self, key: str, value: Any, persist: bool = False) -> None:
+        """설정 변경. persist=True이면 파일로 즉시 저장합니다."""
+        try:
+            self.settings[key] = value
+            if persist:
+                self.save_settings()
+        except Exception as e:
+            logger.debug("[Persistence] set_setting 실패: %s", e)
+
+    def reset_settings_to_defaults(self, persist: bool = False) -> None:
+        """설정을 기본값으로 리셋."""
+        try:
+            self.settings = dict(self.defaults)
+            if persist:
+                self.save_settings()
+        except Exception as e:
+            logger.debug("[Persistence] reset_settings_to_defaults 실패: %s", e)
+
     def save_settings(self) -> None:
+        """
+        settings를 원자적으로 저장합니다:
+        1) 같은 디렉토리에 임시 파일로 작성
+        2) os.replace로 교체 (원자적 교체 보장)
+        """
         try:
             d = os.path.dirname(self.settings_file)
             if d and not os.path.isdir(d):
                 os.makedirs(d, exist_ok=True)
-            with open(self.settings_file, "w", encoding="utf-8") as f:
-                json.dump(self.settings, f, ensure_ascii=False, indent=2)
+            # 임시 파일을 같은 디렉토리에 생성
+            fd, tmp_path = tempfile.mkstemp(dir=d or ".", prefix=".tmp_settings_", suffix=".json")
+            try:
+                with os.fdopen(fd, "w", encoding="utf-8") as f:
+                    json.dump(self.settings, f, ensure_ascii=False, indent=2)
+                    f.flush()
+                    os.fsync(f.fileno())
+                os.replace(tmp_path, self.settings_file)
+            finally:
+                # 안전을 위해 임시파일이 남아있으면 제거
+                if os.path.exists(tmp_path):
+                    try:
+                        os.remove(tmp_path)
+                    except Exception:
+                        pass
         except Exception as e:
             logger.debug("[Persistence] save_settings 실패: %s", e)
 
@@ -78,11 +121,23 @@ class Persistence:
             self.column_layouts = {}
 
     def save_layouts(self) -> None:
+        """layouts를 원자적으로 저장 (임시파일 → 교체)."""
         try:
             d = os.path.dirname(self.layout_file)
             if d and not os.path.isdir(d):
                 os.makedirs(d, exist_ok=True)
-            with open(self.layout_file, "w", encoding="utf-8") as f:
-                json.dump(self.column_layouts, f, ensure_ascii=False, indent=2)
+            fd, tmp_path = tempfile.mkstemp(dir=d or ".", prefix=".tmp_layouts_", suffix=".json")
+            try:
+                with os.fdopen(fd, "w", encoding="utf-8") as f:
+                    json.dump(self.column_layouts, f, ensure_ascii=False, indent=2)
+                    f.flush()
+                    os.fsync(f.fileno())
+                os.replace(tmp_path, self.layout_file)
+            finally:
+                if os.path.exists(tmp_path):
+                    try:
+                        os.remove(tmp_path)
+                    except Exception:
+                        pass
         except Exception as e:
             logger.debug("[Persistence] save_layouts 실패: %s", e)
