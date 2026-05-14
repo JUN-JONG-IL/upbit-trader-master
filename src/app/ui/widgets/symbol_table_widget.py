@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-종목 테이블 위젯 - 03_market 모듈 연동
+종목 테이블 위젯 - market 모듈 연동
 """
 from __future__ import annotations
 import sys
 from pathlib import Path
 
-_market_dir = str(Path(__file__).parents[4] / "03_market")
+_market_dir = str(Path(__file__).parents[4] / "market")
 if _market_dir not in sys.path:
     sys.path.insert(0, _market_dir)
 
 try:
-    from src._03_market import CoinlistWidget as SymbolTableWidget  # type: ignore
+    from src._market import CoinlistWidget as SymbolTableWidget  # type: ignore
 except ImportError:
     try:
         from symbol_list import CoinlistWidget as SymbolTableWidget  # type: ignore
@@ -19,7 +19,7 @@ except ImportError:
         SymbolTableWidget = None  # type: ignore
 
 if SymbolTableWidget is None:
-    # Standalone fallback: self-contained implementation independent of 03_market
+    # Standalone fallback: self-contained implementation independent of market
     try:
         from PyQt5.QtWidgets import (
             QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView,

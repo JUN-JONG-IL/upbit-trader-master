@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 _log_error_throttled = None
 try:
     _et_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "01_core", "utils", "error_throttler.py")
+        os.path.join(os.path.dirname(__file__), "..", "..", "core", "utils", "error_throttler.py")
     )
     if os.path.isfile(_et_path):
         _et_spec = importlib.util.spec_from_file_location("_error_throttler_stager", _et_path)
@@ -43,7 +43,7 @@ except Exception:
 _RateLimitedErrorFilter = None
 try:
     _lc_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "01_core", "config", "logging_config.py")
+        os.path.join(os.path.dirname(__file__), "..", "..", "core", "config", "logging_config.py")
     )
     if os.path.isfile(_lc_path):
         _lc_spec = importlib.util.spec_from_file_location("_logging_config_stager", _lc_path)

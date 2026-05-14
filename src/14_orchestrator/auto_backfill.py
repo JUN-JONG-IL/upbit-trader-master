@@ -164,8 +164,8 @@ class AutoBackfillManager:
     # --------------------------
     def _get_static_module(self) -> Optional[Any]:
         candidates = (
-            "src.11_server.app.static",
-            "11_server.app.static",
+            "src.server.app.static",
+            "server.app.static",
             "app.static",
             "src.app.static",
             "static",
@@ -212,7 +212,7 @@ class AutoBackfillManager:
 
             # 4) Bootstrap-style namespaces: check already-imported bootstrap modules
             #    for a .static attribute (SimpleNamespace) that holds available_symbols.
-            #    The 11_server.app.static module is a package whose module-level chart/
+            #    The server.app.static module is a package whose module-level chart/
             #    available_symbols attributes stay None even after bootstrap populates its
             #    own SimpleNamespace, so we scan sys.modules for bootstrap variants.
             try:
@@ -396,7 +396,7 @@ class AutoBackfillManager:
             _base = _pl.Path(__file__).resolve().parent
             _path = _base / "backfill" / "auto_backfill_manager.py"
             if _path.exists():
-                alias = "src._14_orchestrator.backfill.auto_backfill_manager"
+                alias = "src._orchestrator.backfill.auto_backfill_manager"
                 _mod = sys.modules.get(alias)
                 if _mod is None:
                     _spec = _ilu.spec_from_file_location(alias, str(_path))
@@ -1169,7 +1169,7 @@ def register_auto_backfill_manager(mgr: AutoBackfillManager, static: Optional[An
     target_static = static
     if target_static is None:
         # 탐색
-        candidates = ("src.11_server.app.static", "11_server.app.static", "app.static", "static", "src.app.static")
+        candidates = ("src.server.app.static", "server.app.static", "app.static", "static", "src.app.static")
         for name in candidates:
             try:
                 mod = importlib.import_module(name)
@@ -1208,7 +1208,7 @@ def get_registered_auto_backfill_manager(static: Optional[Any] = None) -> Option
     """
     target_static = static
     if target_static is None:
-        candidates = ("src.11_server.app.static", "11_server.app.static", "app.static", "static", "src.app.static")
+        candidates = ("src.server.app.static", "server.app.static", "app.static", "static", "src.app.static")
         for name in candidates:
             try:
                 mod = importlib.import_module(name)

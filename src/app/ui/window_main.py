@@ -236,7 +236,7 @@ class MainWindow(QMainWindow):
                     "src.app.ui.widgets.db_status_led",
                     "app.ui.widgets.db_status_led",
                     "app.widgets.db_status_led",
-                    "src.01_core.auth.ui.widget_login",
+                    "src.core.auth.ui.widget_login",
                 ):
                     try:
                         mod = importlib.import_module(modname)
@@ -254,7 +254,7 @@ class MainWindow(QMainWindow):
                     file_candidates = [
                         os.path.join(here, "widgets", "db_status_led.py"),
                         os.path.join(repo_root, "src", "app", "ui", "widgets", "db_status_led.py"),
-                        os.path.join(repo_root, "src", "01_core", "auth", "ui", "widget_login.py"),
+                        os.path.join(repo_root, "src", "core", "auth", "ui", "widget_login.py"),
                         os.path.join(repo_root, "src", "app", "ui", "windows", "db_status_led.py"),
                     ]
                     for cand in [os.path.abspath(p) for p in file_candidates]:
@@ -365,7 +365,7 @@ class MainWindow(QMainWindow):
                 mapping = getattr(WidgetFactory, "_WIDGET_PATHS", None) or {}
                 rel_path, cls_name = mapping.get(
                     "SettingsWidget",
-                    (os.path.join("11_server", "ui", "settings", "widget_server_settings.py"), "SettingsWidget"),
+                    (os.path.join("server", "ui", "settings", "widget_server_settings.py"), "SettingsWidget"),
                 )
                 cls = WidgetFactory._load_widget_class(rel_path, cls_name)
             except Exception:

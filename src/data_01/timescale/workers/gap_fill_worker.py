@@ -58,9 +58,9 @@ UPBIT_BASE_DEFAULT = "https://api.upbit.com"
 UPBIT_MAX_PER_REQUEST = 200  # Upbit limit for candles/minutes
 
 # ---------------------------------------------------------------------------
-# constants.py 로드 (01_core 패키지명 Python 식별자 제한으로 직접 import 불가)
+# constants.py 로드 (core 패키지명 Python 식별자 제한으로 직접 import 불가)
 # ---------------------------------------------------------------------------
-_CONST_PATH = Path(__file__).parents[3] / "01_core" / "config" / "constants.py"
+_CONST_PATH = Path(__file__).parents[3] / "core" / "config" / "constants.py"
 
 def _load_constants() -> Optional[types.ModuleType]:
     """constants.py 모듈을 경로 기반으로 로드합니다."""

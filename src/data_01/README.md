@@ -15,7 +15,7 @@ src/data_01/
 ├── features/       # Feature store — AI/ML 피처 엔지니어링
 ├── pipeline/       # 10단계 데이터 수집 파이프라인 (구 src/data_pipeline/)
 ├── clients/        # 데이터베이스 클라이언트 (구 src/db/)
-│   └── upbit_data_provider.py  # Upbit API 데이터 제공자 (구 src/06_ai/priority/services/)
+│   └── upbit_data_provider.py  # Upbit API 데이터 제공자 (구 src/ai/priority/services/)
 └── gap/            # Gap Detection (구 src/gap/)
 ```
 
@@ -211,4 +211,4 @@ print("PGPORT:", os.getenv("PGPORT"))           # 기대값: 5432
 
 ## CHANGELOG
 
-- 2026-03-19 | Copilot | `upbit_data_provider.py` 추가 (`src/06_ai/priority/services/` → `src/data_01/clients/`): Upbit 데이터 공급자는 데이터 레이어에 속하므로 `clients/` 하위로 재배치
+- 2026-03-19 | Copilot | `upbit_data_provider.py` 추가 (`src/ai/priority/services/` → `src/data_01/clients/`): Upbit 데이터 공급자는 데이터 레이어에 속하므로 `clients/` 하위로 재배치

@@ -205,7 +205,7 @@ def ensure_initial_symbols(static: SimpleNamespace, log: SafeLogger) -> None:
                 if mgr and auto_ok and not ai_enabled:
                     try:
                         # force=True: symbols were just loaded above into static.available_symbols,
-                        # but _has_symbols_available() checks src.11_server.app.static (which has
+                        # but _has_symbols_available() checks src.server.app.static (which has
                         # chart=None at startup), so the readiness check would always fail here.
                         # Since we know symbols are ready, bypass the check directly.
                         res = getattr(mgr, "run_once_nonblocking", lambda *a, **k: False)(force=True)

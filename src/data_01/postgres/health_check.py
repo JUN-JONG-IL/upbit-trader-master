@@ -23,11 +23,11 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-_DB_CONFIG_YAML = os.path.join(_REPO_ROOT, "src", "01_core", "config", "db_connections.yaml")
-_DB_CONFIG_JSON = os.path.join(_REPO_ROOT, "src", "01_core", "config", "db_connections.json")
+_DB_CONFIG_YAML = os.path.join(_REPO_ROOT, "src", "core", "config", "db_connections.yaml")
+_DB_CONFIG_JSON = os.path.join(_REPO_ROOT, "src", "core", "config", "db_connections.json")
 
-# constants.py를 경로 기반으로 로드 (01_core는 Python 식별자 제한으로 직접 import 불가)
-_CONST_PATH = str(Path(__file__).parents[3] / "01_core" / "config" / "constants.py")
+# constants.py를 경로 기반으로 로드 (core는 Python 식별자 제한으로 직접 import 불가)
+_CONST_PATH = str(Path(__file__).parents[3] / "core" / "config" / "constants.py")
 
 def _load_constants() -> Optional[types.ModuleType]:
     """constants.py 모듈을 경로 기반으로 로드합니다."""

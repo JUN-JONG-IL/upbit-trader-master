@@ -37,9 +37,9 @@ def _load_symbol_limits() -> dict:
     }
     try:
         import yaml  # type: ignore
-        # src/app/core/ → parents[2] = src/ → src/01_core/config/config.yaml
+        # src/app/core/ → parents[2] = src/ → src/core/config/config.yaml
         search_paths = [
-            Path(__file__).parents[2] / "01_core" / "config" / "config.yaml",
+            Path(__file__).parents[2] / "core" / "config" / "config.yaml",
             Path(__file__).parents[3] / "config.yaml",
         ]
         for p in search_paths:

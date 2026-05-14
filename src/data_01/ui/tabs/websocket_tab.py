@@ -18,9 +18,9 @@ def _load_symbol_limits() -> dict:
     _defaults = {"ui_display_limit": 10_000, "db_fallback_limit": 10_000, "redis_scan_count": 10_000}
     try:
         import yaml  # type: ignore
-        # src/data_01/ui/tabs/ → parents[3] = src/ → src/01_core/config/config.yaml
+        # src/data_01/ui/tabs/ → parents[3] = src/ → src/core/config/config.yaml
         search_paths = [
-            Path(__file__).parents[3] / "01_core" / "config" / "config.yaml",
+            Path(__file__).parents[3] / "core" / "config" / "config.yaml",
             Path(__file__).parents[4] / "config.yaml",
         ]
         for p in search_paths:

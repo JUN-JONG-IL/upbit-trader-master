@@ -146,10 +146,10 @@ class WidgetLoader:
     # ─────────────────────────────────────── 개별 위젯 팩토리 ──
 
     def _make_symbol_widget(self, parent: Any) -> Optional[Any]:
-        """종목 목록 위젯 생성 (src/03_market/coinlist/ui/widget_coin_list.py)"""
+        """종목 목록 위젯 생성 (src/market/coinlist/ui/widget_coin_list.py)"""
         try:
             cls = self._load_widget_class(
-                os.path.join("03_market", "coinlist", "ui", "widget_coin_list.py"),
+                os.path.join("market", "coinlist", "ui", "widget_coin_list.py"),
                 "CoinlistWidget",
             )
             if cls is not None:
@@ -174,10 +174,10 @@ class WidgetLoader:
         return table
 
     def _make_chart_widget(self, parent: Any) -> Optional[Any]:
-        """차트 위젯 생성 (src/04_chart/ui/widget_chart.py)"""
+        """차트 위젯 생성 (src/chart/ui/widget_chart.py)"""
         try:
             cls = self._load_widget_class(
-                os.path.join("04_chart", "ui", "widget_chart.py"),
+                os.path.join("chart", "ui", "widget_chart.py"),
                 "ChartWidget",
             )
             if cls is not None:
@@ -192,10 +192,10 @@ class WidgetLoader:
         return label
 
     def _make_orderbook_widget(self, parent: Any) -> Optional[Any]:
-        """호가창 위젯 생성 (src/03_market/orderbook/ui/widget_orderbook.py)"""
+        """호가창 위젯 생성 (src/market/orderbook/ui/widget_orderbook.py)"""
         try:
             cls = self._load_widget_class(
-                os.path.join("03_market", "orderbook", "ui", "widget_orderbook.py"),
+                os.path.join("market", "orderbook", "ui", "widget_orderbook.py"),
                 "OrderbookWidget",
             )
             if cls is not None:
@@ -210,10 +210,10 @@ class WidgetLoader:
         return label
 
     def _make_trade_widget(self, parent: Any) -> Optional[Any]:
-        """체결창 위젯 생성 (src/03_market/trades/ui/widget_trade.py)"""
+        """체결창 위젯 생성 (src/market/trades/ui/widget_trade.py)"""
         try:
             cls = self._load_widget_class(
-                os.path.join("03_market", "trades", "ui", "widget_trade.py"),
+                os.path.join("market", "trades", "ui", "widget_trade.py"),
                 "TradeWidget",
             )
             if cls is not None:
@@ -228,10 +228,10 @@ class WidgetLoader:
         return label
 
     def _make_holding_widget(self, parent: Any) -> Optional[Any]:
-        """보유 종목 위젯 생성 (src/08_portfolio/holdings/ui/widget_holding_list.py)"""
+        """보유 종목 위젯 생성 (src/portfolio/holdings/ui/widget_holding_list.py)"""
         try:
             cls = self._load_widget_class(
-                os.path.join("08_portfolio", "holdings", "ui", "widget_holding_list.py"),
+                os.path.join("portfolio", "holdings", "ui", "widget_holding_list.py"),
                 "HoldingListWidget",
             )
             if cls is not None:
@@ -246,10 +246,10 @@ class WidgetLoader:
         return label
 
     def _make_search_widget(self, parent: Any) -> Optional[Any]:
-        """종목 검색 위젯 생성 (src/07_scanner/engine/ui/widget_scanner_frame.py)"""
+        """종목 검색 위젯 생성 (src/scanner/engine/ui/widget_scanner_frame.py)"""
         try:
             cls = self._load_widget_class(
-                os.path.join("07_scanner", "engine", "ui", "widget_scanner_frame.py"),
+                os.path.join("scanner", "engine", "ui", "widget_scanner_frame.py"),
                 "ScannerFrameWidget",
             )
             if cls is not None:

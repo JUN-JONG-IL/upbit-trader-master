@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-차트 위젯 - 04_chart 모듈 연동
+차트 위젯 - chart 모듈 연동
 """
 from __future__ import annotations
 import sys
 from pathlib import Path
 
-_chart_dir = str(Path(__file__).parents[4] / "04_chart")
+_chart_dir = str(Path(__file__).parents[4] / "chart")
 if _chart_dir not in sys.path:
     sys.path.insert(0, _chart_dir)
 
 try:
-    from src._04_chart import ChartWidget  # type: ignore
+    from src._chart import ChartWidget  # type: ignore
 except ImportError:
     try:
         from chart.ui.widget_chart import ChartWidget  # type: ignore

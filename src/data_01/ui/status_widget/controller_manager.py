@@ -197,8 +197,8 @@ if _HAS_QT:
             """
             # ── 1단계: 알려진 경로 직접 탐색 ────────────────────────
             known_roots = (
-                "static-fallback", "11_server.app.static",
-                "src.11_server.app.static", "server.static",
+                "static-fallback", "server.app.static",
+                "src.server.app.static", "server.static",
                 "app.bootstrap", "src.app.bootstrap", "bootstrap",
                 "app.static", "src.app.static",
             )
@@ -412,8 +412,8 @@ if _HAS_QT:
         def _find_static_module(self) -> Optional[object]:
             """static 모듈을 sys.modules에서 탐색하는 헬퍼."""
             known = (
-                "static-fallback", "11_server.app.static",
-                "src.11_server.app.static", "server.static",
+                "static-fallback", "server.app.static",
+                "src.server.app.static", "server.static",
             )
             for mod_name in known:
                 if mod_name in sys.modules:

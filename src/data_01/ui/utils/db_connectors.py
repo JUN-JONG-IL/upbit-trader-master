@@ -209,7 +209,7 @@ def get_redis_connector() -> Optional[Any]:
             # Redis 설정 로드
             _redis_cfg: dict = {}
             try:
-                from _01_core.database.redis_factory import _load_redis_config  # type: ignore
+                from _core.database.redis_factory import _load_redis_config  # type: ignore
 
                 _redis_cfg = _load_redis_config()
             except Exception as cfg_exc:

@@ -151,7 +151,7 @@ def _load_default_queue_size() -> int:
         import sys as _sys
         _ps_path = (
             _pl.Path(__file__).resolve().parents[3]
-            / "14_orchestrator"
+            / "orchestrator"
             / "backfill"
             / "performance_settings.py"
         )

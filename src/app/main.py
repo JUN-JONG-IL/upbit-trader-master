@@ -193,7 +193,7 @@ def _configure_global_logging():
             "data_01.mongodb.init_mongodb",
             "src.data_01.timescale.health_check",
             "data_01.timescale.operations.gap_finder",
-            "01_core.auth.ui.widget_login",
+            "core.auth.ui.widget_login",
             "data_01.core.data_manager",
             "static",
         ]

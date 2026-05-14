@@ -38,7 +38,7 @@ def _get_default_redis_url() -> str:
     try:
         import importlib.util as _ilu
         import pathlib as _pl
-        _factory_path = _pl.Path(__file__).resolve().parents[2] / "01_core" / "database" / "redis_factory.py"
+        _factory_path = _pl.Path(__file__).resolve().parents[2] / "core" / "database" / "redis_factory.py"
         _spec = _ilu.spec_from_file_location("_redis_factory_urc", str(_factory_path))
         _factory_mod = _ilu.module_from_spec(_spec)  # type: ignore[arg-type]
         _spec.loader.exec_module(_factory_mod)  # type: ignore[union-attr]

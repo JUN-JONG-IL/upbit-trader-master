@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-11_server 모듈 인터페이스
+server 모듈 인터페이스
 FastAPI 서버 및 WebSocket 추상화
 """
 from __future__ import annotations
@@ -8,13 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any, Optional
 
-_server_dir = str(Path(__file__).parents[3] / "11_server")
+_server_dir = str(Path(__file__).parents[3] / "server")
 if _server_dir not in sys.path:
     sys.path.insert(0, _server_dir)
 
 
 class ServerService:
-    """11_server 모듈 서비스 레이어"""
+    """server 모듈 서비스 레이어"""
 
     def __init__(self) -> None:
         self._app: Optional[Any] = None

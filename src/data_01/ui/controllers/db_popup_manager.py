@@ -102,7 +102,7 @@ class DBPopupManager:
                 return {}
             config_path = os.path.join(
                 os.path.dirname(self._base_dir),  # src/
-                "01_core", "config", "config.yaml",
+                "core", "config", "config.yaml",
             )
             if not os.path.isfile(config_path):
                 logger.debug("[DBPopupManager] config.yaml 없음: %s", config_path)

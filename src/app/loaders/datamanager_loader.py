@@ -360,7 +360,7 @@ def create_data_manager(static: Any) -> Optional[Any]:
 
     if server_mod is None:
         legacy = [
-            "server.server", "src.server.server", "11_server.app.server", "11_server.server.server"
+            "server.server", "src.server.server", "server.app.server", "server.server.server"
         ]
         server_mod = _load_module_by_names(legacy, static)
 

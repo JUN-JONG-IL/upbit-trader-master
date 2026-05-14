@@ -132,8 +132,8 @@ if _HAS_QT:
                 return
 
             _ctrl_candidates = (
-                "14_orchestrator.auto_controller",
-                "src.14_orchestrator.auto_controller",
+                "orchestrator.auto_controller",
+                "src.orchestrator.auto_controller",
             )
             for _cpath in _ctrl_candidates:
                 try:

@@ -2,9 +2,9 @@
 """
 src.app.core.auto_backfill — AutoBackfillManager 재내보내기 모듈
 
-AutoController(src/14_orchestrator/auto_controller.py)가
+AutoController(src/orchestrator/auto_controller.py)가
 `from src.app.core.auto_backfill import AutoBackfillManager` 로 임포트합니다.
-실제 구현은 src/14_orchestrator/auto_backfill.py 에 있으므로 그 파일을 래핑합니다.
+실제 구현은 src/orchestrator/auto_backfill.py 에 있으므로 그 파일을 래핑합니다.
 """
 from __future__ import annotations
 
@@ -15,8 +15,8 @@ _logger = _log.getLogger(__name__)
 
 # 임포트 시도 순서: 일반적인 네임스페이스 → src 접두사 → 파일 직접 로딩
 _CANDIDATES = (
-    "14_orchestrator.auto_backfill",
-    "src.14_orchestrator.auto_backfill",
+    "orchestrator.auto_backfill",
+    "src.orchestrator.auto_backfill",
 )
 
 _m = None
@@ -33,10 +33,10 @@ if _m is None:
     import importlib.util as _ilu
 
     _HERE = _os.path.dirname(_os.path.abspath(__file__))
-    # src/app/core → src/14_orchestrator/auto_backfill.py
-    _fp = _os.path.normpath(_os.path.join(_HERE, "..", "..", "14_orchestrator", "auto_backfill.py"))
+    # src/app/core → src/orchestrator/auto_backfill.py
+    _fp = _os.path.normpath(_os.path.join(_HERE, "..", "..", "orchestrator", "auto_backfill.py"))
     if _os.path.isfile(_fp):
-        _spec = _ilu.spec_from_file_location("14_orchestrator.auto_backfill", _fp)
+        _spec = _ilu.spec_from_file_location("orchestrator.auto_backfill", _fp)
         if _spec and _spec.loader:
             _m = _ilu.module_from_spec(_spec)
             try:
@@ -47,7 +47,7 @@ if _m is None:
 
 if _m is None:
     raise ImportError(
-        "AutoBackfillManager import failed: src/14_orchestrator/auto_backfill.py not found"
+        "AutoBackfillManager import failed: src/orchestrator/auto_backfill.py not found"
     )
 
 AutoBackfillManager = getattr(_m, "AutoBackfillManager")

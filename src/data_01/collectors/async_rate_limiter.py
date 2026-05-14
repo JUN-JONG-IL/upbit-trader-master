@@ -128,7 +128,7 @@ _global_limiter: Optional[AsyncRateLimiter] = None
 def _load_ssot_rate_limits() -> tuple:
     """performance_settings.py SSOT 에서 (per_sec, per_min) 을 읽는다.
 
-    성능 설정 모듈은 ``14_orchestrator`` 패키지(숫자 시작)에 있어 표준
+    성능 설정 모듈은 ``orchestrator`` 패키지(숫자 시작)에 있어 표준
     import 가 불가능하므로 파일 기반 동적 로드로 접근한다. 실패 시 None 반환.
     """
     try:
@@ -142,7 +142,7 @@ def _load_ssot_rate_limits() -> tuple:
             here = pathlib.Path(__file__).resolve()
             # src/data_01/collectors/async_rate_limiter.py → src/
             src_root = here.parents[2]
-            ps_path = src_root / "14_orchestrator" / "backfill" / "performance_settings.py"
+            ps_path = src_root / "orchestrator" / "backfill" / "performance_settings.py"
             if not ps_path.exists():
                 return None, None
             spec = importlib.util.spec_from_file_location(_key, str(ps_path))

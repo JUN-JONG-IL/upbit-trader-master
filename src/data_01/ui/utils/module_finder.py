@@ -42,7 +42,7 @@ def _find_static_module() -> Optional[Any]:
     try:
         import importlib
 
-        for _mod_path in ("src._11_server.app.static", "static", "app.static"):
+        for _mod_path in ("src._server.app.static", "static", "app.static"):
             try:
                 mod = importlib.import_module(_mod_path)
                 logger.info("[UI Utils] ✅ static 모듈 import 성공: %s", _mod_path)

@@ -34,7 +34,7 @@ REDIS_URL = None
 try:
     import importlib.util as _gc_ilu
     import pathlib as _gc_pl
-    _gc_factory_path = _gc_pl.Path(__file__).resolve().parent.parent / "01_core" / "database" / "redis_factory.py"
+    _gc_factory_path = _gc_pl.Path(__file__).resolve().parent.parent / "core" / "database" / "redis_factory.py"
     _gc_spec = _gc_ilu.spec_from_file_location("_redis_factory_gc", str(_gc_factory_path))
     _gc_factory_mod = _gc_ilu.module_from_spec(_gc_spec)  # type: ignore[arg-type]
     _gc_spec.loader.exec_module(_gc_factory_mod)  # type: ignore[union-attr]
@@ -92,8 +92,8 @@ def _find_processor_callable() -> Optional[Any]:
     """
     # Try common component module
     candidates = [
-        ("11_server.component.component", "static"),
-        ("src.11_server.component.component", "static"),
+        ("server.component.component", "static"),
+        ("src.server.component.component", "static"),
         ("src.app.bootstrap", "static"),
         ("app.bootstrap", "static"),
     ]
@@ -110,7 +110,7 @@ def _find_processor_callable() -> Optional[Any]:
     # Last resort: try 'static' module directly in sys.modules
     try:
         import sys
-        st = sys.modules.get("11_server.component.component")
+        st = sys.modules.get("server.component.component")
         if st:
             comp = getattr(st, "static", None)
             if comp:

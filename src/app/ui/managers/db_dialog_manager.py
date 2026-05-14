@@ -47,11 +47,11 @@ class DBDialogManager:
 
     @staticmethod
     def _ensure_settings_path() -> None:
-        """src/11_server/ui/settings/ 를 sys.path 에 추가"""
+        """src/server/ui/settings/ 를 sys.path 에 추가"""
         _settings_dir = os.path.normpath(
             os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
-                "..", "..", "..", "11_server", "ui", "settings",
+                "..", "..", "..", "server", "ui", "settings",
             )
         )
         if _settings_dir not in sys.path:
@@ -71,11 +71,11 @@ class DBDialogManager:
 
     @staticmethod
     def _ensure_priority_ui_path() -> None:
-        """src/06_ai/priority/ui/ 를 sys.path 에 추가"""
+        """src/ai/priority/ui/ 를 sys.path 에 추가"""
         _ui_dir = os.path.normpath(
             os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
-                "..", "..", "..", "06_ai", "priority", "ui",
+                "..", "..", "..", "ai", "priority", "ui",
             )
         )
         if _ui_dir not in sys.path:
@@ -214,7 +214,7 @@ class DBDialogManager:
     # ─────────────────────────────────────── 우선순위 설정 다이얼로그 핸들러 ──
 
     def _open_priority_settings_dialog(self) -> None:
-        """우선순위 종목 설정 다이얼로그 열기 (06_ai/priority/ui)"""
+        """우선순위 종목 설정 다이얼로그 열기 (ai/priority/ui)"""
         try:
             self._ensure_priority_ui_path()
             
@@ -227,7 +227,7 @@ class DBDialogManager:
             if dialog_class is None:
                 raise ModuleNotFoundError(
                     "PrioritySettingsDialog를 찾을 수 없습니다.\n"
-                    "경로: src/06_ai/priority/ui/widget_priority_settings.py"
+                    "경로: src/ai/priority/ui/widget_priority_settings.py"
                 )
             
             # 다이얼로그 생성 및 표시
@@ -249,13 +249,13 @@ class DBDialogManager:
                 f"우선순위 설정 다이얼로그를 불러올 수 없습니다.\n\n"
                 f"오류: {str(e)}\n\n"
                 f"확인 사항:\n"
-                f"  1. 파일 존재 여부: src/06_ai/priority/ui/widget_priority_settings.py\n"
+                f"  1. 파일 존재 여부: src/ai/priority/ui/widget_priority_settings.py\n"
                 f"  2. 클래스명: PrioritySettingsDialog\n"
                 f"  3. 로그 파일: logs/app.log",
             )
 
     def _open_ml_model_selector_dialog(self) -> None:
-        """ML 모델 선택 다이얼로그 열기 (06_ai/priority/ui)"""
+        """ML 모델 선택 다이얼로그 열기 (ai/priority/ui)"""
         try:
             self._ensure_priority_ui_path()
             
@@ -268,7 +268,7 @@ class DBDialogManager:
             if dialog_class is None:
                 raise ModuleNotFoundError(
                     "MLModelSelectorDialog를 찾을 수 없습니다.\n"
-                    "경로: src/06_ai/priority/ui/widget_ml_model_selector.py"
+                    "경로: src/ai/priority/ui/widget_ml_model_selector.py"
                 )
             
             # 다이얼로그 생성 및 표시
@@ -290,13 +290,13 @@ class DBDialogManager:
                 f"ML 모델 선택 다이얼로그를 불러올 수 없습니다.\n\n"
                 f"오류: {str(e)}\n\n"
                 f"확인 사항:\n"
-                f"  1. 파일 존재 여부: src/06_ai/priority/ui/widget_ml_model_selector.py\n"
+                f"  1. 파일 존재 여부: src/ai/priority/ui/widget_ml_model_selector.py\n"
                 f"  2. 클래스명: MLModelSelectorDialog\n"
                 f"  3. 로그 파일: logs/app.log",
             )
 
     def _open_priority_dashboard_dialog(self) -> None:
-        """우선순위 대시보드 다이얼로그 열기 (06_ai/priority/ui)"""
+        """우선순위 대시보드 다이얼로그 열기 (ai/priority/ui)"""
         try:
             # 우선순위 대시보드는 별도 위젯이 없으므로 우선순위 설정으로 안내
             logger.info("[DBDialogManager] 우선순위 대시보드 → 우선순위 설정으로 안내")

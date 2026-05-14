@@ -69,7 +69,7 @@ def _get_redis_url() -> str:
         return redis_url
     try:
         import pathlib as _pl
-        _factory_path = _pl.Path(__file__).resolve().parents[3] / "01_core" / "database" / "redis_factory.py"
+        _factory_path = _pl.Path(__file__).resolve().parents[3] / "core" / "database" / "redis_factory.py"
         spec = importlib.util.spec_from_file_location("_redis_factory_mh", str(_factory_path))
         if spec is not None:
             mod = importlib.util.module_from_spec(spec)

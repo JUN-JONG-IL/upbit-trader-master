@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-01_core 모듈 인터페이스
+core 모듈 인터페이스
 인증, 설정, 공통 유틸리티 추상화
 """
 from __future__ import annotations
@@ -8,13 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-_core_dir = str(Path(__file__).parents[3] / "01_core")
+_core_dir = str(Path(__file__).parents[3] / "core")
 if _core_dir not in sys.path:
     sys.path.insert(0, _core_dir)
 
 
 class CoreService:
-    """01_core 모듈 서비스 레이어"""
+    """core 모듈 서비스 레이어"""
 
     def __init__(self) -> None:
         self._auth: Optional[Any] = None

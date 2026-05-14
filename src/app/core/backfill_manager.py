@@ -15,9 +15,9 @@ from .logger import SafeLogger
 from .module_loader import try_import_names
 
 
-def import_14_orchestrator_pkg() -> Optional[object]:
-    """14_orchestrator 패키지 import"""
-    pkg, attempts = try_import_names(("src.14_orchestrator", "14_orchestrator"))
+def import_orchestrator_pkg() -> Optional[object]:
+    """orchestrator 패키지 import"""
+    pkg, attempts = try_import_names(("src.orchestrator", "orchestrator"))
     return pkg
 
 
@@ -26,7 +26,7 @@ def get_auto_backfill_helpers() -> Tuple[Optional[Callable], Optional[Callable],
     create_auto_backfill_manager, register_auto_backfill_manager, get_registered_auto_backfill_manager
     를 가진 패키지/모듈을 반환(또는 None들).
     """
-    pkg = import_14_orchestrator_pkg()
+    pkg = import_orchestrator_pkg()
     if pkg:
         create_fn = getattr(pkg, "create_auto_backfill_manager", None)
         register_fn = getattr(pkg, "register_auto_backfill_manager", None)
@@ -35,7 +35,7 @@ def get_auto_backfill_helpers() -> Tuple[Optional[Callable], Optional[Callable],
     
     # fallback: try direct module import
     try:
-        mod, _ = try_import_names(("src.14_orchestrator.auto_backfill", "14_orchestrator.auto_backfill"))
+        mod, _ = try_import_names(("src.orchestrator.auto_backfill", "orchestrator.auto_backfill"))
         if mod:
             create_fn = getattr(mod, "create_auto_backfill_manager", None)
             register_fn = getattr(mod, "register_auto_backfill_manager", None)

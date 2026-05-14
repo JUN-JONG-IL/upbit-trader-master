@@ -51,7 +51,7 @@ class SymbolLoader:
         # 1. static module (서버/메모리)
         try:
             static_mod = None
-            for mod_path in ["static", "app.static", "server.static", "11_server.app.static.static", "11_server.server.static.static"]:
+            for mod_path in ["static", "app.static", "server.static", "server.app.static.static", "server.server.static.static"]:
                 try:
                     static_mod = importlib.import_module(mod_path)
                     break

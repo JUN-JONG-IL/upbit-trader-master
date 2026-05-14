@@ -28,14 +28,14 @@ def _get_default_redis_url() -> str:
     if redis_url:
         return redis_url
     try:
-        from _01_core.database.redis_factory import get_redis_url  # type: ignore
+        from _core.database.redis_factory import get_redis_url  # type: ignore
         return get_redis_url()
     except Exception:
         pass
     try:
         import importlib.util as _ilu
         import pathlib as _pl
-        _factory_path = _pl.Path(__file__).resolve().parents[1] / "01_core" / "database" / "redis_factory.py"
+        _factory_path = _pl.Path(__file__).resolve().parents[1] / "core" / "database" / "redis_factory.py"
         _spec = _ilu.spec_from_file_location("_redis_factory_enq", str(_factory_path))
         _factory_mod = _ilu.module_from_spec(_spec)  # type: ignore[arg-type]
         _spec.loader.exec_module(_factory_mod)  # type: ignore[union-attr]
@@ -96,10 +96,10 @@ def _get_symbols_from_mongo(mongo_uri: str = MONGO_URI) -> Optional[List[str]]:
 
 def _get_fallback_symbols() -> List[str]:
     """
-    Fallback 심볼 소스: src/01_core/config/symbols.json 또는 최소 KRW-BTC
+    Fallback 심볼 소스: src/core/config/symbols.json 또는 최소 KRW-BTC
     """
     repo_root = Path(__file__).resolve().parents[2]
-    cand = repo_root / "src" / "01_core" / "config" / "symbols.json"
+    cand = repo_root / "src" / "core" / "config" / "symbols.json"
     if cand.exists():
         try:
             return json.loads(cand.read_text(encoding="utf-8"))

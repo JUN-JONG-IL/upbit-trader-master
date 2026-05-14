@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-로그인 윈도우 - 01_core/auth 모듈 연동
+로그인 윈도우 - core/auth 모듈 연동
 """
 from __future__ import annotations
 import sys
 from pathlib import Path
 
-# 01_core/auth 임포트 경로 보장
-_core_dir = str(Path(__file__).parents[4] / "01_core")
+# core/auth 임포트 경로 보장
+_core_dir = str(Path(__file__).parents[4] / "core")
 if _core_dir not in sys.path:
     sys.path.insert(0, _core_dir)
 

@@ -193,7 +193,7 @@ class StartupValidator:
                 try:
                     import importlib.util as _sv_ilu
                     import pathlib as _sv_pl
-                    _sv_factory_path = _sv_pl.Path(__file__).resolve().parent.parent / "01_core" / "database" / "redis_factory.py"
+                    _sv_factory_path = _sv_pl.Path(__file__).resolve().parent.parent / "core" / "database" / "redis_factory.py"
                     _sv_spec = _sv_ilu.spec_from_file_location("_redis_factory_sv", str(_sv_factory_path))
                     _sv_factory_mod = _sv_ilu.module_from_spec(_sv_spec)  # type: ignore[arg-type]
                     _sv_spec.loader.exec_module(_sv_factory_mod)  # type: ignore[union-attr]

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-14_orchestrator 패키지 초기화 모듈
+orchestrator 패키지 초기화 모듈
 (역할: 앱 시작 시 자동 실행)
 """
 from __future__ import annotations
@@ -18,7 +18,7 @@ __all__ = [
     "get_registered_auto_backfill_manager",
 ]
 
-_log = logging.getLogger("14_orchestrator.__init__")
+_log = logging.getLogger("orchestrator.__init__")
 _auto_force_enqueue_guard_lock = threading.Lock()
 
 
@@ -28,7 +28,7 @@ def _orch_get_redis_url() -> str:
     try:
         import importlib.util as _ilu
         import pathlib as _pl
-        _factory_path = _pl.Path(__file__).resolve().parent.parent / "01_core" / "database" / "redis_factory.py"
+        _factory_path = _pl.Path(__file__).resolve().parent.parent / "core" / "database" / "redis_factory.py"
         _spec = _ilu.spec_from_file_location("_redis_factory_orch", str(_factory_path))
         _factory_mod = _ilu.module_from_spec(_spec)  # type: ignore[arg-type]
         _spec.loader.exec_module(_factory_mod)  # type: ignore[union-attr]
@@ -54,8 +54,8 @@ def _orch_get_redis_url() -> str:
 
 def _resolve_static_module() -> Optional[Any]:
     candidates = (
-        "src.11_server.app.static",
-        "11_server.app.static",
+        "src.server.app.static",
+        "server.app.static",
         "app.static",
         "src.app.static",
         "static",
@@ -77,10 +77,10 @@ def create_auto_backfill_manager(
     ready_poll_interval: float = 1.0,
 ):
     try:
-        mod = importlib.import_module("src.14_orchestrator.auto_backfill")
+        mod = importlib.import_module("src.orchestrator.auto_backfill")
     except Exception:
         try:
-            mod = importlib.import_module("14_orchestrator.auto_backfill")
+            mod = importlib.import_module("orchestrator.auto_backfill")
         except Exception:
             _log.exception("Failed to import auto_backfill module")
             return None
@@ -161,7 +161,7 @@ def _start_gap_consumer_if_enabled():
             gc_mgr.start()
             _log.info("GapConsumerManager auto-started (workers=%s)", workers)
             try:
-                comp_mod = importlib.import_module("11_server.component.component")
+                comp_mod = importlib.import_module("server.component.component")
                 if getattr(comp_mod, "static", None) is not None:
                     try:
                         setattr(comp_mod.static, "gap_consumer", gc_mgr)
@@ -269,7 +269,7 @@ def _run_auto_force_enqueue_once() -> None:
 def _start_auto_force_enqueue_background() -> None:
     """
     앱 시작(import) 경로를 블로킹하지 않기 위해 AUTO_FORCE_ENQUEUE를 백그라운드로 실행한다.
-    또한 패키지가 별칭(src.14_orchestrator / 14_orchestrator)으로 중복 import 되어도
+    또한 패키지가 별칭(src.orchestrator / orchestrator)으로 중복 import 되어도
     프로세스당 1회만 시작되도록 builtins 전역 가드를 사용한다.
     """
     guard_name = "_UPBIT_ORCH_AUTO_FORCE_ENQUEUE_STARTED"

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-06_ai 모듈 인터페이스
+ai 모듈 인터페이스
 AI 예측 및 시그널 추상화
 """
 from __future__ import annotations
@@ -8,13 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-_ai_dir = str(Path(__file__).parents[3] / "06_ai")
+_ai_dir = str(Path(__file__).parents[3] / "ai")
 if _ai_dir not in sys.path:
     sys.path.insert(0, _ai_dir)
 
 
 class AIService:
-    """06_ai 모듈 서비스 레이어"""
+    """ai 모듈 서비스 레이어"""
 
     def __init__(self) -> None:
         self._engine: Optional[Any] = None

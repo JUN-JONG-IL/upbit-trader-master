@@ -11,8 +11,8 @@ from typing import Any, Dict, Optional
 logger = logging.getLogger(__name__)
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
-DB_CONFIG_YAML = os.path.join(REPO_ROOT, "src", "01_core", "config", "db_connections.yaml")
-DB_CONFIG_JSON = os.path.join(REPO_ROOT, "src", "01_core", "config", "db_connections.json")
+DB_CONFIG_YAML = os.path.join(REPO_ROOT, "src", "core", "config", "db_connections.yaml")
+DB_CONFIG_JSON = os.path.join(REPO_ROOT, "src", "core", "config", "db_connections.json")
 
 
 def get_db_config_yaml_path() -> str:

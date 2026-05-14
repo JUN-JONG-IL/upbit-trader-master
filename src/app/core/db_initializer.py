@@ -34,8 +34,8 @@ def validate_db_connections(static: SimpleNamespace, log: SafeLogger) -> None:
     """DB 연결 검증 (startup_validator)"""
     try:
         validator_candidates = (
-            "14_orchestrator.startup_validator",
-            "src.14_orchestrator.startup_validator",
+            "orchestrator.startup_validator",
+            "src.orchestrator.startup_validator",
             "app.core.startup_validator",
             "src.app.core.startup_validator",
         )

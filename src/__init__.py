@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 """
 src 패키지 진입점 (shim 개선)
-- 목적: 기존의 문자열에 숫자가 앞에 오는 잘못된 `from 11_server...` 문법을 제거하고,
+- 목적: 기존의 문자열에 숫자가 앞에 오는 잘못된 `from server...` 문법을 제거하고,
   importlib을 사용하여 명시적이고 안전하게 실제 구현 모듈에서 심볼을 가져옵니다.
 - 동작:
   1) 후보 모듈 목록을 순서대로 시도하여 최초로 발견된 구현에서 RealtimeManager, Account, Coin을 가져옵니다.
@@ -22,10 +22,10 @@ __all__ = ["RealtimeManager", "Account", "Coin"]
 
 # 후보 모듈명(우선순위). 문자열 기반으로 importlib로 로드합니다.
 _CANDIDATES = [
-    "11_server.component.component",
-    "src.11_server.component.component",
-    "11_server.component",
-    "11_server.component.component",
+    "server.component.component",
+    "src.server.component.component",
+    "server.component",
+    "server.component.component",
     "component.component",
     "component",
     "src.component.component",
@@ -51,7 +51,7 @@ if _real_mod is None:
         "필수 구현 모듈을 찾지 못했습니다. 시도한 후보: "
         f"{tried}.  \n"
         "해결 방법: src/ 디렉토리 구조가 올바른지, "
-        "또는 구현 모듈(예: src/11_server/component/component.py)이 존재하는지 확인하세요. "
+        "또는 구현 모듈(예: src/server/component/component.py)이 존재하는지 확인하세요. "
     )
     if _last_exc is not None:
         msg += f"\n마지막 예외: {_last_exc!r}"

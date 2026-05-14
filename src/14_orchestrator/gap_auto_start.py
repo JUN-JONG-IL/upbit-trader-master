@@ -8,15 +8,15 @@ Gap Auto-Start 모듈
 - 이렇게 하면 기본 동작은 변경하지 않으면서 필요할 때만 Orchestrator에 Gap 서비스가 등록됩니다.
 
 사용 방법:
-1) 이 파일을 프로젝트에 추가합니다 (src/14_orchestrator/gap_auto_start.py).
+1) 이 파일을 프로젝트에 추가합니다 (src/orchestrator/gap_auto_start.py).
 2) 앱 실행 시 환경변수 설정으로 활성화:
    - ENABLE_GAP_SERVICE=1
    - TIMESCALE_DSN 및 REDIS_URL 환경변수는 이미 프로젝트에서 사용되는 값을 사용하도록 설정하세요.
 3) 자동 시작을 비활성화하려면 ENABLE_GAP_SERVICE를 비워두거나 "0"으로 설정하면 됩니다.
 
 동작 원리:
-- 모듈 import 시 (예: 부트스트랩에서 import src.14_orchestrator.gap_auto_start)
-  - ENABLE_GAP_SERVICE가 "1"이면 src.14_orchestrator.gap_service.start_service(...)를 호출합니다.
+- 모듈 import 시 (예: 부트스트랩에서 import src.orchestrator.gap_auto_start)
+  - ENABLE_GAP_SERVICE가 "1"이면 src.orchestrator.gap_service.start_service(...)를 호출합니다.
   - start_service는 내부적으로 현재 이벤트 루프 유무를 검사하여 안전하게 백그라운드에서 서비스(task/스레드)를 생성합니다.
 - import-time에 무조건 실행되는 부작용을 최소화하기 위해 기본은 비활성화이며,
   환경변수로 명확히 활성화한 경우에만 동작합니다.
@@ -32,7 +32,7 @@ import os
 from typing import Optional
 
 # Gap service 인터페이스 (이미 생성된 파일)
-from src.14_orchestrator.gap_service import start_service  # type: ignore
+from src.orchestrator.gap_service import start_service  # type: ignore
 
 logger = logging.getLogger("orchestrator.gap_auto_start")
 
@@ -49,14 +49,14 @@ def _get_default_redis_url() -> str:
     if redis_url:
         return redis_url
     try:
-        from _01_core.database.redis_factory import get_redis_url  # type: ignore
+        from _core.database.redis_factory import get_redis_url  # type: ignore
         return get_redis_url()
     except Exception:
         pass
     try:
         import importlib.util as _ilu
         import pathlib as _pl
-        _factory_path = _pl.Path(__file__).resolve().parents[1] / "01_core" / "database" / "redis_factory.py"
+        _factory_path = _pl.Path(__file__).resolve().parents[1] / "core" / "database" / "redis_factory.py"
         _spec = _ilu.spec_from_file_location("_redis_factory_gas", str(_factory_path))
         _factory_mod = _ilu.module_from_spec(_spec)  # type: ignore[arg-type]
         _spec.loader.exec_module(_factory_mod)  # type: ignore[union-attr]

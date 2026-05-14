@@ -12,10 +12,10 @@ GB: int = 1024 ** 3
 # static 모듈 검색 키 목록 (sys.modules 탐색 순서)
 STATIC_MODULE_KEYS: Tuple[str, ...] = (
     "static-fallback",
-    "11_server.app.static",
-    "src.11_server.app.static",
-    "src.11_server.app.static.static",
-    "src._11_server.app.static",
+    "server.app.static",
+    "src.server.app.static",
+    "src.server.app.static.static",
+    "src._server.app.static",
     "_server_static",
     "static",
     "app.static",

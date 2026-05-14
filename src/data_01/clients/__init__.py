@@ -8,7 +8,7 @@ src/data_01/clients — 데이터베이스 클라이언트 패키지 (구 src/db
   upbit_data_provider: Upbit API 데이터 제공자 (pyupbit 래핑)
 
 CHANGELOG:
-- 2026-03-19 | Copilot | upbit_data_provider 추가 (src/06_ai/priority/services/ → clients/ 이동)
+- 2026-03-19 | Copilot | upbit_data_provider 추가 (src/ai/priority/services/ → clients/ 이동)
 """
 
 from .timescale import TimescaleClient, get_timescale_pool

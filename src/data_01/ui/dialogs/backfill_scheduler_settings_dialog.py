@@ -96,7 +96,7 @@ _DEFAULTS: Dict[str, Any] = {
         "concurrent_policy": "skip",
     },
     # ⚡ 성능(고급) — 백필 처리 속도 SSOT (UI 다이얼로그에서만 수정)
-    # 동일 값을 src/14_orchestrator/backfill/performance_settings.py 가 읽어
+    # 동일 값을 src/orchestrator/backfill/performance_settings.py 가 읽어
     # AutoBackfill / AutoBackfillManager / RestCandleCollector / AsyncRateLimiter
     # 에 일괄 주입한다. 하드코딩 제거 목적.
     "performance": {
@@ -477,14 +477,14 @@ if _HAS_QT:
             self._persist_settings(settings)
             self._apply_to_controller(settings)
             # 백필 성능 SSOT 캐시 무효화 → 다음 사이클에서 즉시 새 값 사용
-            # (14_orchestrator 패키지명이 숫자 시작이라 일반 import 불가 → 파일 기반 동적 로드)
+            # (orchestrator 패키지명이 숫자 시작이라 일반 import 불가 → 파일 기반 동적 로드)
             try:
                 import importlib.util
                 import pathlib
                 import sys as _sys
                 _here = pathlib.Path(__file__).resolve()
                 _src_root = _here.parents[3]  # src/
-                _ps_path = _src_root / "14_orchestrator" / "backfill" / "performance_settings.py"
+                _ps_path = _src_root / "orchestrator" / "backfill" / "performance_settings.py"
                 _mod_name = "_perf_settings_dlg_invalidate"
                 _mod = _sys.modules.get(_mod_name)
                 if _mod is None and _ps_path.exists():
