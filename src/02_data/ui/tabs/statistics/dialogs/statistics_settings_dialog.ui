@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+  <class>StatisticsSettingsDialog</class>
+  <widget class="QDialog" name="StatisticsSettingsDialog">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>520</width>
+        <height>420</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>Statistics - 설정</string>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_main">
+      <property name="spacing">
+        <number>8</number>
+      </property>
+
+      <!-- 설명 -->
+      <item>
+        <widget class="QLabel" name="lbl_description">
+          <property name="text">
+            <string>실시간 로그 뷰어 설정 — 권장값으로 복원하거나 실시간 튜닝을 적용하세요.</string>
+          </property>
+          <property name="wordWrap">
+            <bool>true</bool>
+          </property>
+        </widget>
+      </item>
+
+      <!-- Form: 설정 항목 -->
+      <item>
+        <widget class="QFrame" name="frame_form">
+          <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+          </property>
+          <layout class="QFormLayout" name="formLayout">
+            <property name="labelAlignment">
+              <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <property name="formAlignment">
+              <set>Qt::AlignLeft|Qt::AlignTop</set>
+            </property>
+
+            <!-- 실시간 유지 탭 수 -->
+            <item row="0" column="0">
+              <widget class="QLabel" name="lbl_num_live_tabs">
+                <property name="text"><string>실시간 유지 탭 수 (num_live_tabs)</string></property>
+              </widget>
+            </item>
+            <item row="0" column="1">
+              <widget class="QSpinBox" name="sb_num_live_tabs">
+                <property name="minimum"><number>1</number></property>
+                <property name="maximum"><number>7</number></property>
+                <property name="value"><number>3</number></property>
+              </widget>
+            </item>
+
+            <!-- flush interval ms -->
+            <item row="1" column="0">
+              <widget class="QLabel" name="lbl_flush_interval">
+                <property name="text"><string>플러시 간격 (ms)</string></property>
+              </widget>
+            </item>
+            <item row="1" column="1">
+              <widget class="QSpinBox" name="sb_flush_interval">
+                <property name="minimum"><number>50</number></property>
+                <property name="maximum"><number>5000</number></property>
+                <property name="singleStep"><number>50</number></property>
+                <property name="value"><number>200</number></property>
+              </widget>
+            </item>
+
+            <!-- flush batch -->
+            <item row="2" column="0">
+              <widget class="QLabel" name="lbl_flush_batch">
+                <property name="text"><string>플러시 배치 크기 (flush_batch)</string></property>
+              </widget>
+            </item>
+            <item row="2" column="1">
+              <widget class="QSpinBox" name="sb_flush_batch">
+                <property name="minimum"><number>1</number></property>
+                <property name="maximum"><number>5000</number></property>
+                <property name="value"><number>200</number></property>
+              </widget>
+            </item>
+
+            <!-- max pending -->
+            <item row="3" column="0">
+              <widget class="QLabel" name="lbl_max_pending">
+                <property name="text"><string>대기 큐 최대치 (max_pending)</string></property>
+              </widget>
+            </item>
+            <item row="3" column="1">
+              <widget class="QSpinBox" name="sb_max_pending">
+                <property name="minimum"><number>100</number></property>
+                <property name="maximum"><number>10000000</number></property>
+                <property name="singleStep"><number>100</number></property>
+                <property name="value"><number>100000</number></property>
+              </widget>
+            </item>
+
+            <!-- enable forwarding -->
+            <item row="4" column="0">
+              <widget class="QLabel" name="lbl_enable_forwarding">
+                <property name="text"><string>루트 로거 포워딩 사용</string></property>
+              </widget>
+            </item>
+            <item row="4" column="1">
+              <widget class="QCheckBox" name="chk_enable_forwarding">
+                <property name="checked"><bool>true</bool></property>
+                <property name="text"><string>사용</string></property>
+              </widget>
+            </item>
+
+            <!-- autostart timer -->
+            <item row="5" column="0">
+              <widget class="QLabel" name="lbl_autostart_timer">
+                <property name="text"><string>앱 시작시 타이머 자동 시작</string></property>
+              </widget>
+            </item>
+            <item row="5" column="1">
+              <widget class="QCheckBox" name="chk_autostart_timer">
+                <property name="checked"><bool>true</bool></property>
+                <property name="text"><string>자동 시작</string></property>
+              </widget>
+            </item>
+
+            <!-- extra: recommended preset label -->
+            <item row="6" column="0">
+              <widget class="QLabel" name="lbl_recommend_note">
+                <property name="text"><string>권장 설정:</string></property>
+              </widget>
+            </item>
+            <item row="6" column="1">
+              <widget class="QLabel" name="lbl_recommend_values">
+                <property name="text"><string>예: interval=500ms, batch=100, live_tabs=2 (버벅일 때)</string></property>
+                <property name="wordWrap"><bool>true</bool></property>
+              </widget>
+            </item>
+
+          </layout>
+        </widget>
+      </item>
+
+      <!-- Buttons: Apply recommended / Defaults / OK / Cancel -->
+      <item>
+        <widget class="QFrame" name="frame_buttons">
+          <layout class="QHBoxLayout" name="hbox_buttons">
+            <item>
+              <spacer name="spacer_left">
+                <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                </property>
+              </spacer>
+            </item>
+
+            <item>
+              <widget class="QPushButton" name="btn_apply_recommended">
+                <property name="text"><string>권장값 적용</string></property>
+              </widget>
+            </item>
+            <item>
+              <widget class="QPushButton" name="btn_restore_defaults">
+                <property name="text"><string>기본값 복원</string></property>
+              </widget>
+            </item>
+            <item>
+              <widget class="QPushButton" name="btn_ok">
+                <property name="text"><string>확인</string></property>
+                <property name="default"><bool>true</bool></property>
+              </widget>
+            </item>
+            <item>
+              <widget class="QPushButton" name="btn_cancel">
+                <property name="text"><string>취소</string></property>
+              </widget>
+            </item>
+
+          </layout>
+        </widget>
+      </item>
+
+    </layout>
+  </widget>
+  <resources/>
+  <connections/>
+</ui>
