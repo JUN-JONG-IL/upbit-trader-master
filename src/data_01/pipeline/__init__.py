@@ -1,16 +1,16 @@
 """
-src/data_01/pipeline ??10?�계 ?�이???�집 ?�이?�라???�키지 (�?src/data_pipeline/)
+src/data_01/pipeline — 10단계 데이터 수집 파이프라인 패키지 (구 src/data_pipeline/)
 
-Stage 1  checker.py    ???�이??존재 ?�인 (L0-L3 캐시)
-Stage 2  receiver.py   ??WebSocket / REST API ?�신
-Stage 3  stager.py     ??staging_candles ?�시 ?�??
-Stage 4  validator.py  ??OHLC / Gap / ?�상�?검�?
-Stage 5  isolator.py   ???�상 ?�이??격리 & Gap ?�잉
-Stage 6  finalizer.py  ??candles UPSERT (TimescaleDB)
-Stage 7  notifier.py   ??Redis Pub/Sub 발행
-Stage 8  aggregator.py ??CAGG Refresh (?�위 ?�?�프?�임)
-Stage 9  hydrate.py    ??Redis L1 캐시 갱신
-Stage 10 monitor.py    ??Prometheus 메트�??�집
+Stage 1  checker.py    – 데이터 존재 확인 (L0-L3 캐시)
+Stage 2  receiver.py   – WebSocket / REST API 수신
+Stage 3  stager.py     – staging_candles 임시 저장
+Stage 4  validator.py  – OHLC / Gap / 이상치 검증
+Stage 5  isolator.py   – 이상 데이터 격리 & Gap 큐잉
+Stage 6  finalizer.py  – candles UPSERT (TimescaleDB)
+Stage 7  notifier.py   – Redis Pub/Sub 발행
+Stage 8  aggregator.py – CAGG Refresh (상위 타임프레임)
+Stage 9  hydrate.py    – Redis L1 캐시 갱신
+Stage 10 monitor.py    – Prometheus 메트릭 수집
 """
 
 from .checker   import CandleChecker
@@ -38,4 +38,3 @@ __all__ = [
     "CacheHydrator",
     "PipelineMonitor",
 ]
-

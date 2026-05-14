@@ -327,4 +327,3 @@ def schedule_websocket_start(static: SimpleNamespace, delay_seconds: int = 10):
         
         t = threading.Thread(target=_delayed_start_sync, daemon=True, name="websocket_auto_start")
         t.start()
-

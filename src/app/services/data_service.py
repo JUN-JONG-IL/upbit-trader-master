@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-data_01 ëª¨ë“ˆ ?¸í„°?˜ì´??
-TimescaleDB / Redis / MongoDB ?°ì´???‘ê·¼ ì¶”ìƒ??
+data_01 ëª¨ë“ˆ ì¸í„°í˜ì´ìŠ¤
+TimescaleDB / Redis / MongoDB ë°ì´í„° ì ‘ê·¼ ì¶”ìƒí™”
 """
 from __future__ import annotations
 import sys
@@ -14,14 +14,14 @@ if _data_dir not in sys.path:
 
 
 class DataService:
-    """data_01 ëª¨ë“ˆ ?œë¹„???ˆì´??""
+    """data_01 ëª¨ë“ˆ ì„œë¹„ìŠ¤ ë ˆì´ì–´"""
 
     def __init__(self) -> None:
         self._timescale: Optional[Any] = None
         self._redis: Optional[Any] = None
         self._mongo: Optional[Any] = None
 
-    # ?€?€ TimescaleDB ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+    # â”€â”€ TimescaleDB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def get_timescale(self) -> Any:
         if self._timescale is None:
@@ -32,7 +32,7 @@ class DataService:
                 pass
         return self._timescale
 
-    # ?€?€ Redis ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+    # â”€â”€ Redis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def get_redis(self) -> Any:
         if self._redis is None:
@@ -43,7 +43,7 @@ class DataService:
                 pass
         return self._redis
 
-    # ?€?€ MongoDB ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+    # â”€â”€ MongoDB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     def get_mongo(self) -> Any:
         if self._mongo is None:
@@ -58,7 +58,7 @@ class DataService:
         self, symbol: str, tf: str, limit: int = 200
     ) -> List[Dict[str, Any]]:
         """
-        ì°¨íŠ¸ ?°ì´??ì¡°íšŒ (L1 Redis ìºì‹œ ??TimescaleDB)
+        ì°¨íŠ¸ ë°ì´í„° ì¡°íšŒ (L1 Redis ìºì‹œ â†’ TimescaleDB)
         """
         redis = self.get_redis()
         if redis is not None:
@@ -82,4 +82,3 @@ class DataService:
             except Exception:
                 pass
         return []
-

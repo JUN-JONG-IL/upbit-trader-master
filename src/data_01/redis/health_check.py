@@ -112,4 +112,3 @@ def health_check() -> Dict[str, Optional[str]]:
             "port": str(REDIS_PORT),
             "impl": _impl_name,
         }
-

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-StatisticsTab (View ?�용, 강화??UI 로드/바인??
-- ?�심 목표: .ui가 로드?�어???�젯(objectName)???�어???�면??비어 보이??문제 방�?.
-- ?�략:
-  1) load_ui_with_tab_fix ?�선 ?�도 (?�으�?.ui enum/xml 보정)
-  2) PyQt uic.loadUi ?�백
-  3) uic.loadUiType ?�백 (코드 ?�성??
-  4) 로드 ???�심 ?�젯(tabWidget_main_tabs, table_tab_X ?????�으�?findChild 기반?�로 ?�동 바인??
-- ???�일?� View·?�그?�·경???�퍼�??�함?�니?? 비즈?�스 로직?� Controller�??�동?�세??
+StatisticsTab (View 전용, 강화된 UI 로드/바인딩)
+- 핵심 목표: .ui가 로드되어도 위젯(objectName)이 없어서 화면이 비어 보이는 문제 방지.
+- 전략:
+  1) load_ui_with_tab_fix 우선 시도 (있으면 .ui enum/xml 보정)
+  2) PyQt uic.loadUi 폴백
+  3) uic.loadUiType 폴백 (코드 생성형)
+  4) 로드 후 핵심 위젯(tabWidget_main_tabs, table_tab_X 등)이 없으면 findChild 기반으로 자동 바인딩
+- 이 파일은 View·시그널·경량 헬퍼만 포함합니다. 비즈니스 로직은 Controller로 이동하세요.
 """
 from __future__ import annotations
 import os
@@ -23,7 +23,7 @@ from typing import Any, Optional, Sequence, Dict, List, Deque, TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
-# PyQt import (가?�성 검??
+# PyQt import (가용성 검사)
 try:
     from PyQt5 import uic
     from PyQt5.QtCore import pyqtSignal, QTimer, Qt
@@ -55,12 +55,12 @@ except Exception:
     StatisticsModel = None
     LogFilterProxyModel = None
 
-# Persistence paths (???�렉?�리???��? ?�렉?�리)
+# Persistence paths (홈 디렉터리에 숨김 디렉터리)
 _LAYOUT_DIR = os.path.join(os.path.expanduser("~"), ".upbit_trader")
 _LAYOUT_FILE = os.path.join(_LAYOUT_DIR, "statistics_tab_layout.json")
 _SETTINGS_FILE = os.path.join(_LAYOUT_DIR, "statistics_tab_settings.json")
 
-# 기본 ?�정
+# 기본 설정
 _DEF = {
     "num_live_tabs": 3,
     "flush_interval_ms": 200,
@@ -142,10 +142,10 @@ if _HAS_QT:
                 pass
 
             if not loaded or not self._has_core_widgets():
-                logger.warning("[StatisticsTab] UI 로드 ?�는 바인??불완?????�동 바인???�도")
+                logger.warning("[StatisticsTab] UI 로드 또는 바인딩 불완전 — 자동 바인딩 시도")
                 self._attempt_find_widgets()
                 if not self._has_core_widgets():
-                    self._show_ui_warning(f"StatisticsTab UI 로드 ?�패 ?�는 ?�심 ?�젯 ?�락: {os.path.basename(ui_filename)}")
+                    self._show_ui_warning(f"StatisticsTab UI 로드 실패 또는 핵심 위젯 누락: {os.path.basename(ui_filename)}")
 
             # mixin init (optional)
             try:
@@ -198,7 +198,7 @@ if _HAS_QT:
                 try:
                     self._replace_table_widget_with_view(i, tbl_widget)
                 except Exception as exc:
-                    logger.debug("[StatisticsTab] _replace_table_widget_with_view ?�패(tab=%s): %s", i, exc)
+                    logger.debug("[StatisticsTab] _replace_table_widget_with_view 실패(tab=%s): %s", i, exc)
 
                 try:
                     if self._search_boxes[i] is not None and hasattr(self._search_boxes[i], "textChanged"):
@@ -265,7 +265,7 @@ if _HAS_QT:
             try:
                 if bool(self._settings.get("autostart_timer", _DEF["autostart_timer"])) and not self._timer.isActive():
                     self._timer.start()
-                    logger.info("[StatisticsTab] ?�?�머 ?�동 ?�작")
+                    logger.info("[StatisticsTab] 타이머 자동 시작")
             except Exception:
                 pass
 
@@ -276,7 +276,7 @@ if _HAS_QT:
                 pass
 
         # -------------------------
-        # UI 로드 / 바인??보조
+        # UI 로드 / 바인딩 보조
         # -------------------------
         def _robust_load_ui(self, ui_path: str) -> bool:
             """Try load_ui_with_tab_fix, then uic.loadUi, then uic.loadUiType as final fallback."""
@@ -284,29 +284,29 @@ if _HAS_QT:
                 if _load_ui_with_tab_fix is not None:
                     try:
                         _load_ui_with_tab_fix(ui_path, self)
-                        logger.info("[StatisticsTab] UI 로드 ?�공 (load_ui_with_tab_fix)")
+                        logger.info("[StatisticsTab] UI 로드 성공 (load_ui_with_tab_fix)")
                         return True
                     except Exception as e:
-                        logger.debug("[StatisticsTab] load_ui_with_tab_fix ?�패: %s", e)
+                        logger.debug("[StatisticsTab] load_ui_with_tab_fix 실패: %s", e)
                 # Try uic.loadUi
                 try:
                     uic.loadUi(ui_path, self)
-                    logger.info("[StatisticsTab] UI 로드 ?�공 (uic.loadUi)")
+                    logger.info("[StatisticsTab] UI 로드 성공 (uic.loadUi)")
                     return True
                 except Exception as e:
-                    logger.debug("[StatisticsTab] uic.loadUi ?�패: %s", e)
+                    logger.debug("[StatisticsTab] uic.loadUi 실패: %s", e)
                 # Try loadUiType fallback (generates form class)
                 try:
                     form_class, base_class = uic.loadUiType(ui_path)
                     form = form_class()
                     form.setupUi(self)
-                    logger.info("[StatisticsTab] UI 로드 ?�공 (uic.loadUiType ?�백)")
+                    logger.info("[StatisticsTab] UI 로드 성공 (uic.loadUiType 폴백)")
                     return True
                 except Exception as e:
-                    logger.warning("[StatisticsTab] uic.loadUiType ?�백 ?�패: %s", e)
+                    logger.warning("[StatisticsTab] uic.loadUiType 폴백 실패: %s", e)
                     return False
             except Exception as exc:
-                logger.exception("[StatisticsTab] UI 로드 �??�외: %s", exc)
+                logger.exception("[StatisticsTab] UI 로드 중 예외: %s", exc)
                 return False
 
         def _has_core_widgets(self) -> bool:
@@ -327,7 +327,7 @@ if _HAS_QT:
                     if tab is not None:
                         try:
                             setattr(self, "tabWidget_main_tabs", tab)
-                            logger.debug("[StatisticsTab] tabWidget_main_tabs ?�동 바인????(%s)", getattr(tab, "objectName", lambda: "")())
+                            logger.debug("[StatisticsTab] tabWidget_main_tabs 자동 바인딩 됨 (%s)", getattr(tab, "objectName", lambda: "")())
                         except Exception:
                             pass
             except Exception:
@@ -341,7 +341,7 @@ if _HAS_QT:
                         if w is not None:
                             try:
                                 setattr(self, f"table_tab_{i}", w)
-                                logger.debug("[StatisticsTab] table_tab_%d ?�동 바인??(%s)", i, w.objectName())
+                                logger.debug("[StatisticsTab] table_tab_%d 자동 바인딩 (%s)", i, w.objectName())
                             except Exception:
                                 pass
                 except Exception:
@@ -352,7 +352,7 @@ if _HAS_QT:
                         if w is not None:
                             try:
                                 setattr(self, f"text_log_tab_{i}", w)
-                                logger.debug("[StatisticsTab] text_log_tab_%d ?�동 바인??(%s)", i, w.objectName())
+                                logger.debug("[StatisticsTab] text_log_tab_%d 자동 바인딩 (%s)", i, w.objectName())
                             except Exception:
                                 pass
                 except Exception:
@@ -405,7 +405,7 @@ if _HAS_QT:
                 pass
 
         # -------------------------
-        # ?�정 ?�일 로드/?�??
+        # 설정 파일 로드/저장
         # -------------------------
         def _load_settings_file_or_defaults(self) -> None:
             self._settings = dict(_DEF)
@@ -416,7 +416,7 @@ if _HAS_QT:
                     if isinstance(data, dict):
                         self._settings.update(data)
             except Exception as exc:
-                logger.debug("[StatisticsTab] _load_settings_file_or_defaults ?�패: %s", exc)
+                logger.debug("[StatisticsTab] _load_settings_file_or_defaults 실패: %s", exc)
 
         def _save_settings_file(self) -> None:
             try:
@@ -425,14 +425,14 @@ if _HAS_QT:
                 with open(_SETTINGS_FILE, "w", encoding="utf-8") as f:
                     json.dump(self._settings, f, ensure_ascii=False, indent=2)
             except Exception as exc:
-                logger.debug("[StatisticsTab] _save_settings_file ?�패: %s", exc)
+                logger.debug("[StatisticsTab] _save_settings_file 실패: %s", exc)
 
-        # (?�하 로직 �?UI ?�퍼???�본 ?�작???��? ???�략??부분�? ?�요 ???�본 그�?�?붙여 ?�용?�세??)
-        # 주요 ?�작: _replace_table_widget_with_view, _on_section_resized, set_log_handler, _register_forwarding_handler,
+        # (이하 로직 및 UI 헬퍼는 원본 동작을 유지 — 생략된 부분은 필요 시 원본 그대로 붙여 적용하세요.)
+        # 주요 동작: _replace_table_widget_with_view, _on_section_resized, set_log_handler, _register_forwarding_handler,
         # _setup_auto_log_handler, _add_bootstrap_stream_handler, add_log_entry, _on_timer_flush, _collect_filters_for_tab,
-        # _update_proxy_filters, UI ?�션?? export/load history, _filter_log_item, _get_max_rows_for_tab, closeEvent ??
+        # _update_proxy_filters, UI 액션들, export/load history, _filter_log_item, _get_max_rows_for_tab, closeEvent 등.
         #
-        # ?�체 ?�본 로직??보존?�려�????�일???�머지 메서???�리지??구현)�?그�?�??�쳐 ?�용?�시�??�니??
+        # 전체 원본 로직을 보존하려면 이 파일의 나머지 메서드(오리지널 구현)를 그대로 합쳐 사용하시면 됩니다.
 
 else:
     class StatisticsTab:

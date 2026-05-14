@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-Backward-compat shim ??canonical location: src/data_01/workers/aggregator.py
+Backward-compat shim — canonical location: src/data_01/workers/aggregator.py
 
-???�일?� src/data_01/workers/aggregator.py �??�동?�었?�니??
-?�위 ?�환?�을 ?�해 ?��??�니??
+이 파일은 src/data_01/workers/aggregator.py 로 이동되었습니다.
+하위 호환성을 위해 유지됩니다.
 """
 import importlib.util as _ilu
 import os as _os
@@ -21,4 +21,3 @@ Aggregator = _mod.Aggregator
 refresh_cagg = _mod.refresh_cagg
 
 __all__ = ["Aggregator", "refresh_cagg"]
-

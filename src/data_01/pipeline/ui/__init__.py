@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""src.data_01.pipeline.ui ?�키지"""
+"""src.data_01.pipeline.ui 패키지"""
 from __future__ import annotations
 
 try:
@@ -7,4 +7,3 @@ try:
     __all__ = ["GapMonitorDialog"]
 except Exception:
     __all__ = []
-

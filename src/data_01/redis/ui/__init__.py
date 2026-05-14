@@ -25,10 +25,9 @@ if RedisSettingsDialog is not None:
 if RedisClusterTab is not None:
     __all__.append("RedisClusterTab")
 
-# 모니?�링 ?�이?�로�??�전 로드
+# 모니터링 다이얼로그 안전 로드
 try:
     from .redis_monitor import RedisMonitorDialog  # type: ignore  # noqa: F401
     __all__.append("RedisMonitorDialog")
 except Exception as e:
     logger.debug("redis_monitor.RedisMonitorDialog not importable: %s", e)
-
