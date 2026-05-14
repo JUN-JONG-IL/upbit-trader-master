@@ -1,72 +1,59 @@
 # -*- coding: utf-8 -*-
 """
-ForwardingRegistrar 모듈
-- 파이썬 로깅 루트에 포워딩 핸들러를 등록/제거하는 책임을 담당합니다.
-- Callback은 단일 인자(entry: dict)를 받아 처리하도록 설계합니다.
+Buffer 모듈
+- 로그 항목을 안전하게 버퍼링하고 배치로 꺼내주는 책임만 가집니다.
+- 동기(스레드 안전) 방식으로 설계되어 Controller에서 즉시 사용 가능합니다.
 """
 from __future__ import annotations
-import logging
-from datetime import datetime
-from typing import Callable, Dict, Any
+import threading
+from collections import deque
+from typing import Any, Deque, Dict, List
 
-logger = logging.getLogger(__name__)
+class BufferManager:
+    """로그 버퍼 관리 클래스"""
 
-class ForwardingRegistrar:
-    """로깅 포워딩 핸들러 등록기"""
+    def __init__(self, max_pending: int = 100000):
+        self._pending: Deque[Dict[str, Any]] = deque()
+        self._lock = threading.Lock()
+        # 최소값 방어
+        self.max_pending = max(1, int(max_pending))
 
-    MARKER = "_StatisticsTabForwardingHandler"
-
-    def __init__(self):
-        self._handler = None
-
-    def register(self, callback: Callable[[Dict[str, Any]], None]) -> None:
-        """callback(entry: dict)을 호출하는 핸들러를 루트 로거에 등록"""
-        try:
-            root = logging.getLogger()
-            for h in list(root.handlers):
-                if getattr(h, "name", "") == self.MARKER:
-                    self._handler = h
-                    return
-
-            class _H(logging.Handler):
-                def __init__(self, cb):
-                    super().__init__()
-                    self.name = ForwardingRegistrar.MARKER
-                    self._cb = cb
-                    self.setLevel(logging.DEBUG)
-
-                def emit(self, record):
+    def append(self, item: Dict[str, Any]) -> None:
+        """새 로그 항목을 버퍼에 추가"""
+        if not isinstance(item, dict):
+            # 안전성: dict만 허용
+            return
+        with self._lock:
+            self._pending.append(item)
+            if len(self._pending) > self.max_pending:
+                target = int(self.max_pending * 0.8)
+                while len(self._pending) > target:
                     try:
-                        ts = datetime.fromtimestamp(record.created).strftime("%H:%M:%S.%f")[:-3]
-                        entry = {
-                            "time": ts,
-                            "level": record.levelname,
-                            "module": record.name,
-                            "message": self.format(record),
-                        }
-                        self._cb(entry)
+                        self._pending.popleft()
                     except Exception:
-                        pass
+                        break
 
-            h = _H(callback)
-            h.setFormatter(logging.Formatter("%(asctime)s [%(name)s] [%(levelname)s] %(message)s"))
-            root.addHandler(h)
-            self._handler = h
-            logger.info("[ForwardingRegistrar] handler registered")
-        except Exception as e:
-            logger.debug("[ForwardingRegistrar] register failed: %s", e)
+    def pop_batch(self, batch_size: int) -> List[Dict[str, Any]]:
+        """최대 batch_size 만큼의 항목을 안전하게 추출하여 반환"""
+        out: List[Dict[str, Any]] = []
+        with self._lock:
+            for _ in range(min(batch_size, len(self._pending))):
+                try:
+                    out.append(self._pending.popleft())
+                except Exception:
+                    break
+        return out
 
-    def unregister(self) -> None:
-        """등록한 핸들러를 제거"""
-        try:
-            if self._handler is None:
-                return
-            root = logging.getLogger()
-            try:
-                root.removeHandler(self._handler)
-            except Exception:
-                pass
-            self._handler = None
-            logger.info("[ForwardingRegistrar] handler unregistered")
-        except Exception as e:
-            logger.debug("[ForwardingRegistrar] unregister failed: %s", e)
+    def snapshot(self) -> List[Dict[str, Any]]:
+        """버퍼 현재 상태를 복사본으로 반환(읽기 전용)"""
+        with self._lock:
+            return list(self._pending)
+
+    def clear(self) -> None:
+        """버퍼를 비웁니다."""
+        with self._lock:
+            self._pending.clear()
+
+    def __len__(self) -> int:
+        with self._lock:
+            return len(self._pending)
