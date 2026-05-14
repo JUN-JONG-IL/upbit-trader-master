@@ -6,15 +6,23 @@ StatusWidget 메인 클래스 (widget.py)
 - 실시간 로그 팝업을 StatisticsTab 인스턴스로 임베드하여 로그가 보이도록 개선.
 - StatisticsTab 임포트 실패 시 기존 QPlainTextEdit fallback 유지.
 - StatusWidget._on_ui_log_received가 팝업(StatisticsTab)에 레코드와 함께 로그를 전달하도록 보강.
+
+추가 변경(핵심):
+- 파일-경로 폴백으로 statistics_tab.py를 로드할 때, 모듈을 '무작정 exec' 하지 않고
+  적절한 __package__ 값 설정과 sys.modules에 패키지 엔트리를 등록하여 내부의 상대 import가
+  정상 동작하도록 보강했습니다.
+  (문제 원인: 숫자로 시작하는 폴더명 때문에 dotted import가 실패하면 file-path fallback이 동작,
+   이때 package context가 없으면 'from ._mixins' 같은 상대 import가 실패하여 빈 UI가 표시됨)
 """
 from __future__ import annotations
 
 import importlib
+import importlib.util
 import logging
 import os
 import sys
 import threading
-import importlib.util
+import types
 from datetime import datetime
 from typing import Optional
 
@@ -55,6 +63,10 @@ if _HAS_QT:
         - 우선 src/02_data/ui/tabs/statistics_tab.py의 StatisticsTab 클래스를 동적 임포트하여 임베드합니다.
         - 임포트 실패 시 QPlainTextEdit 기반의 fallback 뷰를 사용합니다.
         - append_log(formatted_message, record=None) 를 통해 로그를 전달받아 StatisticsTab.add_log_entry 또는 텍스트뷰에 쌓습니다.
+
+        주의(핵심):
+        - 파일-경로로 모듈을 로드할 때 모듈 내부에서 상대 import를 사용하면 패키지 컨텍스트가 필요합니다.
+          여기서는 안전하게 패키지 이름을 유추하고 sys.modules에 패키지 엔트리를 등록한 뒤 모듈을 exec 합니다.
         """
         def __init__(self, parent: Optional[QWidget] = None) -> None:
             super().__init__(parent)
@@ -82,21 +94,78 @@ if _HAS_QT:
                     candidate = os.path.abspath(os.path.join(here, "..", "tabs", "statistics_tab.py"))
                     if os.path.isfile(candidate):
                         try:
-                            spec = importlib.util.spec_from_file_location("_statistics_tab_local", candidate)
+                            # -------------------------
+                            # 안전한 파일-경로 로드 로직
+                            #  - module_name과 package_name을 유추
+                            #  - 패키지 모듈을 sys.modules에 등록(간단한 __path__ 설정 포함)
+                            #  - 모듈.__package__를 설정한 뒤 exec_module 호출
+                            #  - 이렇게 하면 statistics_tab 내부의 상대 import(from ._mixins 등)가 동작함
+                            # -------------------------
+                            # 유추: candidate 경로에서 'src' 디렉터리 이후의 경로를 패키지 네임으로 사용 시도
+                            candidate_norm = os.path.normpath(candidate)
+                            parts = candidate_norm.split(os.sep)
+                            package_name = None
+                            try:
+                                # 'src' 루트가 있으면 그 이후를 패키지 이름으로 사용
+                                idx = next(i for i, p in enumerate(parts) if p == "src")
+                                # exclude the filename at the end
+                                pkg_parts = parts[idx:-1]
+                                package_name = ".".join(pkg_parts) if pkg_parts else None
+                            except StopIteration:
+                                package_name = None
+
+                            # fallback package_name: 디렉터리 이름을 사용 (안전하게)
+                            if not package_name:
+                                package_name = os.path.basename(os.path.dirname(candidate))
+
+                            # 현실적으로 statistics_tab.py 파일은 '.../src/02_data/ui/tabs/statistics_tab.py' 에 있음.
+                            # 이때 package_name은 'src.02_data.ui.tabs' 가 될 가능성이 큼.
+                            module_name = package_name + ".statistics_tab_local"
+
+                            spec = importlib.util.spec_from_file_location(module_name, candidate)
                             if spec and spec.loader:
                                 mod = importlib.util.module_from_spec(spec)
-                                spec.loader.exec_module(mod)
-                                _stats_tab_cls = getattr(mod, "StatisticsTab", None)
-                                if _stats_tab_cls is not None:
-                                    logger.debug("[LogPopup] StatisticsTab loaded from file: %s", candidate)
-                                else:
-                                    logger.debug("[LogPopup] file loaded but StatisticsTab not found in module: %s", candidate)
-                        except Exception as e_file:
-                            logger.debug("[LogPopup] file-path import of StatisticsTab failed: %s", e_file)
+
+                                # 부모 패키지(간단 타입) 등록: importlib의 상대 import가 동작하려면
+                                # package 엔트리가 sys.modules에 존재하고 __path__가 올바르게 설정되어야 함.
+                                try:
+                                    # 패키지 파일 시스템 디렉토리 (statistics_tab.py의 상위 디렉토리)
+                                    package_dir = os.path.dirname(candidate)
+                                    # 등록되지 않은 경우에만 생성
+                                    if package_name not in sys.modules:
+                                        pkg_mod = types.ModuleType(package_name)
+                                        # __path__는 패키지 탐색시 사용됨(상위 디렉토리로 설정)
+                                        pkg_mod.__path__ = [package_dir]
+                                        sys.modules[package_name] = pkg_mod
+                                    # 모듈의 패키지 속성 설정 (상대 import resolution에 사용)
+                                    mod.__package__ = package_name
+                                except Exception as e_pkg:
+                                    logger.debug("[LogPopup] 패키지 등록 중 오류(무시): %s", e_pkg)
+
+                                # sys.modules에 모듈 이름 등록 — 모듈 내부에서 자신의 절대 이름으로 접근 가능
+                                try:
+                                    sys.modules[module_name] = mod
+                                except Exception:
+                                    pass
+
+                                # finally exec the module
+                                try:
+                                    spec.loader.exec_module(mod)
+                                    _stats_tab_cls = getattr(mod, "StatisticsTab", None)
+                                    if _stats_tab_cls is not None:
+                                        logger.debug("[LogPopup] StatisticsTab loaded from file with package context: %s", candidate)
+                                    else:
+                                        logger.debug("[LogPopup] file loaded but StatisticsTab not found in module: %s", candidate)
+                                except Exception as e_file:
+                                    logger.debug("[LogPopup] file-path import (with package context) of StatisticsTab failed: %s", e_file, exc_info=True)
+                            else:
+                                logger.debug("[LogPopup] spec 생성 실패 또는 loader 없음 for candidate: %s", candidate)
+                        except Exception as e_file_outer:
+                            logger.debug("[LogPopup] file-path import of StatisticsTab failed (outer): %s", e_file_outer, exc_info=True)
                     else:
                         logger.debug("[LogPopup] candidate statistics_tab.py not found at: %s", candidate)
                 except Exception as e_fp:
-                    logger.debug("[LogPopup] statistics_tab import fallback failed: %s", e_fp)
+                    logger.debug("[LogPopup] statistics_tab import fallback failed: %s", e_fp, exc_info=True)
 
             # If we found a StatisticsTab class, instantiate and embed it
             if _stats_tab_cls is not None:
@@ -105,7 +174,7 @@ if _HAS_QT:
                     layout.addWidget(self._stats_tab)
                     self._has_stats_tab = True
                 except Exception as exc:
-                    logger.debug("[LogPopup] StatisticsTab instance create failed, fallback used: %s", exc)
+                    logger.debug("[LogPopup] StatisticsTab instance create failed, fallback used: %s", exc, exc_info=True)
                     self._has_stats_tab = False
             else:
                 self._has_stats_tab = False
