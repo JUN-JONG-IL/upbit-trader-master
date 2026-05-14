@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-09_sentiment 모듈 인터페이스
+sentiment 모듈 인터페이스
 뉴스/소셜 감성 분석 추상화
 """
 from __future__ import annotations
@@ -8,13 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-_sentiment_dir = str(Path(__file__).parents[3] / "09_sentiment")
+_sentiment_dir = str(Path(__file__).parents[3] / "sentiment")
 if _sentiment_dir not in sys.path:
     sys.path.insert(0, _sentiment_dir)
 
 
 class SentimentService:
-    """09_sentiment 모듈 서비스 레이어"""
+    """sentiment 모듈 서비스 레이어"""
 
     def __init__(self) -> None:
         self._engine: Optional[Any] = None

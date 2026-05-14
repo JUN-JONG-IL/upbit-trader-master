@@ -139,7 +139,7 @@ def _load_module_from_file(path: str, alias: str) -> Optional[Any]:
 def _try_candidates_with_file(candidates: Iterable[str], file_relpath: Optional[str], static: Any, src_root: str) -> Optional[Any]:
     """
     후보 네임스페이스들을 순차 import 시도하고, 실패하면 src_root + file_relpath 를 file-load 시도.
-    file_relpath은 src 루트 기준 상대경로(예: '02_data/pipeline/processor.py').
+    file_relpath은 src 루트 기준 상대경로(예: 'data_01/pipeline/processor.py').
     """
     tried: List[Tuple[str, str]] = []
 
@@ -236,11 +236,11 @@ def _discover_pg_pool(static: Any) -> Optional[Any]:
     # 3) timescale 관련 모듈에서 connector 얻기 시도 (강화)
     try:
         try:
-            ts_mod = importlib.import_module("02_data.timescale.timescale_db")
+            ts_mod = importlib.import_module("data_01.timescale.timescale_db")
         except Exception:
             # 파일 레벨로 직접 로드 시도 (비패키지 실행 환경)
             base = pathlib.Path(__file__).resolve().parents[1]  # project/src/.. -> project
-            ts_path = base / "src" / "02_data" / "timescale" / "timescale_db.py"
+            ts_path = base / "src" / "data_01" / "timescale" / "timescale_db.py"
             if ts_path.exists():
                 ts_mod = _load_module_from_file(str(ts_path), alias="file_timescale_timescale_db")
             else:
@@ -271,7 +271,7 @@ def _discover_pg_pool(static: Any) -> Optional[Any]:
         _log(static, "debug", "[pipeline_loader] timescale module discovery failed: %s", traceback.format_exc())
 
     # 4) module-level minimal fallbacks (예전 방식 유지)
-    for mod_name in ("02_data.timescale.timescale_db",):
+    for mod_name in ("data_01.timescale.timescale_db",):
         try:
             mod = importlib.import_module(mod_name)
             for name in ("pg_pool", "pool", "engine"):
@@ -467,8 +467,8 @@ def setup_pipeline(static: Any) -> None:
         # --------------------
         # PipelineProcessor 로드 (정석 경로만)
         # --------------------
-        proc_candidates = ("02_data.pipeline.processor",)
-        proc_relpath = os.path.join("02_data", "pipeline", "processor.py")
+        proc_candidates = ("data_01.pipeline.processor",)
+        proc_relpath = os.path.join("data_01", "pipeline", "processor.py")
         proc_mod = _try_candidates_with_file(proc_candidates, proc_relpath, static, src_root)
         if proc_mod is None:
             _log(static, "info", "[pipeline_loader] PipelineProcessor not found — skipping pipeline setup (candidates tried logged)")
@@ -504,13 +504,13 @@ def setup_pipeline(static: Any) -> None:
         # MetadataManager (정상 경로 우선, 파일 폴백)
         # --------------------
         metadata = None
-        meta_candidates = ("02_data.pipeline.metadata_manager", "02_data.mongodb.metadata_manager")
-        meta_relpath = os.path.join("02_data", "pipeline", "metadata_manager.py")
+        meta_candidates = ("data_01.pipeline.metadata_manager", "data_01.mongodb.metadata_manager")
+        meta_relpath = os.path.join("data_01", "pipeline", "metadata_manager.py")
         meta_mod = _try_candidates_with_file(meta_candidates, meta_relpath, static, src_root)
 
         if meta_mod is None:
             # try mongodb metadata file as secondary explicit path
-            mongo_rel = os.path.join("02_data", "mongodb", "metadata_manager.py")
+            mongo_rel = os.path.join("data_01", "mongodb", "metadata_manager.py")
             meta_mod = _try_candidates_with_file((), mongo_rel, static, src_root)
 
         if meta_mod is not None:
@@ -521,7 +521,7 @@ def setup_pipeline(static: Any) -> None:
                 mongo_db = getattr(data_manager, "db")
             else:
                 try:
-                    mmod = _try_candidates_with_file(("02_data.mongodb.init_mongodb",), os.path.join("02_data", "mongodb", "init_mongodb.py"), static, src_root)
+                    mmod = _try_candidates_with_file(("data_01.mongodb.init_mongodb",), os.path.join("data_01", "mongodb", "init_mongodb.py"), static, src_root)
                     get_db = getattr(mmod, "get_db", None) if mmod is not None else None
                     if callable(get_db):
                         mongo_db = get_db()
@@ -582,8 +582,8 @@ def setup_pipeline(static: Any) -> None:
         # --------------------
         writer = None
         CandleWriter = None
-        cw_candidates = ("02_data.timescale.operations.candle_writer",)
-        cw_relpath = os.path.join("02_data", "timescale", "operations", "candle_writer.py")
+        cw_candidates = ("data_01.timescale.operations.candle_writer",)
+        cw_relpath = os.path.join("data_01", "timescale", "operations", "candle_writer.py")
         cw_mod = _try_candidates_with_file(cw_candidates, cw_relpath, static, src_root)
 
         if cw_mod is not None:
@@ -618,8 +618,8 @@ def setup_pipeline(static: Any) -> None:
         # Stager
         # --------------------
         stager = None
-        stager_candidates = ("02_data.pipeline.stager",)
-        s_relpath = os.path.join("02_data", "pipeline", "stager.py")
+        stager_candidates = ("data_01.pipeline.stager",)
+        s_relpath = os.path.join("data_01", "pipeline", "stager.py")
         s_mod = _try_candidates_with_file(stager_candidates, s_relpath, static, src_root)
         if s_mod is not None:
             Stager = getattr(s_mod, "CandleStager", None) or getattr(s_mod, "Stager", None)
@@ -641,8 +641,8 @@ def setup_pipeline(static: Any) -> None:
         # Finalizer
         # --------------------
         finalizer = None
-        f_candidates = ("02_data.pipeline.finalizer",)
-        f_relpath = os.path.join("02_data", "pipeline", "finalizer.py")
+        f_candidates = ("data_01.pipeline.finalizer",)
+        f_relpath = os.path.join("data_01", "pipeline", "finalizer.py")
         f_mod = _try_candidates_with_file(f_candidates, f_relpath, static, src_root)
         if f_mod is not None:
             Finalizer = getattr(f_mod, "CandlesFinalizer", None) or getattr(f_mod, "Finalizer", None)
@@ -664,8 +664,8 @@ def setup_pipeline(static: Any) -> None:
         # Isolator
         # --------------------
         isolator = None
-        iso_candidates = ("02_data.pipeline.isolator",)
-        iso_relpath = os.path.join("02_data", "pipeline", "isolator.py")
+        iso_candidates = ("data_01.pipeline.isolator",)
+        iso_relpath = os.path.join("data_01", "pipeline", "isolator.py")
         iso_mod = _try_candidates_with_file(iso_candidates, iso_relpath, static, src_root)
         if iso_mod is not None:
             Isolator = getattr(iso_mod, "CandleIsolator", None) or getattr(iso_mod, "Isolator", None)

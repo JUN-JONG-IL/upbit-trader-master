@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-서비스 레이어: 01_core ~ 11_server 모듈 인터페이스
+서비스 레이어: core ~ server 모듈 인터페이스
 """
 from .core_service import CoreService
 from .data_service import DataService

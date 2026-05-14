@@ -33,7 +33,7 @@ log = create_safe_logger("bootstrap")
 
 # ------------------- 잡음성 로거 억제 -------------------
 try:
-    _lc_path = os.path.join(SRC_ROOT, "01_core", "config", "logging_config.py")
+    _lc_path = os.path.join(SRC_ROOT, "core", "config", "logging_config.py")
     if os.path.isfile(_lc_path):
         import importlib.util as _ilu
         _lc_spec = _ilu.spec_from_file_location("logging_config", _lc_path)
@@ -79,7 +79,7 @@ def _do_full_init(sync_mode: bool = False) -> None:
             ts_connector = getattr(static, "timescale_connector", None)
             if ts_connector is None:
                 try:
-                    _ts_db_path = os.path.join(SRC_ROOT, "02_data", "timescale", "timescale_db.py")
+                    _ts_db_path = os.path.join(SRC_ROOT, "data_01", "timescale", "timescale_db.py")
                     if os.path.isfile(_ts_db_path):
                         import importlib.util as _ilu
                         _ts_spec = _ilu.spec_from_file_location("timescale_db_fallback", _ts_db_path)
@@ -100,7 +100,7 @@ def _do_full_init(sync_mode: bool = False) -> None:
             if ts_connector is not None:
                 try:
                     _migration_path = os.path.join(
-                        SRC_ROOT, "02_data", "timescale", "migrations",
+                        SRC_ROOT, "data_01", "timescale", "migrations",
                         "add_staging_processed_column.py"
                     )
                     if os.path.isfile(_migration_path):
@@ -313,7 +313,7 @@ def main(gui: bool = True) -> None:
     if gui:
         log.info("[main] Starting GUI mode...")
         try:
-            auth_mod, _ = try_import_names(("01_core.auth", "app.core.auth", "auth", "src.01_core.auth"))
+            auth_mod, _ = try_import_names(("core.auth", "app.core.auth", "auth", "src.core.auth"))
             if auth_mod:
                 gui_main = getattr(auth_mod, "gui_main", None)
                 if callable(gui_main):

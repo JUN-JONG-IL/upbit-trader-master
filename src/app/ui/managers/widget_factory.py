@@ -51,18 +51,18 @@ _LOG_STATS = {
 # 위젯 경로 매핑 (window_main.py에서 이동)
 # 경로는 src/ 디렉터리 기준 상대 경로 (src/ 접두사 제외)
 _WIDGET_PATHS: Dict[str, tuple] = {
-    "CoinlistWidget":          (os.path.join("03_market", "coinlist", "ui", "widget_coin_list.py"), "CoinlistWidget"),
-    "ChartWidget":             (os.path.join("04_chart", "ui", "widget_chart.py"), "ChartWidget"),
-    "OrderbookWidget":         (os.path.join("03_market", "orderbook", "ui", "widget_orderbook.py"), "OrderbookWidget"),
-    "TradeWidget":             (os.path.join("10_trade", "orders", "ui", "widget_trade.py"), "TradeWidget"),
-    "HoldingListWidget":       (os.path.join("08_portfolio", "holdings", "ui", "widget_holding_list.py"), "HoldingListWidget"),
-    "ScannerFrameWidget":      (os.path.join("07_scanner", "engine", "ui", "widget_scanner_frame.py"), "ScannerFrameWidget"),
-    "UserinfoWidget":          (os.path.join("08_portfolio", "userinfo", "ui", "widget_userinfo.py"), "UserinfoWidget"),
-    "DetailholdinglistWidget": (os.path.join("08_portfolio", "holdings", "ui", "widget_detail_holding.py"), "DetailholdinglistWidget"),
-    "SignallistWidget":        (os.path.join("10_trade", "ui", "signals", "widget_signal_list.py"), "SignallistWidget"),
-    "SignalselectWidget":      (os.path.join("10_trade", "ui", "signals", "widget_signal_select.py"), "SignalselectWidget"),
-    # 수정: SettingsWidget 경로를 실제 레포 파일 위치로 변경 (기존: 11_server/settings/ui/widget_settings.py)
-    "SettingsWidget":          (os.path.join("11_server", "ui", "settings", "widget_server_settings.py"), "SettingsWidget"),
+    "CoinlistWidget":          (os.path.join("market", "coinlist", "ui", "widget_coin_list.py"), "CoinlistWidget"),
+    "ChartWidget":             (os.path.join("chart", "ui", "widget_chart.py"), "ChartWidget"),
+    "OrderbookWidget":         (os.path.join("market", "orderbook", "ui", "widget_orderbook.py"), "OrderbookWidget"),
+    "TradeWidget":             (os.path.join("trade", "orders", "ui", "widget_trade.py"), "TradeWidget"),
+    "HoldingListWidget":       (os.path.join("portfolio", "holdings", "ui", "widget_holding_list.py"), "HoldingListWidget"),
+    "ScannerFrameWidget":      (os.path.join("scanner", "engine", "ui", "widget_scanner_frame.py"), "ScannerFrameWidget"),
+    "UserinfoWidget":          (os.path.join("portfolio", "userinfo", "ui", "widget_userinfo.py"), "UserinfoWidget"),
+    "DetailholdinglistWidget": (os.path.join("portfolio", "holdings", "ui", "widget_detail_holding.py"), "DetailholdinglistWidget"),
+    "SignallistWidget":        (os.path.join("trade", "ui", "signals", "widget_signal_list.py"), "SignallistWidget"),
+    "SignalselectWidget":      (os.path.join("trade", "ui", "signals", "widget_signal_select.py"), "SignalselectWidget"),
+    # 수정: SettingsWidget 경로를 실제 레포 파일 위치로 변경 (기존: server/settings/ui/widget_settings.py)
+    "SettingsWidget":          (os.path.join("server", "ui", "settings", "widget_server_settings.py"), "SettingsWidget"),
 }
 
 
@@ -82,7 +82,7 @@ def _safe_segment(s: str) -> str:
     파일/디렉터리 세그먼트를 안전한 파이썬 식별자로 변환합니다.
     - 이미 유효하면 그대로 반환
     - 유효하지 않으면 앞에 '_'를 붙이고, 유효 아닌 문자들은 '_'로 치환합니다.
-    예: '04_chart' -> '_04_chart'
+    예: 'chart' -> '_chart'
     """
     if _is_valid_identifier_segment(s):
         return s
@@ -201,7 +201,7 @@ class WidgetFactory:
 
             # 원래 parts(디렉터리 세그먼트)와 안전한 세그먼트 변환
             mod_name_parts = rel_path_norm.replace(os.sep, ".").replace("/", ".").replace(".py", "").split(".")
-            original_parts = [p for p in mod_name_parts if p]  # 디스크 상의 세그먼트 (예: ['04_chart','ui','widget_chart'])
+            original_parts = [p for p in mod_name_parts if p]  # 디스크 상의 세그먼트 (예: ['chart','ui','widget_chart'])
             safe_parts = [_safe_segment(p) for p in original_parts]  # 안전한 식별자로 변환
 
             # transformed dotted module name (sys.modules에 등록할 이름)

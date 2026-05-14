@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-호가창 위젯 - 03_market 모듈 연동
+호가창 위젯 - market 모듈 연동
 """
 from __future__ import annotations
 import sys
 from pathlib import Path
 
-_market_dir = str(Path(__file__).parents[4] / "03_market")
+_market_dir = str(Path(__file__).parents[4] / "market")
 if _market_dir not in sys.path:
     sys.path.insert(0, _market_dir)
 
 try:
-    from src._03_market import OrderbookWidget  # type: ignore
+    from src._market import OrderbookWidget  # type: ignore
 except ImportError:
     try:
         from orderbook import OrderbookWidget  # type: ignore
@@ -19,7 +19,7 @@ except ImportError:
         OrderbookWidget = None  # type: ignore
 
 if OrderbookWidget is None:
-    # Standalone fallback: self-contained implementation independent of 03_market
+    # Standalone fallback: self-contained implementation independent of market
     try:
         from PyQt5.QtWidgets import (
             QWidget, QTableWidget, QTableWidgetItem, QVBoxLayout,

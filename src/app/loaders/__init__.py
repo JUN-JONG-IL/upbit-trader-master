@@ -225,7 +225,7 @@ def create_data_manager(static: Any) -> Optional[Any]:
     ns_candidates = [
         "app.loaders.datamanager_loader",
         "app.loaders.datamanager_loader",  # duplicate safe
-        "02_data.core.data_manager",
+        "data_01.core.data_manager",
         "src.app.loaders.datamanager_loader",
         "app.datamanager_loader",
     ]
@@ -233,7 +233,7 @@ def create_data_manager(static: Any) -> Optional[Any]:
     file_candidates = [
         os.path.join("app", "loaders", "datamanager_loader.py"),
         os.path.join("app", "core", "datamanager_loader.py"),
-        os.path.join("02_data", "core", "data_manager.py"),
+        os.path.join("data_01", "core", "data_manager.py"),
     ]
 
     mod, attempts = _try_import_candidates(ns_candidates, file_candidates, static, desc)
@@ -268,8 +268,8 @@ def setup_pipeline(static: Any) -> None:
     ]
     file_candidates = [
         os.path.join("app", "loaders", "pipeline_loader.py"),
-        os.path.join("02_data", "pipeline", "processor.py"),
-        os.path.join("02_data", "timescale", "operations", "candle_writer.py"),
+        os.path.join("data_01", "pipeline", "processor.py"),
+        os.path.join("data_01", "timescale", "operations", "candle_writer.py"),
         os.path.join("app", "pipeline_loader.py"),
     ]
 

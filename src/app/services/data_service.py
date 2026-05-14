@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-02_data 모듈 인터페이스
+data_01 모듈 인터페이스
 TimescaleDB / Redis / MongoDB 데이터 접근 추상화
 """
 from __future__ import annotations
@@ -8,13 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-_data_dir = str(Path(__file__).parents[3] / "02_data")
+_data_dir = str(Path(__file__).parents[3] / "data_01")
 if _data_dir not in sys.path:
     sys.path.insert(0, _data_dir)
 
 
 class DataService:
-    """02_data 모듈 서비스 레이어"""
+    """data_01 모듈 서비스 레이어"""
 
     def __init__(self) -> None:
         self._timescale: Optional[Any] = None

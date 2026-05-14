@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-05_strategy 모듈 인터페이스
+strategy 모듈 인터페이스
 자동매매 전략 시스템 추상화
 """
 from __future__ import annotations
@@ -8,13 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-_strategy_dir = str(Path(__file__).parents[3] / "05_strategy")
+_strategy_dir = str(Path(__file__).parents[3] / "strategy")
 if _strategy_dir not in sys.path:
     sys.path.insert(0, _strategy_dir)
 
 
 class StrategyService:
-    """05_strategy 모듈 서비스 레이어"""
+    """strategy 모듈 서비스 레이어"""
 
     def __init__(self) -> None:
         self._signal_manager: Optional[Any] = None

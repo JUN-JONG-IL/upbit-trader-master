@@ -21,9 +21,9 @@ def load_runtime_modules(static: SimpleNamespace, log: SafeLogger) -> None:
 
     # server.static 로드
     server_candidates = (
-        "src.11_server.app.static",
-        "11_server.app.static",
-        "11_server.app.static.__init__",
+        "src.server.app.static",
+        "server.app.static",
+        "server.app.static.__init__",
     )
     server_mod, attempts = try_import_names(server_candidates)
     if server_mod:
@@ -44,7 +44,7 @@ def load_runtime_modules(static: SimpleNamespace, log: SafeLogger) -> None:
         log.debug("[bootstrap] server.static import attempts: %s", attempts)
 
     # utils 모듈 로드
-    utils_candidates = ("src.11_server.utils", "11_server.utils", "src.app.utils", "app.utils", "utils")
+    utils_candidates = ("src.server.utils", "server.utils", "src.app.utils", "app.utils", "utils")
     utils_mod, u_attempts = try_import_names(utils_candidates)
     if utils_mod:
         set_global = getattr(utils_mod, "set_windows_selector_event_loop_global", None)
@@ -62,13 +62,13 @@ def load_runtime_modules(static: SimpleNamespace, log: SafeLogger) -> None:
     helper_candidates = (
         "src.app.utils.helpers",
         "app.utils.helpers",
-        "01_core.utils.helpers",
-        "src.01_core.utils.helpers",
-        "11_server.utils.helpers",
-        "src.11_server.utils.helpers",
+        "core.utils.helpers",
+        "src.core.utils.helpers",
+        "server.utils.helpers",
+        "src.server.utils.helpers",
         "utils.helpers",
-        "02_data.timescale.utils.helpers",
-        "02_data.utils.helpers",
+        "data_01.timescale.utils.helpers",
+        "data_01.utils.helpers",
     )
     helper_mod, h_attempts = try_import_names(helper_candidates)
     if helper_mod:
@@ -78,9 +78,9 @@ def load_runtime_modules(static: SimpleNamespace, log: SafeLogger) -> None:
     else:
         log.debug("[bootstrap] helpers import attempts: %s", h_attempts)
         comp_candidates = (
-            "src.11_server.component.component",
-            "11_server.component.component",
-            "11_server.component",
+            "src.server.component.component",
+            "server.component.component",
+            "server.component",
             "component",
             "component.component",
         )
@@ -95,7 +95,7 @@ def load_runtime_modules(static: SimpleNamespace, log: SafeLogger) -> None:
             log.debug("[bootstrap] component import attempts: %s", comp_attempts)
 
     # strategy 모듈 로드 시도
-    try_import_names(("src.05_strategy", "05_strategy", "strategy"))
+    try_import_names(("src.strategy", "strategy", "strategy"))
     
     # 전역 객체에 저장
     static.RealtimeManager = RealtimeManager

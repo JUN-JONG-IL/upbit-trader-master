@@ -190,11 +190,11 @@ def _configure_global_logging():
         # 2) 기본 허용 핵심 로거 목록 (권장 기본값)
         default_allowed = [
             "app.core.startup_validator",
-            "02_data.mongodb.init_mongodb",
-            "src.02_data.timescale.health_check",
-            "02_data.timescale.operations.gap_finder",
-            "01_core.auth.ui.widget_login",
-            "02_data.core.data_manager",
+            "data_01.mongodb.init_mongodb",
+            "src.data_01.timescale.health_check",
+            "data_01.timescale.operations.gap_finder",
+            "core.auth.ui.widget_login",
+            "data_01.core.data_manager",
             "static",
         ]
 
@@ -238,7 +238,7 @@ def _configure_global_logging():
         if ui_loggers_env:
             ui_prefixes = [s.strip() for s in ui_loggers_env.split(",") if s.strip()]
         else:
-            ui_prefixes = ["timescale", "02_data", "o2_data", "websocket", "pipeline", "collectors", "gap_finder"]
+            ui_prefixes = ["timescale", "data_01", "o2_data", "websocket", "pipeline", "collectors", "gap_finder"]
 
         qt_handler = QtLogHandler(level=logging.INFO, fmt="%(asctime)s %(levelname)s %(name)s: %(message)s", datefmt="%H:%M:%S", tz_name=tz_name)
 
@@ -327,7 +327,7 @@ def _init_global_pool_from_env(minconn: int = 10, maxconn: int = 100) -> None:
         except Exception:
             src_root = Path(__file__).resolve().parents[2] / "src"
 
-        pool_path = src_root / "02_data" / "timescale" / "pool.py"
+        pool_path = src_root / "data_01" / "timescale" / "pool.py"
         if not pool_path.exists():
             _log.debug("[main] pool.py not found at expected path: %s", pool_path)
             return

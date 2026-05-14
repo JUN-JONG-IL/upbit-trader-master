@@ -35,11 +35,11 @@ class DBDialogManager:
 
     @staticmethod
     def _ensure_data_path() -> None:
-        """src/02_data/ 를 sys.path 에 추가"""
+        """src/data_01/ 를 sys.path 에 추가"""
         _data_dir = os.path.normpath(
             os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
-                "..", "..", "..", "02_data",
+                "..", "..", "..", "data_01",
             )
         )
         if _data_dir not in sys.path:
@@ -47,11 +47,11 @@ class DBDialogManager:
 
     @staticmethod
     def _ensure_settings_path() -> None:
-        """src/11_server/ui/settings/ 를 sys.path 에 추가"""
+        """src/server/ui/settings/ 를 sys.path 에 추가"""
         _settings_dir = os.path.normpath(
             os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
-                "..", "..", "..", "11_server", "ui", "settings",
+                "..", "..", "..", "server", "ui", "settings",
             )
         )
         if _settings_dir not in sys.path:
@@ -59,11 +59,11 @@ class DBDialogManager:
 
     @staticmethod
     def _ensure_db_ui_path(db_name: str) -> None:
-        """src/02_data/{db_name}/ui/ 를 sys.path 에 추가"""
+        """src/data_01/{db_name}/ui/ 를 sys.path 에 추가"""
         _ui_dir = os.path.normpath(
             os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
-                "..", "..", "..", "02_data", db_name, "ui",
+                "..", "..", "..", "data_01", db_name, "ui",
             )
         )
         if _ui_dir not in sys.path:
@@ -71,11 +71,11 @@ class DBDialogManager:
 
     @staticmethod
     def _ensure_priority_ui_path() -> None:
-        """src/06_ai/priority/ui/ 를 sys.path 에 추가"""
+        """src/ai/priority/ui/ 를 sys.path 에 추가"""
         _ui_dir = os.path.normpath(
             os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
-                "..", "..", "..", "06_ai", "priority", "ui",
+                "..", "..", "..", "ai", "priority", "ui",
             )
         )
         if _ui_dir not in sys.path:
@@ -92,7 +92,7 @@ class DBDialogManager:
             f"  1. Docker 컨테이너 실행 여부 확인 (docker ps)\n"
             f"  2. DB 연결 설정 확인 (호스트/포트/사용자)\n"
             f"  3. 로그 파일 확인: logs/app.log\n\n"
-            f"모듈 경로: src/02_data/{db_name.lower()}/ui/",
+            f"모듈 경로: src/data_01/{db_name.lower()}/ui/",
         )
 
     @staticmethod
@@ -116,7 +116,7 @@ class DBDialogManager:
     # ─────────────────────────────────────── DB 다이얼로그 핸들러 ──
 
     def _open_timescale_dialog(self) -> None:
-        """TimescaleDB 설정 다이얼로그 열기 (02_data 경로)"""
+        """TimescaleDB 설정 다이얼로그 열기 (data_01 경로)"""
         try:
             self._ensure_db_ui_path("timescale")
             dialog_class = self._try_import_dialog(
@@ -132,7 +132,7 @@ class DBDialogManager:
             self._show_dialog_error("TimescaleDB", e)
 
     def _open_mongodb_dialog(self) -> None:
-        """MongoDB 브라우저 다이얼로그 열기 (02_data 경로)"""
+        """MongoDB 브라우저 다이얼로그 열기 (data_01 경로)"""
         try:
             self._ensure_db_ui_path("mongodb")
             dialog_class = self._try_import_dialog(
@@ -148,7 +148,7 @@ class DBDialogManager:
             self._show_dialog_error("MongoDB", e)
 
     def _open_redis_dialog(self) -> None:
-        """Redis 상태 모니터 다이얼로그 열기 (02_data 경로)"""
+        """Redis 상태 모니터 다이얼로그 열기 (data_01 경로)"""
         try:
             self._ensure_db_ui_path("redis")
             dialog_class = self._try_import_dialog(
@@ -164,7 +164,7 @@ class DBDialogManager:
             self._show_dialog_error("Redis", e)
 
     def _open_kafka_dialog(self) -> None:
-        """Kafka 모니터 다이얼로그 열기 (02_data 경로)"""
+        """Kafka 모니터 다이얼로그 열기 (data_01 경로)"""
         try:
             self._ensure_db_ui_path("kafka")
             dialog_class = self._try_import_dialog(
@@ -180,7 +180,7 @@ class DBDialogManager:
             self._show_dialog_error("Kafka", e)
 
     def _open_clickhouse_dialog(self) -> None:
-        """ClickHouse 모니터 다이얼로그 열기 (02_data 경로)"""
+        """ClickHouse 모니터 다이얼로그 열기 (data_01 경로)"""
         try:
             self._ensure_db_ui_path("clickhouse")
             dialog_class = self._try_import_dialog(
@@ -196,7 +196,7 @@ class DBDialogManager:
             self._show_dialog_error("ClickHouse", e)
 
     def _open_postgresql_dialog(self) -> None:
-        """PostgreSQL CQRS 다이얼로그 열기 (02_data 경로)"""
+        """PostgreSQL CQRS 다이얼로그 열기 (data_01 경로)"""
         try:
             self._ensure_db_ui_path("postgres")
             dialog_class = self._try_import_dialog(
@@ -214,7 +214,7 @@ class DBDialogManager:
     # ─────────────────────────────────────── 우선순위 설정 다이얼로그 핸들러 ──
 
     def _open_priority_settings_dialog(self) -> None:
-        """우선순위 종목 설정 다이얼로그 열기 (06_ai/priority/ui)"""
+        """우선순위 종목 설정 다이얼로그 열기 (ai/priority/ui)"""
         try:
             self._ensure_priority_ui_path()
             
@@ -227,7 +227,7 @@ class DBDialogManager:
             if dialog_class is None:
                 raise ModuleNotFoundError(
                     "PrioritySettingsDialog를 찾을 수 없습니다.\n"
-                    "경로: src/06_ai/priority/ui/widget_priority_settings.py"
+                    "경로: src/ai/priority/ui/widget_priority_settings.py"
                 )
             
             # 다이얼로그 생성 및 표시
@@ -249,13 +249,13 @@ class DBDialogManager:
                 f"우선순위 설정 다이얼로그를 불러올 수 없습니다.\n\n"
                 f"오류: {str(e)}\n\n"
                 f"확인 사항:\n"
-                f"  1. 파일 존재 여부: src/06_ai/priority/ui/widget_priority_settings.py\n"
+                f"  1. 파일 존재 여부: src/ai/priority/ui/widget_priority_settings.py\n"
                 f"  2. 클래스명: PrioritySettingsDialog\n"
                 f"  3. 로그 파일: logs/app.log",
             )
 
     def _open_ml_model_selector_dialog(self) -> None:
-        """ML 모델 선택 다이얼로그 열기 (06_ai/priority/ui)"""
+        """ML 모델 선택 다이얼로그 열기 (ai/priority/ui)"""
         try:
             self._ensure_priority_ui_path()
             
@@ -268,7 +268,7 @@ class DBDialogManager:
             if dialog_class is None:
                 raise ModuleNotFoundError(
                     "MLModelSelectorDialog를 찾을 수 없습니다.\n"
-                    "경로: src/06_ai/priority/ui/widget_ml_model_selector.py"
+                    "경로: src/ai/priority/ui/widget_ml_model_selector.py"
                 )
             
             # 다이얼로그 생성 및 표시
@@ -290,13 +290,13 @@ class DBDialogManager:
                 f"ML 모델 선택 다이얼로그를 불러올 수 없습니다.\n\n"
                 f"오류: {str(e)}\n\n"
                 f"확인 사항:\n"
-                f"  1. 파일 존재 여부: src/06_ai/priority/ui/widget_ml_model_selector.py\n"
+                f"  1. 파일 존재 여부: src/ai/priority/ui/widget_ml_model_selector.py\n"
                 f"  2. 클래스명: MLModelSelectorDialog\n"
                 f"  3. 로그 파일: logs/app.log",
             )
 
     def _open_priority_dashboard_dialog(self) -> None:
-        """우선순위 대시보드 다이얼로그 열기 (06_ai/priority/ui)"""
+        """우선순위 대시보드 다이얼로그 열기 (ai/priority/ui)"""
         try:
             # 우선순위 대시보드는 별도 위젯이 없으므로 우선순위 설정으로 안내
             logger.info("[DBDialogManager] 우선순위 대시보드 → 우선순위 설정으로 안내")

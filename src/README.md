@@ -39,7 +39,7 @@ src/
 ├── __init__.py
 ├── README.md                   # 이 파일
 │
-├── 01_core/                    # 핵심 인프라 (인증, DI, 설정, 이벤트)
+├── core/                    # 핵심 인프라 (인증, DI, 설정, 이벤트)
 │   ├── __init__.py
 │   ├── README.md
 │   ├── auth/                   # 인증 및 로그인
@@ -52,7 +52,7 @@ src/
 │   ├── lib/                    # 핵심 라이브러리
 │   └── utils/                  # 공통 유틸리티
 │
-├── 02_data/                    # 데이터 레이어 (DB, 파이프라인)
+├── data_01/                    # 데이터 레이어 (DB, 파이프라인)
 │   ├── __init__.py
 │   ├── README.md
 │   ├── timescale/              # TimescaleDB (시계열 OHLCV)
@@ -66,7 +66,7 @@ src/
 │   ├── core/                   # DataManager
 │   └── workers/                # 백그라운드 워커
 │
-├── 03_market/                  # 마켓 데이터 (종목, 호가, 체결)
+├── market/                  # 마켓 데이터 (종목, 호가, 체결)
 │   ├── __init__.py
 │   ├── README.md
 │   ├── coinlist/
@@ -78,7 +78,7 @@ src/
 │   ├── websocket/              # WebSocket 클라이언트
 │   └── rest/                   # REST API 클라이언트
 │
-├── 04_chart/                   # 차트 엔진 (5개 엔진, 100+ 지표)
+├── chart/                   # 차트 엔진 (5개 엔진, 100+ 지표)
 │   ├── __init__.py
 │   ├── README.md
 │   ├── ui/                     # chart.ui, chart_settings_dialog.ui, widget_chart.py
@@ -93,7 +93,7 @@ src/
 │   ├── indicators/             # trend/momentum/volatility/volume
 │   └── utils/
 │
-├── 05_strategy/                # 트레이딩 전략 (백테스팅, 최적화)
+├── strategy/                # 트레이딩 전략 (백테스팅, 최적화)
 │   ├── __init__.py
 │   ├── README.md
 │   ├── core/                   # SignalManager, BaseStrategy, StrategyRegistry
@@ -101,7 +101,7 @@ src/
 │   ├── widgets/                # 전략 관리 UI
 │   └── risk/                   # 리스크 관리
 │
-├── 06_ai/                      # AI/ML 엔진 (예측, 강화학습, 이상탐지)
+├── ai/                      # AI/ML 엔진 (예측, 강화학습, 이상탐지)
 │   ├── __init__.py
 │   ├── README.md
 │   ├── ui/                     # AI UI 통합 진입점 (v4.0)
@@ -120,7 +120,7 @@ src/
 │   ├── sentiment/              # 감성 분석 엔진
 │   └── prompt/                 # 프롬프트 관리
 │
-├── 07_scanner/                 # 마켓 스캐너 (조건 스캔, 알림)
+├── scanner/                 # 마켓 스캐너 (조건 스캔, 알림)
 │   ├── __init__.py
 │   ├── README.md
 │   └── engine/
@@ -135,7 +135,7 @@ src/
 │       ├── indicators/
 │       └── patterns/
 │
-├── 08_portfolio/               # 포트폴리오 관리 (자산 현황, 최적화)
+├── portfolio/               # 포트폴리오 관리 (자산 현황, 최적화)
 │   ├── __init__.py
 │   ├── README.md
 │   ├── holdings/
@@ -144,7 +144,7 @@ src/
 │   │   └── ui/                 # userinfo.ui, widget_piechart.py
 │   └── optimizer/
 │
-├── 09_sentiment/               # 감성 분석 (뉴스/소셜)
+├── sentiment/               # 감성 분석 (뉴스/소셜)
 │   ├── __init__.py
 │   ├── README.md
 │   └── analysis/
@@ -155,7 +155,7 @@ src/
 │       ├── analytics/          # correlation, topic_modeling ✅ (analysis/ → analytics/ 변경)
 │       └── workers/
 │
-├── 10_trade/                   # 트레이드 실행 (주문, 리스크 관리)
+├── trade/                   # 트레이드 실행 (주문, 리스크 관리)
 │   ├── __init__.py
 │   ├── README.md
 │   ├── orders/                 # ✅ order/ → orders/ 완전 통합
@@ -168,7 +168,7 @@ src/
 │   ├── risk/
 │   └── core/
 │
-├── 11_server/                  # FastAPI 서버 (REST, WebSocket)
+├── server/                  # FastAPI 서버 (REST, WebSocket)
 │   ├── __init__.py
 │   ├── README.md
 │   ├── api/                    # REST API 라우터
@@ -178,14 +178,14 @@ src/
 │   │   └── ui/                 # settings.ui, widget_settings.py
 │   └── utils/
 │
-├── 12_realtime/                # 실시간 데이터 스트리밍
+├── realtime/                # 실시간 데이터 스트리밍
 │   ├── __init__.py
 │   ├── README.md
 │   ├── component/
 │   ├── workers/
 │   └── ui/
 │
-├── 13_compute/                 # 계산 엔진 (지표 계산, 집계)
+├── compute/                 # 계산 엔진 (지표 계산, 집계)
 │   ├── __init__.py
 │   ├── README.md
 │   ├── engine/                 # ✅ compute/ → engine/ 변경
@@ -227,7 +227,7 @@ src/
 | 8 | **균형성** | 폴더 깊이 3~5단계 유지 |
 | 9 | **점진성** | 모니터 → 스캐너 → AI → 자동매매 단계적 구현 |
 | 10 | **완결성** | 모든 기능(차트/스캐너/AI/트레이드/서버) 완전 구현 |
-| 11 | **재사용성** | `01_core/utils/`·`resources/`·`styles/` 공통 모듈 |
+| 11 | **재사용성** | `core/utils/`·`resources/`·`styles/` 공통 모듈 |
 | 12 | **계층성** | Core → Data → Market → Chart → Strategy → AI → Trade |
 | 13 | **전환성** | 하위 호환성 유지 — DeprecationWarning 기반 shim 지원 |
 | 14 | **강조성** | 핵심 기능(AI/스캐너) 별도 번호 모듈로 강조 |
@@ -282,7 +282,7 @@ docker-compose up -d
 python -m src.app.main
 
 # FastAPI 서버
-python -m src._11_server.core.app
+python -m src._server.core.app
 
 # 테스트 실행
 python -m pytest tools/tests/ -q
@@ -294,19 +294,19 @@ python -m pytest tools/tests/ -q
 
 | 모듈 | 설명 | 핵심 기술 |
 |------|------|-----------|
-| `01_core/` | 핵심 인프라 (인증, DI, 설정) | PyQt5, asyncio |
-| `02_data/` | 데이터 레이어 (DB, 파이프라인) | TimescaleDB, Redis, MongoDB, Kafka, ClickHouse |
-| `03_market/` | 마켓 데이터 (종목, 호가, 체결) | Upbit WebSocket/REST API |
-| `04_chart/` | 차트 엔진 (5개 엔진, 100+ 지표) | matplotlib, mplfinance, plotly, lightweight-charts, bokeh |
-| `05_strategy/` | 트레이딩 전략 (백테스팅, 최적화) | 변동성돌파, 추세추종, DCA, 그리드 |
-| `06_ai/` | AI/ML 엔진 (예측, 강화학습, 이상탐지) | LSTM, XGBoost, Transformer, PPO, VAE |
-| `07_scanner/` | 마켓 스캐너 (조건 스캔, 알림) | 기술지표, 패턴, 볼륨 조건 |
-| `08_portfolio/` | 포트폴리오 관리 (자산 현황, 최적화) | 파이차트, 수익률 분석 |
-| `09_sentiment/` | 감성 분석 (뉴스/소셜) | FinBERT, KoBERT |
-| `10_trade/` | 트레이드 실행 (주문, 리스크 관리) | Upbit 주문 API, PAPER/LIVE 모드 |
-| `11_server/` | FastAPI 서버 (REST, WebSocket) | FastAPI, uvicorn, WebSocket |
-| `12_realtime/` | 실시간 데이터 스트리밍 | Upbit WebSocket, 틱 수신 |
-| `13_compute/` | 계산 엔진 (지표 계산, 집계) | 캔들 집계, O(1) 증분 계산 |
+| `core/` | 핵심 인프라 (인증, DI, 설정) | PyQt5, asyncio |
+| `data_01/` | 데이터 레이어 (DB, 파이프라인) | TimescaleDB, Redis, MongoDB, Kafka, ClickHouse |
+| `market/` | 마켓 데이터 (종목, 호가, 체결) | Upbit WebSocket/REST API |
+| `chart/` | 차트 엔진 (5개 엔진, 100+ 지표) | matplotlib, mplfinance, plotly, lightweight-charts, bokeh |
+| `strategy/` | 트레이딩 전략 (백테스팅, 최적화) | 변동성돌파, 추세추종, DCA, 그리드 |
+| `ai/` | AI/ML 엔진 (예측, 강화학습, 이상탐지) | LSTM, XGBoost, Transformer, PPO, VAE |
+| `scanner/` | 마켓 스캐너 (조건 스캔, 알림) | 기술지표, 패턴, 볼륨 조건 |
+| `portfolio/` | 포트폴리오 관리 (자산 현황, 최적화) | 파이차트, 수익률 분석 |
+| `sentiment/` | 감성 분석 (뉴스/소셜) | FinBERT, KoBERT |
+| `trade/` | 트레이드 실행 (주문, 리스크 관리) | Upbit 주문 API, PAPER/LIVE 모드 |
+| `server/` | FastAPI 서버 (REST, WebSocket) | FastAPI, uvicorn, WebSocket |
+| `realtime/` | 실시간 데이터 스트리밍 | Upbit WebSocket, 틱 수신 |
+| `compute/` | 계산 엔진 (지표 계산, 집계) | 캔들 집계, O(1) 증분 계산 |
 
 ---
 
@@ -350,7 +350,7 @@ flake8 src/
 ## ⚠️ 보안 및 실거래 주의사항
 
 - **API 키 관리**: `.env` 파일 사용, 절대 커밋 금지
-- **LIVE 모드**: `10_trade/` 모듈은 실거래 API를 호출합니다 — PAPER 모드로 충분히 검증 후 사용
+- **LIVE 모드**: `trade/` 모듈은 실거래 API를 호출합니다 — PAPER 모드로 충분히 검증 후 사용
 - **STAGE_LOCKED**: `work_order/*.md` 파일의 STAGE_X_LOCKED 토큰 준수
 
 ---

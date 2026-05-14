@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-10_trade 모듈 인터페이스
+trade 모듈 인터페이스
 주문 실행 및 리스크 관리 추상화
 """
 from __future__ import annotations
@@ -8,13 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-_trade_dir = str(Path(__file__).parents[3] / "10_trade")
+_trade_dir = str(Path(__file__).parents[3] / "trade")
 if _trade_dir not in sys.path:
     sys.path.insert(0, _trade_dir)
 
 
 class TradeService:
-    """10_trade 모듈 서비스 레이어"""
+    """trade 모듈 서비스 레이어"""
 
     def __init__(self) -> None:
         self._engine: Optional[Any] = None

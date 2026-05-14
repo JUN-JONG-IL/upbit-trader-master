@@ -347,11 +347,11 @@ def create_data_manager(static: Any) -> Optional[Any]:
     _log(static, "info", "[datamanager_loader] create_data_manager invoked")
 
     module_candidates = [
-        "02_data.core.data_manager",
-        "src.02_data.core.data_manager",
-        "src._02_data.core.data_manager",
-        "02_data.core",
-        "02_data.core.data_manager_v2",
+        "data_01.core.data_manager",
+        "src.data_01.core.data_manager",
+        "src._data_01.core.data_manager",
+        "data_01.core",
+        "data_01.core.data_manager_v2",
         "data.core.data_manager",
         "src.data.core.data_manager",
     ]
@@ -360,7 +360,7 @@ def create_data_manager(static: Any) -> Optional[Any]:
 
     if server_mod is None:
         legacy = [
-            "server.server", "src.server.server", "11_server.app.server", "11_server.server.server"
+            "server.server", "src.server.server", "server.app.server", "server.server.server"
         ]
         server_mod = _load_module_by_names(legacy, static)
 
@@ -369,10 +369,10 @@ def create_data_manager(static: Any) -> Optional[Any]:
         try:
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             file_candidates = [
-                os.path.join(base_dir, "02_data", "core", "data_manager.py"),
-                os.path.join(base_dir, "src", "02_data", "core", "data_manager.py"),
-                os.path.join(base_dir, "02_data", "core", "data_manager_local.py"),
-                os.path.join(base_dir, "..", "02_data", "core", "data_manager.py"),
+                os.path.join(base_dir, "data_01", "core", "data_manager.py"),
+                os.path.join(base_dir, "src", "data_01", "core", "data_manager.py"),
+                os.path.join(base_dir, "data_01", "core", "data_manager_local.py"),
+                os.path.join(base_dir, "..", "data_01", "core", "data_manager.py"),
             ]
             for p in file_candidates:
                 mod = _load_module_from_file(p, alias=f"datamanager_file_{os.path.basename(p)}", static=static)

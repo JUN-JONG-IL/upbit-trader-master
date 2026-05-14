@@ -25,7 +25,7 @@ except ImportError:
 
 def should_fetch_all_symbols_from_settings(log: SafeLogger) -> bool:
     """TimescaleSettings 우선순위 플래그 확인"""
-    names = ("02_data.timescale.timescale_settings", "src.02_data.timescale.timescale_settings", "timescale.timescale_settings")
+    names = ("data_01.timescale.timescale_settings", "src.data_01.timescale.timescale_settings", "timescale.timescale_settings")
     mod, _ = try_import_names(names)
     
     if not mod:
@@ -101,10 +101,10 @@ def ensure_initial_symbols(static: SimpleNamespace, log: SafeLogger) -> None:
         try:
             from .module_loader import try_load_from_files
             
-            mod, _ = try_import_names(("02_data.mongodb.init_mongodb", "src.02_data.mongodb.init_mongodb", "mongodb.init_mongodb"))
+            mod, _ = try_import_names(("data_01.mongodb.init_mongodb", "src.data_01.mongodb.init_mongodb", "mongodb.init_mongodb"))
             
             if not mod:
-                file_path = os.path.join("02_data", "mongodb", "init_mongodb.py")
+                file_path = os.path.join("data_01", "mongodb", "init_mongodb.py")
                 mod, _ = try_load_from_files([file_path], alias_prefix="init_mongodb")
             
             if mod:
@@ -117,7 +117,7 @@ def ensure_initial_symbols(static: SimpleNamespace, log: SafeLogger) -> None:
         
         # TimescaleSettings 저장
         try:
-            mod, _ = try_import_names(("02_data.timescale.timescale_settings",))
+            mod, _ = try_import_names(("data_01.timescale.timescale_settings",))
             if mod:
                 TimescaleSettings = getattr(mod, "TimescaleSettings", None)
                 if TimescaleSettings:
@@ -137,7 +137,7 @@ def ensure_initial_symbols(static: SimpleNamespace, log: SafeLogger) -> None:
         # 메인 스레드에서 동기 실행하면 로그인창이 늦게 뜬다.
         # daemon 스레드로 분리하여 init_snapshots 호출이 로그인 흐름을 방해하지 않도록 한다.
         try:
-            gap_mod, _ = try_import_names(("02_data.timescale.operations.gap_finder", "src.02_data.timescale.operations.gap_finder"))
+            gap_mod, _ = try_import_names(("data_01.timescale.operations.gap_finder", "src.data_01.timescale.operations.gap_finder"))
             if gap_mod:
                 GapFinder = getattr(gap_mod, "GapFinder", None)
                 if GapFinder:
@@ -205,7 +205,7 @@ def ensure_initial_symbols(static: SimpleNamespace, log: SafeLogger) -> None:
                 if mgr and auto_ok and not ai_enabled:
                     try:
                         # force=True: symbols were just loaded above into static.available_symbols,
-                        # but _has_symbols_available() checks src.11_server.app.static (which has
+                        # but _has_symbols_available() checks src.server.app.static (which has
                         # chart=None at startup), so the readiness check would always fail here.
                         # Since we know symbols are ready, bypass the check directly.
                         res = getattr(mgr, "run_once_nonblocking", lambda *a, **k: False)(force=True)

@@ -236,7 +236,7 @@ class MainWindow(QMainWindow):
                     "src.app.ui.widgets.db_status_led",
                     "app.ui.widgets.db_status_led",
                     "app.widgets.db_status_led",
-                    "src.01_core.auth.ui.widget_login",
+                    "src.core.auth.ui.widget_login",
                 ):
                     try:
                         mod = importlib.import_module(modname)
@@ -254,7 +254,7 @@ class MainWindow(QMainWindow):
                     file_candidates = [
                         os.path.join(here, "widgets", "db_status_led.py"),
                         os.path.join(repo_root, "src", "app", "ui", "widgets", "db_status_led.py"),
-                        os.path.join(repo_root, "src", "01_core", "auth", "ui", "widget_login.py"),
+                        os.path.join(repo_root, "src", "core", "auth", "ui", "widget_login.py"),
                         os.path.join(repo_root, "src", "app", "ui", "windows", "db_status_led.py"),
                     ]
                     for cand in [os.path.abspath(p) for p in file_candidates]:
@@ -365,7 +365,7 @@ class MainWindow(QMainWindow):
                 mapping = getattr(WidgetFactory, "_WIDGET_PATHS", None) or {}
                 rel_path, cls_name = mapping.get(
                     "SettingsWidget",
-                    (os.path.join("11_server", "ui", "settings", "widget_server_settings.py"), "SettingsWidget"),
+                    (os.path.join("server", "ui", "settings", "widget_server_settings.py"), "SettingsWidget"),
                 )
                 cls = WidgetFactory._load_widget_class(rel_path, cls_name)
             except Exception:
@@ -490,8 +490,8 @@ class MainWindow(QMainWindow):
             # StatusWidget 임포트
             StatusWidget = None
             for mod_path in (
-                "_02_data.ui.status_widget",
-                "02_data.ui.status_widget",
+                "_data_01.ui.status_widget",
+                "data_01.ui.status_widget",
             ):
                 try:
                     mod = importlib.import_module(mod_path)
@@ -504,7 +504,7 @@ class MainWindow(QMainWindow):
             if StatusWidget is None:
                 here = os.path.dirname(os.path.abspath(__file__))
                 repo_root = Path(here).parents[1] if len(Path(here).parents) > 1 else Path(here).parent
-                candidate = os.path.join(repo_root, "src", "02_data", "ui", "status_widget.py")
+                candidate = os.path.join(repo_root, "src", "data_01", "ui", "status_widget.py")
                 if os.path.isfile(candidate):
                     spec = importlib.util.spec_from_file_location("_status_widget", candidate)
                     if spec and spec.loader:

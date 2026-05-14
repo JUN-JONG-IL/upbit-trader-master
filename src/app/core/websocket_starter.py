@@ -37,9 +37,9 @@ def _load_symbol_limits() -> dict:
     }
     try:
         import yaml  # type: ignore
-        # src/app/core/ → parents[2] = src/ → src/01_core/config/config.yaml
+        # src/app/core/ → parents[2] = src/ → src/core/config/config.yaml
         search_paths = [
-            Path(__file__).parents[2] / "01_core" / "config" / "config.yaml",
+            Path(__file__).parents[2] / "core" / "config" / "config.yaml",
             Path(__file__).parents[3] / "config.yaml",
         ]
         for p in search_paths:
@@ -142,8 +142,8 @@ async def start_websocket_auto(static: SimpleNamespace):
         # 3. WebSocketManager 생성
         try:
             ws_manager_mod, _ = try_import_names((
-                "02_data.collectors.websocket_manager",
-                "src.02_data.collectors.websocket_manager",
+                "data_01.collectors.websocket_manager",
+                "src.data_01.collectors.websocket_manager",
             ))
             
             if not ws_manager_mod:
@@ -220,8 +220,8 @@ async def start_websocket_auto(static: SimpleNamespace):
         # ========================================
         try:
             rest_collector_mod, _ = try_import_names((
-                "02_data.collectors.rest_candle_collector",
-                "src.02_data.collectors.rest_candle_collector",
+                "data_01.collectors.rest_candle_collector",
+                "src.data_01.collectors.rest_candle_collector",
             ))
             
             if not rest_collector_mod:

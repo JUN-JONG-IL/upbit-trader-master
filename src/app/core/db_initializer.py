@@ -34,8 +34,8 @@ def validate_db_connections(static: SimpleNamespace, log: SafeLogger) -> None:
     """DB 연결 검증 (startup_validator)"""
     try:
         validator_candidates = (
-            "14_orchestrator.startup_validator",
-            "src.14_orchestrator.startup_validator",
+            "orchestrator.startup_validator",
+            "src.orchestrator.startup_validator",
             "app.core.startup_validator",
             "src.app.core.startup_validator",
         )
@@ -74,7 +74,7 @@ def validate_db_connections(static: SimpleNamespace, log: SafeLogger) -> None:
 def init_mongodb(log: SafeLogger) -> None:
     """MongoDB 초기화"""
     try:
-        names = ("02_data.mongodb.init_mongodb", "src.02_data.mongodb.init_mongodb", "mongodb.init_mongodb")
+        names = ("data_01.mongodb.init_mongodb", "src.data_01.mongodb.init_mongodb", "mongodb.init_mongodb")
         mod, attempts = try_import_names(names)
 
         if mod:
@@ -111,7 +111,7 @@ def init_data_manager(static: SimpleNamespace, log: SafeLogger) -> None:
                     "app.loaders.datamanager_loader",
                     [
                         os.path.join("app", "loaders", "datamanager_loader.py"),
-                        os.path.join("02_data", "core", "data_manager.py")
+                        os.path.join("data_01", "core", "data_manager.py")
                     ]
                 )
                 if dm_loader is not None:
@@ -153,9 +153,9 @@ def init_pipeline(static: SimpleNamespace, log: SafeLogger) -> None:
                     if not getattr(static, "timescale_connector", None):
                         # try import timescale module (file or package)
                         ts_mod, _ = try_import_names((
-                            "02_data.timescale.timescale_db",
-                            "src.02_data.timescale.timescale_db",
-                            "02_data.timescale.timescale_db_fallback",
+                            "data_01.timescale.timescale_db",
+                            "src.data_01.timescale.timescale_db",
+                            "data_01.timescale.timescale_db_fallback",
                         ))
                         if ts_mod is None:
                             # fallback: try file path near src root
@@ -165,7 +165,7 @@ def init_pipeline(static: SimpleNamespace, log: SafeLogger) -> None:
                                 SRC_ROOT = None
                                 load_module_from_file_abs = None
                             if SRC_ROOT:
-                                p = os.path.join(SRC_ROOT, "02_data", "timescale", "timescale_db.py")
+                                p = os.path.join(SRC_ROOT, "data_01", "timescale", "timescale_db.py")
                                 if os.path.isfile(p):
                                     try:
                                         if load_module_from_file_abs:
@@ -212,8 +212,8 @@ def init_pipeline(static: SimpleNamespace, log: SafeLogger) -> None:
                     "app.loaders.pipeline_loader",
                     [
                         os.path.join("app", "loaders", "pipeline_loader.py"),
-                        os.path.join("02_data", "pipeline", "processor.py"),
-                        os.path.join("02_data", "timescale", "operations", "candle_writer.py")
+                        os.path.join("data_01", "pipeline", "processor.py"),
+                        os.path.join("data_01", "timescale", "operations", "candle_writer.py")
                     ]
                 )
                 if pipe_mod is not None:
@@ -299,7 +299,7 @@ def flush_staging_candles_once(log: SafeLogger) -> int:
         # --- (1) 가능한 경우 전역 pool 초기화 시도 (안전한 시도, 실패 시 무시) ---
         try:
             # pool 모듈을 파일 경로 또는 import 후보로 시도 로드하여 init_global_pool_from_env 호출
-            pool_mod, _ = try_import_names(("02_data.timescale.pool", "src.02_data.timescale.pool"))
+            pool_mod, _ = try_import_names(("data_01.timescale.pool", "src.data_01.timescale.pool"))
             if pool_mod and hasattr(pool_mod, "init_global_pool_from_env"):
                 try:
                     pool_mod.init_global_pool_from_env()
@@ -336,11 +336,11 @@ def flush_staging_candles_once(log: SafeLogger) -> int:
                 load_module_from_file_abs = None
 
             if SRC_ROOT:
-                ts_db_paths.append(os.path.join(SRC_ROOT, "02_data", "timescale", "timescale_db.py"))
+                ts_db_paths.append(os.path.join(SRC_ROOT, "data_01", "timescale", "timescale_db.py"))
             else:
                 # best-effort common paths relative to this module
                 here = os.path.dirname(__file__)
-                ts_db_paths.append(os.path.join(here, "..", "..", "02_data", "timescale", "timescale_db.py"))
+                ts_db_paths.append(os.path.join(here, "..", "..", "data_01", "timescale", "timescale_db.py"))
 
             ts_mod = None
             for p in ts_db_paths:
@@ -364,8 +364,8 @@ def flush_staging_candles_once(log: SafeLogger) -> int:
             # 3) if not loaded from file, try import candidates
             if ts_mod is None:
                 ts_mod, _ = try_import_names((
-                    "02_data.timescale.timescale_db",
-                    "src.02_data.timescale.timescale_db",
+                    "data_01.timescale.timescale_db",
+                    "src.data_01.timescale.timescale_db",
                 ))
 
             if ts_mod is None and connector_obj is None:

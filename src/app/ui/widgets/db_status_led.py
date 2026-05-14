@@ -87,11 +87,11 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
             self._timer = None
 
     def _ensure_data_dir_in_sys_path(self) -> None:
-        """한 번만 실행: src/02_data 경로를 sys.path에 추가(중복 삽입 회피)."""
+        """한 번만 실행: src/data_01 경로를 sys.path에 추가(중복 삽입 회피)."""
         try:
             here = os.path.dirname(os.path.abspath(__file__))
             repo_root = os.path.abspath(os.path.join(here, "..", "..", ".."))
-            data_dir = os.path.join(repo_root, "src", "02_data")
+            data_dir = os.path.join(repo_root, "src", "data_01")
             # 기존 값들과 중복될 수 있으므로 한 번만 추가
             if os.path.isdir(data_dir) and data_dir not in sys.path:
                 sys.path.insert(0, data_dir)
@@ -162,9 +162,9 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
         if mod is None:
             # try package names first
             candidates = {
-                "timescale": ["src.02_data.timescale.health_check", "src.timescale.health_check", "timescale.health_check"],
-                "mongodb": ["src.02_data.mongodb.health_check", "src.mongodb.health_check", "mongodb.health_check"],
-                "redis": ["src.02_data.redis.health_check", "src.redis.health_check", "redis.health_check"],
+                "timescale": ["src.data_01.timescale.health_check", "src.timescale.health_check", "timescale.health_check"],
+                "mongodb": ["src.data_01.mongodb.health_check", "src.mongodb.health_check", "mongodb.health_check"],
+                "redis": ["src.data_01.redis.health_check", "src.redis.health_check", "redis.health_check"],
             }.get(key, [])
             for nm in candidates:
                 try:
@@ -182,14 +182,14 @@ class DBStatusLED(QLabel):  # type: ignore[misc]
                     repo_root = os.path.abspath(os.path.join(here, "..", "..", ".."))
                     file_cands = {
                         "redis": [
-                            os.path.join(repo_root, "src", "02_data", "redis", "health_check.py"),
+                            os.path.join(repo_root, "src", "data_01", "redis", "health_check.py"),
                             os.path.join(repo_root, "redis", "health_check.py"),
                         ],
                         "mongodb": [
-                            os.path.join(repo_root, "src", "02_data", "mongodb", "health_check.py"),
+                            os.path.join(repo_root, "src", "data_01", "mongodb", "health_check.py"),
                         ],
                         "timescale": [
-                            os.path.join(repo_root, "src", "02_data", "timescale", "health_check.py"),
+                            os.path.join(repo_root, "src", "data_01", "timescale", "health_check.py"),
                         ],
                     }.get(key, [])
                     for f in file_cands:

@@ -1,0 +1,22 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+Backward-compat shim — canonical location: src/data_01/core/data_manager.py
+
+이 파일은 src/data_01/core/data_manager.py 로 이동되었습니다.
+하위 호환성을 위해 유지됩니다.
+"""
+import importlib.util as _ilu
+import os as _os
+
+_path = _os.path.normpath(_os.path.join(
+    _os.path.dirname(_os.path.abspath(__file__)),
+    "..", "..", "data_01", "core", "data_manager.py"
+))
+_spec = _ilu.spec_from_file_location("_02data_core_data_manager", _path)
+_mod = _ilu.module_from_spec(_spec)
+_spec.loader.exec_module(_mod)  # type: ignore
+
+DataManager = _mod.DataManager
+
+__all__ = ["DataManager"]
