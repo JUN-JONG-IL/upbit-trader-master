@@ -19,7 +19,7 @@ import json
 import csv
 from collections import deque
 from datetime import datetime
-from typing import Any, Optional, Sequence, Dict, List
+from typing import Any, Optional, Sequence, Dict, List, Deque, TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +37,17 @@ except Exception:
     _HAS_QT = False
 
 # Optional local imports (if your project has these modules)
-try:
-    from ._mixins import TableCopyMixin
-except Exception:
-    TableCopyMixin = object
+# Make editors/type-checkers happy while keeping runtime fallback
+if TYPE_CHECKING:
+    try:
+        from ._mixins import TableCopyMixin  # type: ignore
+    except Exception:
+        TableCopyMixin = object  # type: ignore
+else:
+    try:
+        from ._mixins import TableCopyMixin
+    except Exception:
+        TableCopyMixin = object
 
 try:
     from .statistics_model import StatisticsModel, LogFilterProxyModel
@@ -151,15 +158,14 @@ if _HAS_QT:
             self._load_settings_file_or_defaults()
 
             # buffers and locks
-            self._pending_logs: "deque[Dict[str, Any]]" = deque()
+            self._pending_logs: Deque[Dict[str, Any]] = deque()
             self._pending_lock = threading.Lock()
 
-            # per-tab caches
-            self._displayed_logs_by_tab: Dict[int, deque] = {i: deque() for i in range(1, 8)}
+            # per-tab caches (fixed annotations and initialization)
+            self._displayed_logs_by_tab: Dict[int, Deque[Dict[str, Any]]] = {i: deque() for i in range(1, 8)}
             self._models: Dict[int, Optional[StatisticsModel]] = {}
             self._proxies: Dict[int, Optional[LogFilterProxyModel]] = {}
             self._views: Dict[int, Optional[object]] = {}
-            self._orig_tablewidgets: Dict[int, object] = {}
 
             # widget caches
             self._text_logs: Dict[int, Optional[object]] = {}
@@ -265,7 +271,7 @@ if _HAS_QT:
 
             try:
                 if bool(self._settings.get("auto_load_history_on_start", _DEF["auto_load_history_on_start"])):
-                    self.load_history(max_lines=int(self._settings.get("history_max_lines", _DEF["history_max_lines"])))
+                    self.load_history(max_lines=int(self._settings.get("history_max_lines", _DEF["history_max_lines"])) )
             except Exception:
                 pass
 
@@ -282,12 +288,14 @@ if _HAS_QT:
                         return True
                     except Exception as e:
                         logger.debug("[StatisticsTab] load_ui_with_tab_fix 실패: %s", e)
+                # Try uic.loadUi
                 try:
                     uic.loadUi(ui_path, self)
                     logger.info("[StatisticsTab] UI 로드 성공 (uic.loadUi)")
                     return True
                 except Exception as e:
                     logger.debug("[StatisticsTab] uic.loadUi 실패: %s", e)
+                # Try loadUiType fallback (generates form class)
                 try:
                     form_class, base_class = uic.loadUiType(ui_path)
                     form = form_class()
@@ -305,6 +313,7 @@ if _HAS_QT:
             """Check for presence of primary expected widgets."""
             if hasattr(self, "tabWidget_main_tabs") and getattr(self, "tabWidget_main_tabs") is not None:
                 return True
+            # fallback: any table or text_log present
             for name in ("table_tab_1", "text_log_tab_1"):
                 if hasattr(self, name) and getattr(self, name) is not None:
                     return True
@@ -314,16 +323,17 @@ if _HAS_QT:
             """Try to auto-bind expected widget names via findChild if attributes missing."""
             try:
                 if not hasattr(self, "tabWidget_main_tabs") or getattr(self, "tabWidget_main_tabs") is None:
-                    tabs = self.findChildren(QTabWidget)
-                    if tabs:
+                    tab = self._find_first_child(QTabWidget)
+                    if tab is not None:
                         try:
-                            setattr(self, "tabWidget_main_tabs", tabs[0])
-                            logger.debug("[StatisticsTab] tabWidget_main_tabs 자동 바인딩 됨 (%s)", getattr(tabs[0], "objectName", lambda: "")())
+                            setattr(self, "tabWidget_main_tabs", tab)
+                            logger.debug("[StatisticsTab] tabWidget_main_tabs 자동 바인딩 됨 (%s)", getattr(tab, "objectName", lambda: "")())
                         except Exception:
                             pass
             except Exception:
                 pass
 
+            # For tables/texts: attempt findChild by name patterns
             for i in range(1, 8):
                 try:
                     if not hasattr(self, f"table_tab_{i}") or getattr(self, f"table_tab_{i}") is None:
@@ -360,6 +370,7 @@ if _HAS_QT:
                     obj = self.findChild(cls, name)
                     if obj is not None:
                         return obj
+                # fuzzy fallback
                 for child in self.findChildren(object):
                     try:
                         if name in (child.objectName() or ""):
@@ -370,8 +381,19 @@ if _HAS_QT:
                 pass
             return None
 
-        def _show_ui_warning(self, text: str) -> None:
+        def _find_first_child(self, cls):
             try:
+                childs = self.findChildren(cls)
+                if childs:
+                    return childs[0]
+            except Exception:
+                pass
+            return None
+
+        def _show_ui_warning(self, text: str) -> None:
+            """If UI hasn't proper widgets, show a small label so user sees something.""" 
+            try:
+                # don't override if actual UI present
                 if self._has_core_widgets():
                     return
                 layout = QVBoxLayout(self)
