@@ -13,6 +13,11 @@ StatusWidget 메인 클래스 (widget.py)
   정상 동작하도록 보강했습니다.
   (문제 원인: 숫자로 시작하는 폴더명 때문에 dotted import가 실패하면 file-path fallback이 동작,
    이때 package context가 없으면 'from ._mixins' 같은 상대 import가 실패하여 빈 UI가 표시됨)
+
+추가(디버그/자동 바인딩):
+- StatisticsTab 인스턴스화 직후 _attempt_find_widgets() 호출(있을 경우)
+- 핵심 objectName 목록을 기준으로 findChildren 기반 강제 바인딩 시도
+- 바인딩 결과를 logger.debug 로 남김 (프러덕션에선 낮춰도 됨)
 """
 from __future__ import annotations
 
@@ -60,13 +65,10 @@ if _HAS_QT:
         """실시간 로그 전용 팝업창.
 
         동작 방식:
-        - 우선 src/02_data/ui/tabs/statistics_tab.py의 StatisticsTab 클래스를 동적 임포트하여 임베드합니다.
-        - 임포트 실패 시 QPlainTextEdit 기반의 fallback 뷰를 사용합니다.
-        - append_log(formatted_message, record=None) 를 통해 로그를 전달받아 StatisticsTab.add_log_entry 또는 텍스트뷰에 쌓습니다.
-
-        주의(핵심):
-        - 파일-경로로 모듈을 로드할 때 모듈 내부에서 상대 import를 사용하면 패키지 컨텍스트가 필요합니다.
-          여기서는 안전하게 패키지 이름을 유추하고 sys.modules에 패키지 엔트리를 등록한 뒤 모듈을 exec 합니다.
+        - 우선 package-relative import (preferred) 시도
+        - 실패 시 파일-경로 폴백 → 패키지 컨텍스트를 유추하여 sys.modules와 __package__를 세팅 후 exec
+        - 임포트 실패 시 QPlainTextEdit fallback 사용
+        - 인스턴스화 직후 StatisticsTab의 자동 바인딩 메서드(있으면) 호출 및 예상 objectName으로 강제 바인딩 시도
         """
         def __init__(self, parent: Optional[QWidget] = None) -> None:
             super().__init__(parent)
@@ -83,11 +85,12 @@ if _HAS_QT:
             # === Robust StatisticsTab import: try relative/package import first, then file-path fallback ===
             _stats_tab_cls = None
             try:
-                # Try relative/package import first (preferred)
+                # 우선 패키지 상대/절대 임포트 시도 (가장 안전한 경로)
                 from ..tabs.statistics_tab import StatisticsTab  # type: ignore
                 _stats_tab_cls = StatisticsTab
             except Exception as e_rel:
                 logger.debug("[LogPopup] relative import of StatisticsTab failed: %s", e_rel)
+
                 # File-path fallback: load statistics_tab.py by filesystem path
                 try:
                     here = os.path.dirname(os.path.abspath(__file__))
@@ -96,59 +99,57 @@ if _HAS_QT:
                         try:
                             # -------------------------
                             # 안전한 파일-경로 로드 로직
-                            #  - module_name과 package_name을 유추
-                            #  - 패키지 모듈을 sys.modules에 등록(간단한 __path__ 설정 포함)
-                            #  - 모듈.__package__를 설정한 뒤 exec_module 호출
-                            #  - 이렇게 하면 statistics_tab 내부의 상대 import(from ._mixins 등)가 동작함
+                            # 1) candidate 경로로부터 적절한 package 이름을 유추 시도
+                            # 2) package 모듈을 sys.modules에 간단히 등록(__path__ 포함)
+                            # 3) 모듈.__package__ 설정 및 sys.modules에 모듈 등록
+                            # 4) spec.loader.exec_module(mod) 호출
                             # -------------------------
-                            # 유추: candidate 경로에서 'src' 디렉터리 이후의 경로를 패키지 네임으로 사용 시도
                             candidate_norm = os.path.normpath(candidate)
                             parts = candidate_norm.split(os.sep)
                             package_name = None
                             try:
-                                # 'src' 루트가 있으면 그 이후를 패키지 이름으로 사용
+                                # 'src' 폴더를 루트로 간주하고 그 이후를 패키지명으로 사용 시도
                                 idx = next(i for i, p in enumerate(parts) if p == "src")
-                                # exclude the filename at the end
-                                pkg_parts = parts[idx:-1]
-                                package_name = ".".join(pkg_parts) if pkg_parts else None
+                                pkg_parts = parts[idx:-1]  # filename 제외
+                                if pkg_parts:
+                                    package_name = ".".join(pkg_parts)
                             except StopIteration:
                                 package_name = None
 
-                            # fallback package_name: 디렉터리 이름을 사용 (안전하게)
+                            # fallback: statistics_tab.py 상위 디렉토리 이름 사용 (안전모드)
                             if not package_name:
                                 package_name = os.path.basename(os.path.dirname(candidate))
 
-                            # 현실적으로 statistics_tab.py 파일은 '.../src/02_data/ui/tabs/statistics_tab.py' 에 있음.
-                            # 이때 package_name은 'src.02_data.ui.tabs' 가 될 가능성이 큼.
+                            # 모듈명 생성(충돌 방지를 위해 임시 suffix 사용)
                             module_name = package_name + ".statistics_tab_local"
 
                             spec = importlib.util.spec_from_file_location(module_name, candidate)
                             if spec and spec.loader:
                                 mod = importlib.util.module_from_spec(spec)
 
-                                # 부모 패키지(간단 타입) 등록: importlib의 상대 import가 동작하려면
-                                # package 엔트리가 sys.modules에 존재하고 __path__가 올바르게 설정되어야 함.
+                                # 부모 패키지(간단한 ModuleType)를 sys.modules에 등록하면
+                                # 상대 import가 패키지 컨텍스트에서 동작 가능해짐
                                 try:
-                                    # 패키지 파일 시스템 디렉토리 (statistics_tab.py의 상위 디렉토리)
                                     package_dir = os.path.dirname(candidate)
-                                    # 등록되지 않은 경우에만 생성
                                     if package_name not in sys.modules:
                                         pkg_mod = types.ModuleType(package_name)
-                                        # __path__는 패키지 탐색시 사용됨(상위 디렉토리로 설정)
+                                        # __path__는 import 시 상대 모듈 탐색에 사용됨
                                         pkg_mod.__path__ = [package_dir]
                                         sys.modules[package_name] = pkg_mod
-                                    # 모듈의 패키지 속성 설정 (상대 import resolution에 사용)
-                                    mod.__package__ = package_name
                                 except Exception as e_pkg:
-                                    logger.debug("[LogPopup] 패키지 등록 중 오류(무시): %s", e_pkg)
+                                    logger.debug("[LogPopup] package registration error (ignored): %s", e_pkg)
 
-                                # sys.modules에 모듈 이름 등록 — 모듈 내부에서 자신의 절대 이름으로 접근 가능
+                                # 모듈 패키지 속성 설정 및 sys.modules 등록
+                                try:
+                                    mod.__package__ = package_name
+                                except Exception:
+                                    pass
                                 try:
                                     sys.modules[module_name] = mod
                                 except Exception:
                                     pass
 
-                                # finally exec the module
+                                # 모듈 실행
                                 try:
                                     spec.loader.exec_module(mod)
                                     _stats_tab_cls = getattr(mod, "StatisticsTab", None)
@@ -167,10 +168,93 @@ if _HAS_QT:
                 except Exception as e_fp:
                     logger.debug("[LogPopup] statistics_tab import fallback failed: %s", e_fp, exc_info=True)
 
-            # If we found a StatisticsTab class, instantiate and embed it
+            # StatisticsTab 클래스를 찾았으면 인스턴스화하여 레이아웃에 추가
             if _stats_tab_cls is not None:
                 try:
                     self._stats_tab = _stats_tab_cls(parent=self)
+
+                    # -------------------------
+                    # 자동 바인딩 시도 (인스턴스화 직후)
+                    # 1) StatisticsTab 내부에 _attempt_find_widgets가 있으면 호출
+                    # 2) 핵심 objectName 목록을 기준으로 findChildren로 강제 바인딩 시도
+                    # 3) 진단 로그 출력
+                    # -------------------------
+                    try:
+                        # 1) 내부 보정 함수 호출
+                        attempt_fn = getattr(self._stats_tab, "_attempt_find_widgets", None)
+                        if callable(attempt_fn):
+                            try:
+                                attempt_fn()
+                            except Exception as e_attempt:
+                                logger.debug("[LogPopup.DEBUG] _attempt_find_widgets() failed: %s", e_attempt, exc_info=True)
+
+                        # 2) 핵심 이름들로 강제 바인딩 (안전하게 시도)
+                        expected_names = (
+                            "tabWidget_main_tabs",
+                            "table_tab_1",
+                            "table_tab_2",
+                            "table_tab_3",
+                            "text_log_tab_1",
+                            "plain_log_tab_1",
+                            "btn_pause",
+                            "btn_refresh",
+                            "btn_load_history",
+                            "btn_realtime_log",
+                        )
+                        try:
+                            children = []
+                            try:
+                                children = list(self._stats_tab.findChildren(object))
+                            except Exception:
+                                children = []
+                            for name in expected_names:
+                                try:
+                                    cur = getattr(self._stats_tab, name, None)
+                                    if cur is None:
+                                        # children 순회로 objectName이 일치하는 것을 찾아 속성으로 설정
+                                        for ch in children:
+                                            try:
+                                                on = ""
+                                                try:
+                                                    on = ch.objectName()
+                                                except Exception:
+                                                    on = ""
+                                                if on == name:
+                                                    try:
+                                                        setattr(self._stats_tab, name, ch)
+                                                        logger.debug("[LogPopup.DEBUG] forced bind: %s -> %s", name, ch)
+                                                        break
+                                                    except Exception:
+                                                        pass
+                                            except Exception:
+                                                continue
+                                except Exception:
+                                    continue
+                        except Exception as e_bind:
+                            logger.debug("[LogPopup.DEBUG] forced binding exception: %s", e_bind, exc_info=True)
+
+                        # 3) 진단 로그
+                        try:
+                            child_list = list(self._stats_tab.findChildren(object)) if hasattr(self._stats_tab, "findChildren") else []
+                            logger.debug("[LogPopup.DEBUG] after auto-bind has_stats_tab=%s stats_tab_type=%s child_count=%d",
+                                         bool(self._stats_tab), type(self._stats_tab), len(child_list))
+                            # objectName 목록 출력(디버그용)
+                            onames = []
+                            for ch in child_list:
+                                try:
+                                    onames.append(ch.objectName())
+                                except Exception:
+                                    try:
+                                        onames.append(str(ch))
+                                    except Exception:
+                                        onames.append("<unknown>")
+                            logger.debug("[LogPopup.DEBUG] child objectNames: %s", onames)
+                        except Exception:
+                            pass
+
+                    except Exception as e_autobind:
+                        logger.debug("[LogPopup.DEBUG] auto-bind flow failed: %s", e_autobind, exc_info=True)
+
                     layout.addWidget(self._stats_tab)
                     self._has_stats_tab = True
                 except Exception as exc:
@@ -188,7 +272,6 @@ if _HAS_QT:
                     self._text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
                     layout.addWidget(self._text)
                 except Exception:
-                    # final fallback: try a basic widget-less behavior (rare)
                     logger.debug("[LogPopup] fallback text widget creation failed", exc_info=True)
 
             # 하단 닫기 버튼
@@ -211,7 +294,6 @@ if _HAS_QT:
             """
             try:
                 if self._has_stats_tab and self._stats_tab is not None:
-                    # build entry expected by StatisticsTab.add_log_entry
                     try:
                         if record is not None:
                             ts = datetime.fromtimestamp(getattr(record, "created", datetime.now().timestamp())).strftime("%H:%M:%S")
@@ -220,34 +302,32 @@ if _HAS_QT:
                             msg = formatted_message
                             entry = {"time": ts, "level": level, "module": module, "message": msg}
                         else:
-                            # record 없으면 포맷 문자열을 메시지로 넣음
                             ts = datetime.now().strftime("%H:%M:%S")
                             entry = {"time": ts, "level": "INFO", "module": "", "message": formatted_message}
-                        # 호출 (StatisticsTab 내부에서 스레드 안전 처리함)
+
+                        # StatisticsTab이 제공하는 API(add_log_entry)를 호출
                         try:
                             self._stats_tab.add_log_entry(entry)
                         except Exception as exc:
                             logger.debug("[LogPopup] statistics_tab.add_log_entry 실패, fallback: %s", exc)
-                            # fallback to text view if present
                             if self._text is not None:
                                 try:
                                     self._text.appendPlainText(f"[{entry['level']}] {entry['time']} {entry['module']}: {entry['message']}")
                                 except Exception:
                                     pass
                     except Exception:
-                        # 안전하게 fallback
                         if self._text is not None:
                             try:
                                 self._text.appendPlainText(formatted_message)
                             except Exception:
                                 pass
                 else:
-                    # 단순 텍스트 뷰에 append
                     if self._text is not None:
                         try:
                             self._text.appendPlainText(formatted_message)
                         except Exception:
                             pass
+
                 # autoscroll for plain text view
                 try:
                     if self._text is not None:
@@ -344,7 +424,6 @@ if _HAS_QT:
 
             # 시작 시 전체창(최대화)으로 표시 — 사용자가 다시 복원하면 원래 크기로 돌아갑니다.
             try:
-                # 표준 최대화 호출 (안정성 위해 예외 처리)
                 self.showMaximized()
             except Exception:
                 pass
@@ -415,7 +494,6 @@ if _HAS_QT:
             try:
                 if hasattr(self, "btn_realtime_log") and callable(getattr(self.btn_realtime_log, "clicked", None)):
                     try:
-                        # 안전하게 연결
                         self.btn_realtime_log.clicked.connect(self._open_realtime_log_popup)
                     except Exception:
                         logger.debug("[StatusWidget] btn_realtime_log 연결 실패", exc_info=True)
@@ -501,16 +579,13 @@ if _HAS_QT:
                     popup = getattr(self, "_log_popup", None)
                     if popup is not None and popup.isVisible():
                         try:
-                            # append_log accepts (formatted_message, record)
                             popup.append_log(formatted_message, record)
                         except RuntimeError:
-                            # 스레드 문제시 Qt 이벤트 루프에 큐잉
                             try:
                                 QTimer.singleShot(0, lambda m=formatted_message, r=record: popup.append_log(m, r))
                             except Exception:
                                 pass
                         except Exception:
-                            # fallback 큐잉
                             try:
                                 QTimer.singleShot(0, lambda m=formatted_message, r=record: popup.append_log(m, r))
                             except Exception:
