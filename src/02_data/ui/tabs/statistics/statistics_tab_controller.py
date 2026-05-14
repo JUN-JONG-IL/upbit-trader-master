@@ -6,6 +6,7 @@ Controller for StatisticsTab View.
 - Controller owns the business logic: timer, pending log buffering, persistence (settings/layout),
   log forwarding handler registration, model/proxy wiring (if statistics_model available),
   and file I/O for history/export.
+- Controller imports and owns the View (StatisticsTab) and connects view signals -> controller slots.
 
 한글 주석: 이 파일은 Controller 역할만 합니다. View(StatisticsTab)는 시그널만 발생시키고,
 Controller가 모든 로직을 수행합니다.
@@ -18,6 +19,7 @@ import os
 import threading
 from collections import deque
 from datetime import datetime
+from functools import partial
 from typing import Any, Deque, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -82,12 +84,12 @@ if _HAS_QT and StatisticsTab is not None:
             self._settings: Dict[str, Any] = dict(_DEF)
             self._load_settings_file_or_defaults()
 
-            # 내부 버퍼 및 락
+            # 내부 버퍼 및 락 (각 로그 항목은 Dict[str, Any])
             self._pending_logs: Deque[Dict[str, Any]] = deque()
             self._pending_lock = threading.Lock()
 
             # 표시 버퍼(탭별)
-            self._displayed_logs_by_tab: Dict[int, Deque] = {i: deque() for i in range(1, 8)}
+            self._displayed_logs_by_tab: Dict[int, Deque[Dict[str, Any]]] = {i: deque() for i in range(1, 8)}
 
             # 모델/프록시 캐시
             self._models: Dict[int, Optional[StatisticsModel]] = {}
@@ -200,8 +202,8 @@ if _HAS_QT and StatisticsTab is not None:
                         continue
                     try:
                         header = tbl.horizontalHeader()
-                        # connect to controller handler
-                        header.sectionResized.connect((lambda t: (lambda logical, old, new: self._on_section_resized(t, logical, old, new)))(tab))
+                        # using functools.partial to avoid loop-variable-capture lambda issues
+                        header.sectionResized.connect(partial(self._on_section_resized, tab))
                     except Exception:
                         pass
             except Exception:
@@ -283,7 +285,7 @@ if _HAS_QT and StatisticsTab is not None:
                 except Exception:
                     pass
                 self._forwarding_handler = None
-                logger.info("[StatisticsTabController] ��워딩 로그 핸들러 제거됨")
+                logger.info("[StatisticsTabController] 포워딩 로그 핸들러 제거됨")
             except Exception as exc:
                 logger.debug("[StatisticsTabController] _unregister_forwarding_handler 실패: %s", exc)
 
